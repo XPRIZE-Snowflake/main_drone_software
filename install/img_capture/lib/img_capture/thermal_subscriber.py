@@ -1,0 +1,1 @@
+/home/username/ros2_ws/src/img_capture/scripts/thermal_subscriber.py

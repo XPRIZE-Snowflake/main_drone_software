@@ -1,0 +1,130 @@
+[0.000000] (-) TimerEvent: {}
+[0.000360] (-) JobUnselected: {'identifier': 'px4_msgs'}
+[0.000399] (-) JobUnselected: {'identifier': 'px4_ros_com'}
+[0.000424] (img_capture) JobQueued: {'identifier': 'img_capture', 'dependencies': OrderedDict()}
+[0.000705] (img_capture) JobStarted: {'identifier': 'img_capture'}
+[0.012092] (img_capture) JobProgress: {'identifier': 'img_capture', 'progress': 'cmake'}
+[0.013365] (img_capture) Command: {'cmd': ['/usr/bin/cmake', '/home/username/ros2_ws/src/img_capture', '-DAMENT_CMAKE_SYMLINK_INSTALL=1', '-DCMAKE_INSTALL_PREFIX=/home/username/ros2_ws/install/img_capture'], 'cwd': '/home/username/ros2_ws/build/img_capture', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'username', 'SSH_CLIENT': '10.37.116.1 60113 22', 'XDG_SESSION_TYPE': 'tty', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/home/username/ros2_ws/install/px4_ros_com/lib:/home/username/ros2_ws/install/px4_msgs/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib:/usr/local/lib', 'HOME': '/home/username', 'OLDPWD': '/home/username/ros2_ws/src', 'SSH_TTY': '/dev/pts/0', 'ROS_PYTHON_VERSION': '3', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLCON_PREFIX_PATH': '/home/username/ros2_ws/install', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'username', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'TERM': 'xterm-256color', 'XDG_SESSION_ID': '1', 'PATH': '/home/username/.local/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin', 'XDG_RUNTIME_DIR': '/run/user/1000', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'ROS_DOMAIN_ID': '0', 'AMENT_PREFIX_PATH': '/home/username/ros2_ws/install/px4_ros_com:/home/username/ros2_ws/install/px4_msgs:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/home/username/ros2_ws/build/img_capture', 'SSH_CONNECTION': '10.37.116.1 60113 10.2.118.167 22', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/username/ros2_ws/install/px4_ros_com/lib/python3.12/site-packages:/home/username/ros2_ws/install/px4_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/home/username/ros2_ws/install/px4_ros_com:/home/username/ros2_ws/install/px4_msgs:/opt/ros/jazzy'}), 'shell': False}
+[0.038052] (img_capture) StdoutLine: {'line': b'-- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)\n'}
+[0.099676] (-) TimerEvent: {}
+[0.200015] (-) TimerEvent: {}
+[0.300352] (-) TimerEvent: {}
+[0.358597] (img_capture) StdoutLine: {'line': b'-- Override CMake install command with custom implementation using symlinks instead of copying resources\n'}
+[0.369243] (img_capture) StdoutLine: {'line': b'-- Found rclcpp: 28.1.6 (/opt/ros/jazzy/share/rclcpp/cmake)\n'}
+[0.400439] (-) TimerEvent: {}
+[0.400695] (img_capture) StdoutLine: {'line': b'-- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)\n'}
+[0.413823] (img_capture) StdoutLine: {'line': b'-- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)\n'}
+[0.429849] (img_capture) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.448335] (img_capture) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.500525] (-) TimerEvent: {}
+[0.529853] (img_capture) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 7.3.1 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)\n'}
+[0.531718] (img_capture) StdoutLine: {'line': b'-- Found rmw_fastrtps_cpp: 8.4.1 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)\n'}
+[0.600635] (-) TimerEvent: {}
+[0.616679] (img_capture) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_fastrtps_cpp' as default\n"}
+[0.696201] (img_capture) StdoutLine: {'line': b'-- Found sensor_msgs: 5.3.5 (/opt/ros/jazzy/share/sensor_msgs/cmake)\n'}
+[0.700703] (-) TimerEvent: {}
+[0.800953] (-) TimerEvent: {}
+[0.901274] (-) TimerEvent: {}
+[0.956271] (img_capture) StdoutLine: {'line': b'-- Configuring done (0.9s)\n'}
+[0.977381] (img_capture) StdoutLine: {'line': b'-- Generating done (0.0s)\n'}
+[0.995177] (img_capture) StdoutLine: {'line': b'-- Build files have been written to: /home/username/ros2_ws/build/img_capture\n'}
+[1.001421] (-) TimerEvent: {}
+[1.008609] (img_capture) CommandEnded: {'returncode': 0}
+[1.009308] (img_capture) JobProgress: {'identifier': 'img_capture', 'progress': 'build'}
+[1.010034] (img_capture) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/username/ros2_ws/build/img_capture', '--', '-j4', '-l4'], 'cwd': '/home/username/ros2_ws/build/img_capture', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'username', 'SSH_CLIENT': '10.37.116.1 60113 22', 'XDG_SESSION_TYPE': 'tty', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/home/username/ros2_ws/install/px4_ros_com/lib:/home/username/ros2_ws/install/px4_msgs/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib:/usr/local/lib', 'HOME': '/home/username', 'OLDPWD': '/home/username/ros2_ws/src', 'SSH_TTY': '/dev/pts/0', 'ROS_PYTHON_VERSION': '3', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLCON_PREFIX_PATH': '/home/username/ros2_ws/install', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'username', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'TERM': 'xterm-256color', 'XDG_SESSION_ID': '1', 'PATH': '/home/username/.local/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin', 'XDG_RUNTIME_DIR': '/run/user/1000', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'ROS_DOMAIN_ID': '0', 'AMENT_PREFIX_PATH': '/home/username/ros2_ws/install/px4_ros_com:/home/username/ros2_ws/install/px4_msgs:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/home/username/ros2_ws/build/img_capture', 'SSH_CONNECTION': '10.37.116.1 60113 10.2.118.167 22', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/username/ros2_ws/install/px4_ros_com/lib/python3.12/site-packages:/home/username/ros2_ws/install/px4_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/home/username/ros2_ws/install/px4_ros_com:/home/username/ros2_ws/install/px4_msgs:/opt/ros/jazzy'}), 'shell': False}
+[1.101559] (-) TimerEvent: {}
+[1.109655] (img_capture) StdoutLine: {'line': b'[ 50%] \x1b[32mBuilding CXX object CMakeFiles/seekcamera_publisher.dir/src/seekcamera_publisher.cpp.o\x1b[0m\n'}
+[1.201816] (-) TimerEvent: {}
+[1.302372] (-) TimerEvent: {}
+[1.402628] (-) TimerEvent: {}
+[1.502870] (-) TimerEvent: {}
+[1.603107] (-) TimerEvent: {}
+[1.703344] (-) TimerEvent: {}
+[1.803563] (-) TimerEvent: {}
+[1.903798] (-) TimerEvent: {}
+[2.004020] (-) TimerEvent: {}
+[2.104233] (-) TimerEvent: {}
+[2.204448] (-) TimerEvent: {}
+[2.304671] (-) TimerEvent: {}
+[2.404877] (-) TimerEvent: {}
+[2.505081] (-) TimerEvent: {}
+[2.605276] (-) TimerEvent: {}
+[2.705477] (-) TimerEvent: {}
+[2.805677] (-) TimerEvent: {}
+[2.905877] (-) TimerEvent: {}
+[3.006065] (-) TimerEvent: {}
+[3.106263] (-) TimerEvent: {}
+[3.206464] (-) TimerEvent: {}
+[3.306669] (-) TimerEvent: {}
+[3.406864] (-) TimerEvent: {}
+[3.507067] (-) TimerEvent: {}
+[3.607262] (-) TimerEvent: {}
+[3.707444] (-) TimerEvent: {}
+[3.807637] (-) TimerEvent: {}
+[3.907841] (-) TimerEvent: {}
+[4.008051] (-) TimerEvent: {}
+[4.108250] (-) TimerEvent: {}
+[4.208438] (-) TimerEvent: {}
+[4.308626] (-) TimerEvent: {}
+[4.310264] (img_capture) StderrLine: {'line': b'\x1b[01m\x1b[K/home/username/ros2_ws/src/img_capture/src/seekcamera_publisher.cpp:18:5:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[Kseekcamera_manager_event_t\x1b[m\x1b[K\xe2\x80\x99 has not been declared\n'}
+[4.310534] (img_capture) StderrLine: {'line': b'   18 |     \x1b[01;31m\x1b[Kseekcamera_manager_event_t\x1b[m\x1b[K event,\n'}
+[4.310630] (img_capture) StderrLine: {'line': b'      |     \x1b[01;31m\x1b[K^~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[4.327703] (img_capture) StderrLine: {'line': b'\x1b[01m\x1b[K/home/username/ros2_ws/src/img_capture/src/seekcamera_publisher.cpp:\x1b[m\x1b[K In constructor \xe2\x80\x98\x1b[01m\x1b[KSeekCameraNode::\x1b[01;32m\x1b[KSeekCameraNode\x1b[m\x1b[K()\x1b[m\x1b[K\xe2\x80\x99:\n'}
+[4.327855] (img_capture) StderrLine: {'line': b'\x1b[01m\x1b[K/home/username/ros2_ws/src/img_capture/src/seekcamera_publisher.cpp:40:5:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[Kseekcamera_manager_t\x1b[m\x1b[K\xe2\x80\x99 was not declared in this scope; did you mean \xe2\x80\x98\x1b[01m\x1b[Kseekcamera_frame_t\x1b[m\x1b[K\xe2\x80\x99?\n'}
+[4.327959] (img_capture) StderrLine: {'line': b'   40 |     \x1b[01;31m\x1b[Kseekcamera_manager_t\x1b[m\x1b[K* manager = nullptr;\n'}
+[4.328039] (img_capture) StderrLine: {'line': b'      |     \x1b[01;31m\x1b[K^~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[4.328112] (img_capture) StderrLine: {'line': b'      |     \x1b[32m\x1b[Kseekcamera_frame_t\x1b[m\x1b[K\n'}
+[4.338129] (img_capture) StderrLine: {'line': b'\x1b[01m\x1b[K/home/username/ros2_ws/src/img_capture/src/seekcamera_publisher.cpp:40:27:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[Kmanager\x1b[m\x1b[K\xe2\x80\x99 was not declared in this scope\n'}
+[4.338285] (img_capture) StderrLine: {'line': b'   40 |     seekcamera_manager_t* \x1b[01;31m\x1b[Kmanager\x1b[m\x1b[K = nullptr;\n'}
+[4.338366] (img_capture) StderrLine: {'line': b'      |                           \x1b[01;31m\x1b[K^~~~~~~\x1b[m\x1b[K\n'}
+[4.359496] (img_capture) StderrLine: {'line': b'\x1b[01m\x1b[K/home/username/ros2_ws/src/img_capture/src/seekcamera_publisher.cpp:45:30:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[Kseekcamera_manager_create\x1b[m\x1b[K\xe2\x80\x99 was not declared in this scope\n'}
+[4.359626] (img_capture) StderrLine: {'line': b'   45 |     seekcamera_error_t res = \x1b[01;31m\x1b[Kseekcamera_manager_create\x1b[m\x1b[K(&manager, discovery_mode);\n'}
+[4.359720] (img_capture) StderrLine: {'line': b'      |                              \x1b[01;31m\x1b[K^~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[4.395054] (img_capture) StderrLine: {'line': b'\x1b[01m\x1b[K/home/username/ros2_ws/src/img_capture/src/seekcamera_publisher.cpp:53:11:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[Kseekcamera_manager_register_event_callback\x1b[m\x1b[K\xe2\x80\x99 was not declared in this scope\n'}
+[4.395176] (img_capture) StderrLine: {'line': b'   53 |     res = \x1b[01;31m\x1b[Kseekcamera_manager_register_event_callback\x1b[m\x1b[K(manager, cameraManagerEventCallback, nullptr);\n'}
+[4.395269] (img_capture) StderrLine: {'line': b'      |           \x1b[01;31m\x1b[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[4.408695] (-) TimerEvent: {}
+[4.417660] (img_capture) StderrLine: {'line': b'\x1b[01m\x1b[K/home/username/ros2_ws/src/img_capture/src/seekcamera_publisher.cpp:58:7:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[Kseekcamera_manager_destroy\x1b[m\x1b[K\xe2\x80\x99 was not declared in this scope\n'}
+[4.417826] (img_capture) StderrLine: {'line': b'   58 |       \x1b[01;31m\x1b[Kseekcamera_manager_destroy\x1b[m\x1b[K(&manager);\n'}
+[4.417905] (img_capture) StderrLine: {'line': b'      |       \x1b[01;31m\x1b[K^~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[4.419045] (img_capture) StderrLine: {'line': b'\x1b[01m\x1b[K/home/username/ros2_ws/src/img_capture/src/seekcamera_publisher.cpp:\x1b[m\x1b[K At global scope:\n'}
+[4.419199] (img_capture) StderrLine: {'line': b'\x1b[01m\x1b[K/home/username/ros2_ws/src/img_capture/src/seekcamera_publisher.cpp:71:5:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[Kseekcamera_manager_event_t\x1b[m\x1b[K\xe2\x80\x99 has not been declared\n'}
+[4.419286] (img_capture) StderrLine: {'line': b'   71 |     \x1b[01;31m\x1b[Kseekcamera_manager_event_t\x1b[m\x1b[K event,\n'}
+[4.419362] (img_capture) StderrLine: {'line': b'      |     \x1b[01;31m\x1b[K^~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[4.437740] (img_capture) StderrLine: {'line': b'\x1b[01m\x1b[K/home/username/ros2_ws/src/img_capture/src/seekcamera_publisher.cpp:\x1b[m\x1b[K In function \xe2\x80\x98\x1b[01m\x1b[Kvoid\x1b[01;32m\x1b[K cameraManagerEventCallback\x1b[m\x1b[K(seekcamera_t*, int, seekcamera_error_t, void*)\x1b[m\x1b[K\xe2\x80\x99:\n'}
+[4.437865] (img_capture) StderrLine: {'line': b'\x1b[01m\x1b[K/home/username/ros2_ws/src/img_capture/src/seekcamera_publisher.cpp:77:16:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[KSEEKCAMERA_MANAGER_EVENT_CONNECT\x1b[m\x1b[K\xe2\x80\x99 was not declared in this scope\n'}
+[4.437978] (img_capture) StderrLine: {'line': b'   77 |   if (event == \x1b[01;31m\x1b[KSEEKCAMERA_MANAGER_EVENT_CONNECT\x1b[m\x1b[K) {\n'}
+[4.438054] (img_capture) StderrLine: {'line': b'      |                \x1b[01;31m\x1b[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[4.458350] (img_capture) StderrLine: {'line': b'\x1b[01m\x1b[K/home/username/ros2_ws/src/img_capture/src/seekcamera_publisher.cpp:96:23:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[KSEEKCAMERA_MANAGER_EVENT_DISCONNECT\x1b[m\x1b[K\xe2\x80\x99 was not declared in this scope\n'}
+[4.458473] (img_capture) StderrLine: {'line': b'   96 |   } else if (event == \x1b[01;31m\x1b[KSEEKCAMERA_MANAGER_EVENT_DISCONNECT\x1b[m\x1b[K) {\n'}
+[4.458552] (img_capture) StderrLine: {'line': b'      |                       \x1b[01;31m\x1b[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[4.480414] (img_capture) StderrLine: {'line': b'\x1b[01m\x1b[K/home/username/ros2_ws/src/img_capture/src/seekcamera_publisher.cpp:99:23:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[KSEEKCAMERA_MANAGER_EVENT_READY_TO_PAIR\x1b[m\x1b[K\xe2\x80\x99 was not declared in this scope\n'}
+[4.480528] (img_capture) StderrLine: {'line': b'   99 |   } else if (event == \x1b[01;31m\x1b[KSEEKCAMERA_MANAGER_EVENT_READY_TO_PAIR\x1b[m\x1b[K) {\n'}
+[4.480604] (img_capture) StderrLine: {'line': b'      |                       \x1b[01;31m\x1b[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[4.497394] (img_capture) StderrLine: {'line': b'\x1b[01m\x1b[K/home/username/ros2_ws/src/img_capture/src/seekcamera_publisher.cpp:102:23:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[KSEEKCAMERA_MANAGER_EVENT_ERROR\x1b[m\x1b[K\xe2\x80\x99 was not declared in this scope\n'}
+[4.497528] (img_capture) StderrLine: {'line': b'  102 |   } else if (event == \x1b[01;31m\x1b[KSEEKCAMERA_MANAGER_EVENT_ERROR\x1b[m\x1b[K) {\n'}
+[4.497604] (img_capture) StderrLine: {'line': b'      |                       \x1b[01;31m\x1b[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[4.508771] (-) TimerEvent: {}
+[4.608996] (-) TimerEvent: {}
+[4.709226] (-) TimerEvent: {}
+[4.809442] (-) TimerEvent: {}
+[4.909655] (-) TimerEvent: {}
+[5.009968] (-) TimerEvent: {}
+[5.110222] (-) TimerEvent: {}
+[5.210444] (-) TimerEvent: {}
+[5.310668] (-) TimerEvent: {}
+[5.410871] (-) TimerEvent: {}
+[5.511068] (-) TimerEvent: {}
+[5.611272] (-) TimerEvent: {}
+[5.711504] (-) TimerEvent: {}
+[5.811703] (-) TimerEvent: {}
+[5.837061] (img_capture) StderrLine: {'line': b'\x1b[01m\x1b[K/home/username/ros2_ws/src/img_capture/src/seekcamera_publisher.cpp:\x1b[m\x1b[K At global scope:\n'}
+[5.837271] (img_capture) StderrLine: {'line': b'\x1b[01m\x1b[K/home/username/ros2_ws/src/img_capture/src/seekcamera_publisher.cpp:69:13:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[Kvoid\x1b[01;32m\x1b[K cameraManagerEventCallback\x1b[m\x1b[K(seekcamera_t*, int, seekcamera_error_t, void*)\x1b[m\x1b[K\xe2\x80\x99 defined but not used [\x1b[01;35m\x1b[K\x1b]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function\x07-Wunused-function\x1b]8;;\x07\x1b[m\x1b[K]\n'}
+[5.837366] (img_capture) StderrLine: {'line': b'   69 | static void \x1b[01;35m\x1b[KcameraManagerEventCallback\x1b[m\x1b[K(\n'}
+[5.837442] (img_capture) StderrLine: {'line': b'      |             \x1b[01;35m\x1b[K^~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[5.884156] (img_capture) StderrLine: {'line': b'gmake[2]: *** [CMakeFiles/seekcamera_publisher.dir/build.make:76: CMakeFiles/seekcamera_publisher.dir/src/seekcamera_publisher.cpp.o] Error 1\n'}
+[5.884490] (img_capture) StderrLine: {'line': b'gmake[1]: *** [CMakeFiles/Makefile2:137: CMakeFiles/seekcamera_publisher.dir/all] Error 2\n'}
+[5.884735] (img_capture) StderrLine: {'line': b'gmake: *** [Makefile:146: all] Error 2\n'}
+[5.888056] (img_capture) CommandEnded: {'returncode': 2}
+[5.899404] (img_capture) JobEnded: {'identifier': 'img_capture', 'rc': 2}
+[5.909935] (-) EventReactorShutdown: {}

@@ -1,0 +1,1 @@
+Invoking command in '/home/username/ros2_ws/build/detection': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /home/username/ros2_ws/src/detection -DCMAKE_INSTALL_PREFIX=/home/username/ros2_ws/install/detection

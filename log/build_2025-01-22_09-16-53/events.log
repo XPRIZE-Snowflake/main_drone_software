@@ -1,0 +1,278 @@
+[0.000000] (-) TimerEvent: {}
+[0.000274] (detection) JobQueued: {'identifier': 'detection', 'dependencies': OrderedDict()}
+[0.000450] (img_capture) JobQueued: {'identifier': 'img_capture', 'dependencies': OrderedDict()}
+[0.000476] (px4_msgs) JobQueued: {'identifier': 'px4_msgs', 'dependencies': OrderedDict()}
+[0.000495] (px4_ros_com) JobQueued: {'identifier': 'px4_ros_com', 'dependencies': OrderedDict({'px4_msgs': '/home/username/ros2_ws/install/px4_msgs'})}
+[0.000789] (px4_msgs) JobStarted: {'identifier': 'px4_msgs'}
+[0.021832] (detection) JobStarted: {'identifier': 'detection'}
+[0.026972] (img_capture) JobStarted: {'identifier': 'img_capture'}
+[0.034038] (px4_msgs) JobProgress: {'identifier': 'px4_msgs', 'progress': 'cmake'}
+[0.040248] (px4_msgs) JobProgress: {'identifier': 'px4_msgs', 'progress': 'build'}
+[0.041058] (px4_msgs) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/username/ros2_ws/build/px4_msgs', '--', '-j4', '-l4'], 'cwd': '/home/username/ros2_ws/build/px4_msgs', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'username', 'SSH_CLIENT': '10.37.116.1 60113 22', 'XDG_SESSION_TYPE': 'tty', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/home/username/ros2_ws/install/px4_ros_com/lib:/home/username/ros2_ws/install/px4_msgs/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib:/usr/local/lib', 'HOME': '/home/username', 'OLDPWD': '/home/username/ros2_ws/src', 'SSH_TTY': '/dev/pts/0', 'ROS_PYTHON_VERSION': '3', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLCON_PREFIX_PATH': '/home/username/ros2_ws/install', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'username', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'TERM': 'xterm-256color', 'XDG_SESSION_ID': '1', 'PATH': '/home/username/.local/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin', 'XDG_RUNTIME_DIR': '/run/user/1000', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'ROS_DOMAIN_ID': '0', 'AMENT_PREFIX_PATH': '/home/username/ros2_ws/install/px4_ros_com:/home/username/ros2_ws/install/px4_msgs:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/home/username/ros2_ws/build/px4_msgs', 'SSH_CONNECTION': '10.37.116.1 60113 10.2.118.167 22', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/username/ros2_ws/install/px4_ros_com/lib/python3.12/site-packages:/home/username/ros2_ws/install/px4_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/home/username/ros2_ws/install/px4_ros_com:/home/username/ros2_ws/install/px4_msgs:/opt/ros/jazzy'}), 'shell': False}
+[0.046639] (detection) JobProgress: {'identifier': 'detection', 'progress': 'cmake'}
+[0.061358] (detection) Command: {'cmd': ['/usr/bin/cmake', '/home/username/ros2_ws/src/detection', '-DCMAKE_INSTALL_PREFIX=/home/username/ros2_ws/install/detection'], 'cwd': '/home/username/ros2_ws/build/detection', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'username', 'SSH_CLIENT': '10.37.116.1 60113 22', 'XDG_SESSION_TYPE': 'tty', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/home/username/ros2_ws/install/px4_ros_com/lib:/home/username/ros2_ws/install/px4_msgs/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib:/usr/local/lib', 'HOME': '/home/username', 'OLDPWD': '/home/username/ros2_ws/src', 'SSH_TTY': '/dev/pts/0', 'ROS_PYTHON_VERSION': '3', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLCON_PREFIX_PATH': '/home/username/ros2_ws/install', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'username', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'TERM': 'xterm-256color', 'XDG_SESSION_ID': '1', 'PATH': '/home/username/.local/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin', 'XDG_RUNTIME_DIR': '/run/user/1000', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'ROS_DOMAIN_ID': '0', 'AMENT_PREFIX_PATH': '/home/username/ros2_ws/install/px4_ros_com:/home/username/ros2_ws/install/px4_msgs:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/home/username/ros2_ws/build/detection', 'SSH_CONNECTION': '10.37.116.1 60113 10.2.118.167 22', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/username/ros2_ws/install/px4_ros_com/lib/python3.12/site-packages:/home/username/ros2_ws/install/px4_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/home/username/ros2_ws/install/px4_ros_com:/home/username/ros2_ws/install/px4_msgs:/opt/ros/jazzy'}), 'shell': False}
+[0.065936] (img_capture) JobProgress: {'identifier': 'img_capture', 'progress': 'cmake'}
+[0.071514] (img_capture) JobProgress: {'identifier': 'img_capture', 'progress': 'build'}
+[0.073131] (img_capture) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/username/ros2_ws/build/img_capture', '--', '-j4', '-l4'], 'cwd': '/home/username/ros2_ws/build/img_capture', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'username', 'SSH_CLIENT': '10.37.116.1 60113 22', 'XDG_SESSION_TYPE': 'tty', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/home/username/ros2_ws/install/px4_ros_com/lib:/home/username/ros2_ws/install/px4_msgs/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib:/usr/local/lib', 'HOME': '/home/username', 'OLDPWD': '/home/username/ros2_ws/src', 'SSH_TTY': '/dev/pts/0', 'ROS_PYTHON_VERSION': '3', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLCON_PREFIX_PATH': '/home/username/ros2_ws/install', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'username', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'TERM': 'xterm-256color', 'XDG_SESSION_ID': '1', 'PATH': '/home/username/.local/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin', 'XDG_RUNTIME_DIR': '/run/user/1000', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'ROS_DOMAIN_ID': '0', 'AMENT_PREFIX_PATH': '/home/username/ros2_ws/install/px4_ros_com:/home/username/ros2_ws/install/px4_msgs:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/home/username/ros2_ws/build/img_capture', 'SSH_CONNECTION': '10.37.116.1 60113 10.2.118.167 22', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/username/ros2_ws/install/px4_ros_com/lib/python3.12/site-packages:/home/username/ros2_ws/install/px4_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/home/username/ros2_ws/install/px4_ros_com:/home/username/ros2_ws/install/px4_msgs:/opt/ros/jazzy'}), 'shell': False}
+[0.099707] (-) TimerEvent: {}
+[0.200109] (-) TimerEvent: {}
+[0.273504] (detection) StderrLine: {'line': b'\x1b[31mCMake Error at CMakeLists.txt:1 (cmake_minimum_required):\n'}
+[0.273859] (detection) StderrLine: {'line': b'  cmake_minimum_required called with unknown argument "Version".\n'}
+[0.274066] (detection) StderrLine: {'line': b'\n'}
+[0.274181] (detection) StderrLine: {'line': b'\x1b[0m\n'}
+[0.274285] (detection) StderrLine: {'line': b'\x1b[33mCMake Warning (dev) at CMakeLists.txt:2 (project):\n'}
+[0.274389] (detection) StderrLine: {'line': b'  cmake_minimum_required() should be called prior to this top-level project()\n'}
+[0.274517] (detection) StderrLine: {'line': b'  call.  Please see the cmake-commands(7) manual for usage documentation of\n'}
+[0.274621] (detection) StderrLine: {'line': b'  both commands.\n'}
+[0.274773] (detection) StderrLine: {'line': b'This warning is for project developers.  Use -Wno-dev to suppress it.\n'}
+[0.274976] (detection) StderrLine: {'line': b'\x1b[0m\n'}
+[0.300204] (-) TimerEvent: {}
+[0.366366] (detection) StdoutLine: {'line': b'-- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)\n'}
+[0.386574] (img_capture) StdoutLine: {'line': b'-- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)\n'}
+[0.400361] (-) TimerEvent: {}
+[0.500786] (-) TimerEvent: {}
+[0.601266] (-) TimerEvent: {}
+[0.701804] (-) TimerEvent: {}
+[0.802539] (-) TimerEvent: {}
+[0.857204] (img_capture) StdoutLine: {'line': b'-- Found ament_lint_auto: 0.17.1 (/opt/ros/jazzy/share/ament_lint_auto/cmake)\n'}
+[0.857584] (detection) StdoutLine: {'line': b'-- Found rclcpp: 28.1.6 (/opt/ros/jazzy/share/rclcpp/cmake)\n'}
+[0.859096] (detection) StderrLine: {'line': b'\x1b[33mCMake Warning (dev) at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:52 (while):\n'}
+[0.860170] (detection) StderrLine: {'line': b'  Policy CMP0130 is not set: while() diagnoses condition evaluation errors.\n'}
+[0.860317] (detection) StderrLine: {'line': b'  Run "cmake --help-policy CMP0130" for policy details.  Use the cmake_policy\n'}
+[0.860441] (detection) StderrLine: {'line': b'  command to set the policy and suppress this warning.\n'}
+[0.860560] (detection) StderrLine: {'line': b'\n'}
+[0.860659] (detection) StderrLine: {'line': b'  while() given incorrect arguments:\n'}
+[0.860739] (detection) StderrLine: {'line': b'\n'}
+[0.860819] (detection) StderrLine: {'line': b'    "TRUE"\n'}
+[0.860943] (detection) StderrLine: {'line': b'\n'}
+[0.861063] (detection) StderrLine: {'line': b'  An argument named "TRUE" appears in a conditional statement.  Policy\n'}
+[0.861155] (detection) StderrLine: {'line': b'  CMP0012 is not set: if() recognizes numbers and boolean constants.  Run\n'}
+[0.861237] (detection) StderrLine: {'line': b'  "cmake --help-policy CMP0012" for policy details.  Use the cmake_policy\n'}
+[0.861313] (detection) StderrLine: {'line': b'  command to set the policy and suppress this warning.\n'}
+[0.861389] (detection) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[0.861467] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:34 (_normalize_path__collapse_redundant)\n'}
+[0.861553] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rclcpp/cmake/ament_cmake_export_include_directories-extras.cmake:13 (normalize_path)\n'}
+[0.861650] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)\n'}
+[0.861747] (detection) StderrLine: {'line': b'  CMakeLists.txt:8 (find_package)\n'}
+[0.861840] (detection) StderrLine: {'line': b'This warning is for project developers.  Use -Wno-dev to suppress it.\n'}
+[0.861959] (detection) StderrLine: {'line': b'\x1b[0m\n'}
+[0.862064] (detection) StderrLine: {'line': b'\x1b[33mCMake Warning (dev) at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:72 (while):\n'}
+[0.862146] (detection) StderrLine: {'line': b'  Policy CMP0130 is not set: while() diagnoses condition evaluation errors.\n'}
+[0.862221] (detection) StderrLine: {'line': b'  Run "cmake --help-policy CMP0130" for policy details.  Use the cmake_policy\n'}
+[0.862321] (detection) StderrLine: {'line': b'  command to set the policy and suppress this warning.\n'}
+[0.862397] (detection) StderrLine: {'line': b'\n'}
+[0.862470] (detection) StderrLine: {'line': b'  while() given incorrect arguments:\n'}
+[0.862543] (detection) StderrLine: {'line': b'\n'}
+[0.862616] (detection) StderrLine: {'line': b'    "TRUE"\n'}
+[0.862688] (detection) StderrLine: {'line': b'\n'}
+[0.862758] (detection) StderrLine: {'line': b'  An argument named "TRUE" appears in a conditional statement.  Policy\n'}
+[0.862829] (detection) StderrLine: {'line': b'  CMP0012 is not set: if() recognizes numbers and boolean constants.  Run\n'}
+[0.863033] (detection) StderrLine: {'line': b'  "cmake --help-policy CMP0012" for policy details.  Use the cmake_policy\n'}
+[0.863132] (detection) StderrLine: {'line': b'  command to set the policy and suppress this warning.\n'}
+[0.863216] (detection) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[0.863319] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:35 (_normalize_path__collapse_uplevel_reference)\n'}
+[0.863420] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rclcpp/cmake/ament_cmake_export_include_directories-extras.cmake:13 (normalize_path)\n'}
+[0.863501] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)\n'}
+[0.863577] (detection) StderrLine: {'line': b'  CMakeLists.txt:8 (find_package)\n'}
+[0.863653] (detection) StderrLine: {'line': b'This warning is for project developers.  Use -Wno-dev to suppress it.\n'}
+[0.863727] (detection) StderrLine: {'line': b'\x1b[0m\n'}
+[0.872414] (detection) StderrLine: {'line': b'\x1b[33mCMake Warning (dev) at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:52 (while):\n'}
+[0.872724] (detection) StderrLine: {'line': b'  Policy CMP0130 is not set: while() diagnoses condition evaluation errors.\n'}
+[0.872897] (detection) StderrLine: {'line': b'  Run "cmake --help-policy CMP0130" for policy details.  Use the cmake_policy\n'}
+[0.873067] (detection) StderrLine: {'line': b'  command to set the policy and suppress this warning.\n'}
+[0.873200] (detection) StderrLine: {'line': b'\n'}
+[0.873357] (detection) StderrLine: {'line': b'  while() given incorrect arguments:\n'}
+[0.873532] (detection) StderrLine: {'line': b'\n'}
+[0.873678] (detection) StderrLine: {'line': b'    "TRUE"\n'}
+[0.873795] (detection) StderrLine: {'line': b'\n'}
+[0.873940] (detection) StderrLine: {'line': b'  An argument named "TRUE" appears in a conditional statement.  Policy\n'}
+[0.874080] (detection) StderrLine: {'line': b'  CMP0012 is not set: if() recognizes numbers and boolean constants.  Run\n'}
+[0.874198] (detection) StderrLine: {'line': b'  "cmake --help-policy CMP0012" for policy details.  Use the cmake_policy\n'}
+[0.874316] (detection) StderrLine: {'line': b'  command to set the policy and suppress this warning.\n'}
+[0.874423] (detection) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[0.874544] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:34 (_normalize_path__collapse_redundant)\n'}
+[0.874688] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/builtin_interfaces/cmake/ament_cmake_export_include_directories-extras.cmake:13 (normalize_path)\n'}
+[0.874802] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/builtin_interfaces/cmake/builtin_interfacesConfig.cmake:41 (include)\n'}
+[0.874918] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rclcpp/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.875044] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)\n'}
+[0.875148] (detection) StderrLine: {'line': b'  CMakeLists.txt:8 (find_package)\n'}
+[0.875264] (detection) StderrLine: {'line': b'This warning is for project developers.  Use -Wno-dev to suppress it.\n'}
+[0.875422] (detection) StderrLine: {'line': b'\x1b[0m\n'}
+[0.875567] (detection) StderrLine: {'line': b'\x1b[33mCMake Warning (dev) at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:72 (while):\n'}
+[0.875722] (detection) StderrLine: {'line': b'  Policy CMP0130 is not set: while() diagnoses condition evaluation errors.\n'}
+[0.875826] (detection) StderrLine: {'line': b'  Run "cmake --help-policy CMP0130" for policy details.  Use the cmake_policy\n'}
+[0.876011] (detection) StderrLine: {'line': b'  command to set the policy and suppress this warning.\n'}
+[0.876175] (detection) StderrLine: {'line': b'\n'}
+[0.876314] (detection) StderrLine: {'line': b'  while() given incorrect arguments:\n'}
+[0.876421] (detection) StderrLine: {'line': b'\n'}
+[0.876541] (detection) StderrLine: {'line': b'    "TRUE"\n'}
+[0.876659] (detection) StderrLine: {'line': b'\n'}
+[0.876755] (detection) StderrLine: {'line': b'  An argument named "TRUE" appears in a conditional statement.  Policy\n'}
+[0.876849] (detection) StderrLine: {'line': b'  CMP0012 is not set: if() recognizes numbers and boolean constants.  Run\n'}
+[0.876993] (detection) StderrLine: {'line': b'  "cmake --help-policy CMP0012" for policy details.  Use the cmake_policy\n'}
+[0.877120] (detection) StderrLine: {'line': b'  command to set the policy and suppress this warning.\n'}
+[0.877239] (detection) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[0.877354] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:35 (_normalize_path__collapse_uplevel_reference)\n'}
+[0.877467] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/builtin_interfaces/cmake/ament_cmake_export_include_directories-extras.cmake:13 (normalize_path)\n'}
+[0.877582] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/builtin_interfaces/cmake/builtin_interfacesConfig.cmake:41 (include)\n'}
+[0.877675] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rclcpp/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.877767] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)\n'}
+[0.877880] (detection) StderrLine: {'line': b'  CMakeLists.txt:8 (find_package)\n'}
+[0.878044] (detection) StderrLine: {'line': b'This warning is for project developers.  Use -Wno-dev to suppress it.\n'}
+[0.878180] (detection) StderrLine: {'line': b'\x1b[0m\n'}
+[0.898360] (detection) StderrLine: {'line': b'\x1b[33mCMake Warning (dev) at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:52 (while):\n'}
+[0.898655] (detection) StderrLine: {'line': b'  Policy CMP0130 is not set: while() diagnoses condition evaluation errors.\n'}
+[0.898771] (detection) StderrLine: {'line': b'  Run "cmake --help-policy CMP0130" for policy details.  Use the cmake_policy\n'}
+[0.899099] (detection) StderrLine: {'line': b'  command to set the policy and suppress this warning.\n'}
+[0.899288] (detection) StderrLine: {'line': b'\n'}
+[0.899428] (detection) StderrLine: {'line': b'  while() given incorrect arguments:\n'}
+[0.899556] (detection) StderrLine: {'line': b'\n'}
+[0.899685] (detection) StderrLine: {'line': b'    "TRUE"\n'}
+[0.899807] (detection) StderrLine: {'line': b'\n'}
+[0.899934] (detection) StderrLine: {'line': b'  An argument named "TRUE" appears in a conditional statement.  Policy\n'}
+[0.900061] (detection) StderrLine: {'line': b'  CMP0012 is not set: if() recognizes numbers and boolean constants.  Run\n'}
+[0.900192] (detection) StderrLine: {'line': b'  "cmake --help-policy CMP0012" for policy details.  Use the cmake_policy\n'}
+[0.900301] (detection) StderrLine: {'line': b'  command to set the policy and suppress this warning.\n'}
+[0.900394] (detection) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[0.900498] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:34 (_normalize_path__collapse_redundant)\n'}
+[0.900612] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rcutils/cmake/ament_cmake_export_include_directories-extras.cmake:13 (normalize_path)\n'}
+[0.900766] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rcutils/cmake/rcutilsConfig.cmake:41 (include)\n'}
+[0.900921] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rosidl_runtime_c/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.901075] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rosidl_runtime_c/cmake/rosidl_runtime_cConfig.cmake:41 (include)\n'}
+[0.901208] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/builtin_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.901347] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/builtin_interfaces/cmake/builtin_interfacesConfig.cmake:41 (include)\n'}
+[0.901461] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rclcpp/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.901566] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)\n'}
+[0.901661] (detection) StderrLine: {'line': b'  CMakeLists.txt:8 (find_package)\n'}
+[0.901793] (detection) StderrLine: {'line': b'This warning is for project developers.  Use -Wno-dev to suppress it.\n'}
+[0.901938] (detection) StderrLine: {'line': b'\x1b[0m\n'}
+[0.902061] (detection) StderrLine: {'line': b'\x1b[33mCMake Warning (dev) at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:72 (while):\n'}
+[0.902183] (detection) StderrLine: {'line': b'  Policy CMP0130 is not set: while() diagnoses condition evaluation errors.\n'}
+[0.902314] (detection) StderrLine: {'line': b'  Run "cmake --help-policy CMP0130" for policy details.  Use the cmake_policy\n'}
+[0.902435] (detection) StderrLine: {'line': b'  command to set the policy and suppress this warning.\n'}
+[0.902539] (-) TimerEvent: {}
+[0.902750] (detection) StderrLine: {'line': b'\n'}
+[0.902951] (detection) StderrLine: {'line': b'  while() given incorrect arguments:\n'}
+[0.903092] (detection) StderrLine: {'line': b'\n'}
+[0.903215] (detection) StderrLine: {'line': b'    "TRUE"\n'}
+[0.903319] (detection) StderrLine: {'line': b'\n'}
+[0.903416] (detection) StderrLine: {'line': b'  An argument named "TRUE" appears in a conditional statement.  Policy\n'}
+[0.903521] (detection) StderrLine: {'line': b'  CMP0012 is not set: if() recognizes numbers and boolean constants.  Run\n'}
+[0.903622] (detection) StderrLine: {'line': b'  "cmake --help-policy CMP0012" for policy details.  Use the cmake_policy\n'}
+[0.903730] (detection) StderrLine: {'line': b'  command to set the policy and suppress this warning.\n'}
+[0.903850] (detection) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[0.904071] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:35 (_normalize_path__collapse_uplevel_reference)\n'}
+[0.904214] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rcutils/cmake/ament_cmake_export_include_directories-extras.cmake:13 (normalize_path)\n'}
+[0.904328] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rcutils/cmake/rcutilsConfig.cmake:41 (include)\n'}
+[0.904425] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rosidl_runtime_c/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.904523] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rosidl_runtime_c/cmake/rosidl_runtime_cConfig.cmake:41 (include)\n'}
+[0.904639] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/builtin_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.904784] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/builtin_interfaces/cmake/builtin_interfacesConfig.cmake:41 (include)\n'}
+[0.904930] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rclcpp/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.905052] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)\n'}
+[0.905161] (detection) StderrLine: {'line': b'  CMakeLists.txt:8 (find_package)\n'}
+[0.905314] (detection) StderrLine: {'line': b'This warning is for project developers.  Use -Wno-dev to suppress it.\n'}
+[0.905445] (detection) StderrLine: {'line': b'\x1b[0m\n'}
+[0.908195] (detection) StderrLine: {'line': b'\x1b[33mCMake Warning (dev) at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/list_append_unique.cmake:30 (if):\n'}
+[0.908490] (detection) StderrLine: {'line': b'  Policy CMP0057 is not set: Support new IN_LIST if() operator.  Run "cmake\n'}
+[0.908633] (detection) StderrLine: {'line': b'  --help-policy CMP0057" for policy details.  Use the cmake_policy command to\n'}
+[0.908806] (detection) StderrLine: {'line': b'  set the policy and suppress this warning.\n'}
+[0.908963] (detection) StderrLine: {'line': b'\n'}
+[0.909083] (detection) StderrLine: {'line': b'  IN_LIST will be interpreted as an operator when the policy is set to NEW.\n'}
+[0.909199] (detection) StderrLine: {'line': b'  Since the policy is not set the OLD behavior will be used.\n'}
+[0.909295] (detection) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[0.909380] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rcutils/cmake/ament_cmake_export_dependencies-extras.cmake:84 (list_append_unique)\n'}
+[0.909476] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rcutils/cmake/rcutilsConfig.cmake:41 (include)\n'}
+[0.909566] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rosidl_runtime_c/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.909644] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rosidl_runtime_c/cmake/rosidl_runtime_cConfig.cmake:41 (include)\n'}
+[0.909724] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/builtin_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.909807] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/builtin_interfaces/cmake/builtin_interfacesConfig.cmake:41 (include)\n'}
+[0.909905] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rclcpp/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.910009] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)\n'}
+[0.910098] (detection) StderrLine: {'line': b'  CMakeLists.txt:8 (find_package)\n'}
+[0.910184] (detection) StderrLine: {'line': b'This warning is for project developers.  Use -Wno-dev to suppress it.\n'}
+[0.910265] (detection) StderrLine: {'line': b'\x1b[0m\n'}
+[0.910345] (detection) StderrLine: {'line': b'\x1b[31mCMake Error at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/list_append_unique.cmake:30 (if):\n'}
+[0.910429] (detection) StderrLine: {'line': b'  if given arguments:\n'}
+[0.910532] (detection) StderrLine: {'line': b'\n'}
+[0.910658] (detection) StderrLine: {'line': b'    "NOT" "element" "IN_LIST" "rcutils_RECURSIVE_DEPENDENCIES"\n'}
+[0.910792] (detection) StderrLine: {'line': b'\n'}
+[0.911021] (detection) StderrLine: {'line': b'  Unknown arguments specified\n'}
+[0.911184] (detection) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[0.911307] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rcutils/cmake/ament_cmake_export_dependencies-extras.cmake:84 (list_append_unique)\n'}
+[0.911433] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rcutils/cmake/rcutilsConfig.cmake:41 (include)\n'}
+[0.911553] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rosidl_runtime_c/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.911712] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rosidl_runtime_c/cmake/rosidl_runtime_cConfig.cmake:41 (include)\n'}
+[0.911844] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/builtin_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.912060] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/builtin_interfaces/cmake/builtin_interfacesConfig.cmake:41 (include)\n'}
+[0.912250] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rclcpp/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.912393] (detection) StderrLine: {'line': b'  /opt/ros/jazzy/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)\n'}
+[0.912517] (detection) StderrLine: {'line': b'  CMakeLists.txt:8 (find_package)\n'}
+[0.912641] (detection) StderrLine: {'line': b'\n'}
+[0.912765] (detection) StderrLine: {'line': b'\x1b[0m\n'}
+[0.912940] (detection) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[0.924159] (detection) CommandEnded: {'returncode': 1}
+[0.975226] (detection) JobEnded: {'identifier': 'detection', 'rc': 1}
+[1.002665] (-) TimerEvent: {}
+[1.081538] (img_capture) StdoutLine: {'line': b"-- Added test 'cppcheck' to perform static code analysis on C / C++ code\n"}
+[1.081875] (img_capture) StdoutLine: {'line': b'-- Configured cppcheck include dirs: \n'}
+[1.082023] (img_capture) StdoutLine: {'line': b'-- Configured cppcheck exclude dirs and/or files: \n'}
+[1.083776] (img_capture) StdoutLine: {'line': b"-- Added test 'lint_cmake' to check CMake code style\n"}
+[1.085793] (img_capture) StdoutLine: {'line': b"-- Added test 'uncrustify' to check C / C++ code style\n"}
+[1.086019] (img_capture) StdoutLine: {'line': b'-- Configured uncrustify additional arguments: \n'}
+[1.087168] (img_capture) StdoutLine: {'line': b"-- Added test 'xmllint' to check XML markup files\n"}
+[1.090920] (img_capture) StdoutLine: {'line': b'-- Configuring done (0.7s)\n'}
+[1.102759] (-) TimerEvent: {}
+[1.118006] (img_capture) StdoutLine: {'line': b'-- Generating done (0.0s)\n'}
+[1.128924] (img_capture) StdoutLine: {'line': b'-- Build files have been written to: /home/username/ros2_ws/build/img_capture\n'}
+[1.166067] (img_capture) JobEnded: {'identifier': 'img_capture', 'rc': 'SIGINT'}
+[1.202862] (-) TimerEvent: {}
+[1.303163] (-) TimerEvent: {}
+[1.403435] (-) TimerEvent: {}
+[1.503738] (-) TimerEvent: {}
+[1.604062] (-) TimerEvent: {}
+[1.704403] (-) TimerEvent: {}
+[1.721743] (px4_msgs) StdoutLine: {'line': b'[  0%] Built target px4_msgs__rosidl_generator_type_description\n'}
+[1.804545] (-) TimerEvent: {}
+[1.904956] (-) TimerEvent: {}
+[1.909376] (px4_msgs) StdoutLine: {'line': b'[  0%] Built target px4_msgs__cpp\n'}
+[2.005118] (-) TimerEvent: {}
+[2.105565] (-) TimerEvent: {}
+[2.205913] (-) TimerEvent: {}
+[2.226973] (px4_msgs) StdoutLine: {'line': b'[ 29%] Built target px4_msgs__rosidl_generator_c\n'}
+[2.306051] (-) TimerEvent: {}
+[2.406431] (-) TimerEvent: {}
+[2.487338] (px4_msgs) StdoutLine: {'line': b'[ 29%] Built target ament_cmake_python_copy_px4_msgs\n'}
+[2.506581] (-) TimerEvent: {}
+[2.607029] (-) TimerEvent: {}
+[2.707520] (-) TimerEvent: {}
+[2.801007] (px4_msgs) StdoutLine: {'line': b'[ 39%] Built target px4_msgs__rosidl_typesupport_cpp\n'}
+[2.802972] (px4_msgs) StdoutLine: {'line': b'[ 49%] Built target px4_msgs__rosidl_typesupport_introspection_c\n'}
+[2.807673] (px4_msgs) StdoutLine: {'line': b'[ 69%] Built target px4_msgs__rosidl_typesupport_fastrtps_c\n'}
+[2.808067] (-) TimerEvent: {}
+[2.808253] (px4_msgs) StdoutLine: {'line': b'[ 69%] Built target px4_msgs__rosidl_typesupport_fastrtps_cpp\n'}
+[2.908194] (-) TimerEvent: {}
+[3.001644] (px4_msgs) StdoutLine: {'line': b'[ 79%] Built target px4_msgs__rosidl_typesupport_c\n'}
+[3.008368] (-) TimerEvent: {}
+[3.107403] (px4_msgs) StdoutLine: {'line': b'[ 89%] Built target px4_msgs__rosidl_typesupport_introspection_cpp\n'}
+[3.108422] (-) TimerEvent: {}
+[3.143591] (px4_msgs) StdoutLine: {'line': b'running egg_info\n'}
+[3.144271] (px4_msgs) StdoutLine: {'line': b'[ 89%] Built target px4_msgs\n'}
+[3.168524] (px4_msgs) StdoutLine: {'line': b'writing px4_msgs.egg-info/PKG-INFO\n'}
+[3.169066] (px4_msgs) StdoutLine: {'line': b'writing dependency_links to px4_msgs.egg-info/dependency_links.txt\n'}
+[3.170935] (px4_msgs) StdoutLine: {'line': b'writing top-level names to px4_msgs.egg-info/top_level.txt\n'}
+[3.205881] (px4_msgs) StdoutLine: {'line': b'[ 89%] Built target px4_msgs__py\n'}
+[3.208539] (-) TimerEvent: {}
+[3.243984] (px4_msgs) StdoutLine: {'line': b"reading manifest file 'px4_msgs.egg-info/SOURCES.txt'\n"}
+[3.250909] (px4_msgs) StdoutLine: {'line': b"writing manifest file 'px4_msgs.egg-info/SOURCES.txt'\n"}
+[3.308780] (-) TimerEvent: {}
+[3.328414] (px4_msgs) StdoutLine: {'line': b'[ 89%] Built target ament_cmake_python_build_px4_msgs_egg\n'}
+[3.408883] (-) TimerEvent: {}
+[3.454983] (px4_msgs) StdoutLine: {'line': b'[ 99%] Built target px4_msgs__rosidl_generator_py\n'}
+[3.508984] (-) TimerEvent: {}
+[3.521042] (px4_msgs) StdoutLine: {'line': b'[100%] Built target px4_msgs_s__rosidl_typesupport_fastrtps_c\n'}
+[3.521332] (px4_msgs) StdoutLine: {'line': b'[100%] Built target px4_msgs_s__rosidl_typesupport_introspection_c\n'}
+[3.522596] (px4_msgs) StdoutLine: {'line': b'[100%] Built target px4_msgs_s__rosidl_typesupport_c\n'}
+[3.544632] (px4_msgs) JobEnded: {'identifier': 'px4_msgs', 'rc': 'SIGINT'}
+[3.546033] (px4_ros_com) JobSkipped: {'identifier': 'px4_ros_com'}
+[3.546074] (-) EventReactorShutdown: {}

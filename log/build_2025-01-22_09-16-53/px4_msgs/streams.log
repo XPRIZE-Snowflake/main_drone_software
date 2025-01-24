@@ -1,0 +1,24 @@
+[0.043s] Invoking command in '/home/username/ros2_ws/build/px4_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/username/ros2_ws/build/px4_msgs -- -j4 -l4
+[1.721s] [  0%] Built target px4_msgs__rosidl_generator_type_description
+[1.909s] [  0%] Built target px4_msgs__cpp
+[2.226s] [ 29%] Built target px4_msgs__rosidl_generator_c
+[2.487s] [ 29%] Built target ament_cmake_python_copy_px4_msgs
+[2.801s] [ 39%] Built target px4_msgs__rosidl_typesupport_cpp
+[2.802s] [ 49%] Built target px4_msgs__rosidl_typesupport_introspection_c
+[2.807s] [ 69%] Built target px4_msgs__rosidl_typesupport_fastrtps_c
+[2.808s] [ 69%] Built target px4_msgs__rosidl_typesupport_fastrtps_cpp
+[3.001s] [ 79%] Built target px4_msgs__rosidl_typesupport_c
+[3.107s] [ 89%] Built target px4_msgs__rosidl_typesupport_introspection_cpp
+[3.143s] running egg_info
+[3.144s] [ 89%] Built target px4_msgs
+[3.168s] writing px4_msgs.egg-info/PKG-INFO
+[3.168s] writing dependency_links to px4_msgs.egg-info/dependency_links.txt
+[3.170s] writing top-level names to px4_msgs.egg-info/top_level.txt
+[3.205s] [ 89%] Built target px4_msgs__py
+[3.243s] reading manifest file 'px4_msgs.egg-info/SOURCES.txt'
+[3.250s] writing manifest file 'px4_msgs.egg-info/SOURCES.txt'
+[3.328s] [ 89%] Built target ament_cmake_python_build_px4_msgs_egg
+[3.454s] [ 99%] Built target px4_msgs__rosidl_generator_py
+[3.520s] [100%] Built target px4_msgs_s__rosidl_typesupport_fastrtps_c
+[3.521s] [100%] Built target px4_msgs_s__rosidl_typesupport_introspection_c
+[3.522s] [100%] Built target px4_msgs_s__rosidl_typesupport_c

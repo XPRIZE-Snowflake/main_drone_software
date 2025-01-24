@@ -1,0 +1,2 @@
+Invoking command in '/home/username/ros2_ws/build/sdk_wrap': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /home/username/ros2_ws/src/sdk_wrap -DCMAKE_INSTALL_PREFIX=/home/username/ros2_ws/install/sdk_wrap
+Invoked command in '/home/username/ros2_ws/build/sdk_wrap' returned '1': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /home/username/ros2_ws/src/sdk_wrap -DCMAKE_INSTALL_PREFIX=/home/username/ros2_ws/install/sdk_wrap

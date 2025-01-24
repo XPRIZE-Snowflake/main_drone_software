@@ -1,0 +1,188 @@
+[0.040s] Invoking command in '/home/username/ros2_ws/build/detection': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /home/username/ros2_ws/src/detection -DCMAKE_INSTALL_PREFIX=/home/username/ros2_ws/install/detection
+[0.252s] [31mCMake Error at CMakeLists.txt:1 (cmake_minimum_required):
+[0.252s]   cmake_minimum_required called with unknown argument "Version".
+[0.252s] 
+[0.252s] [0m
+[0.252s] [33mCMake Warning (dev) at CMakeLists.txt:2 (project):
+[0.252s]   cmake_minimum_required() should be called prior to this top-level project()
+[0.253s]   call.  Please see the cmake-commands(7) manual for usage documentation of
+[0.253s]   both commands.
+[0.253s] This warning is for project developers.  Use -Wno-dev to suppress it.
+[0.253s] [0m
+[0.345s] -- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.836s] -- Found rclcpp: 28.1.6 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.838s] [33mCMake Warning (dev) at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:52 (while):
+[0.838s]   Policy CMP0130 is not set: while() diagnoses condition evaluation errors.
+[0.838s]   Run "cmake --help-policy CMP0130" for policy details.  Use the cmake_policy
+[0.838s]   command to set the policy and suppress this warning.
+[0.839s] 
+[0.839s]   while() given incorrect arguments:
+[0.839s] 
+[0.839s]     "TRUE"
+[0.839s] 
+[0.839s]   An argument named "TRUE" appears in a conditional statement.  Policy
+[0.839s]   CMP0012 is not set: if() recognizes numbers and boolean constants.  Run
+[0.839s]   "cmake --help-policy CMP0012" for policy details.  Use the cmake_policy
+[0.839s]   command to set the policy and suppress this warning.
+[0.839s] Call Stack (most recent call first):
+[0.839s]   /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:34 (_normalize_path__collapse_redundant)
+[0.840s]   /opt/ros/jazzy/share/rclcpp/cmake/ament_cmake_export_include_directories-extras.cmake:13 (normalize_path)
+[0.840s]   /opt/ros/jazzy/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)
+[0.840s]   CMakeLists.txt:8 (find_package)
+[0.840s] This warning is for project developers.  Use -Wno-dev to suppress it.
+[0.840s] [0m
+[0.840s] [33mCMake Warning (dev) at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:72 (while):
+[0.840s]   Policy CMP0130 is not set: while() diagnoses condition evaluation errors.
+[0.840s]   Run "cmake --help-policy CMP0130" for policy details.  Use the cmake_policy
+[0.840s]   command to set the policy and suppress this warning.
+[0.840s] 
+[0.840s]   while() given incorrect arguments:
+[0.841s] 
+[0.841s]     "TRUE"
+[0.841s] 
+[0.841s]   An argument named "TRUE" appears in a conditional statement.  Policy
+[0.841s]   CMP0012 is not set: if() recognizes numbers and boolean constants.  Run
+[0.841s]   "cmake --help-policy CMP0012" for policy details.  Use the cmake_policy
+[0.841s]   command to set the policy and suppress this warning.
+[0.841s] Call Stack (most recent call first):
+[0.841s]   /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:35 (_normalize_path__collapse_uplevel_reference)
+[0.841s]   /opt/ros/jazzy/share/rclcpp/cmake/ament_cmake_export_include_directories-extras.cmake:13 (normalize_path)
+[0.842s]   /opt/ros/jazzy/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)
+[0.842s]   CMakeLists.txt:8 (find_package)
+[0.842s] This warning is for project developers.  Use -Wno-dev to suppress it.
+[0.842s] [0m
+[0.851s] [33mCMake Warning (dev) at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:52 (while):
+[0.851s]   Policy CMP0130 is not set: while() diagnoses condition evaluation errors.
+[0.851s]   Run "cmake --help-policy CMP0130" for policy details.  Use the cmake_policy
+[0.851s]   command to set the policy and suppress this warning.
+[0.851s] 
+[0.851s]   while() given incorrect arguments:
+[0.852s] 
+[0.852s]     "TRUE"
+[0.852s] 
+[0.852s]   An argument named "TRUE" appears in a conditional statement.  Policy
+[0.852s]   CMP0012 is not set: if() recognizes numbers and boolean constants.  Run
+[0.852s]   "cmake --help-policy CMP0012" for policy details.  Use the cmake_policy
+[0.852s]   command to set the policy and suppress this warning.
+[0.852s] Call Stack (most recent call first):
+[0.853s]   /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:34 (_normalize_path__collapse_redundant)
+[0.853s]   /opt/ros/jazzy/share/builtin_interfaces/cmake/ament_cmake_export_include_directories-extras.cmake:13 (normalize_path)
+[0.853s]   /opt/ros/jazzy/share/builtin_interfaces/cmake/builtin_interfacesConfig.cmake:41 (include)
+[0.853s]   /opt/ros/jazzy/share/rclcpp/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.853s]   /opt/ros/jazzy/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)
+[0.853s]   CMakeLists.txt:8 (find_package)
+[0.853s] This warning is for project developers.  Use -Wno-dev to suppress it.
+[0.853s] [0m
+[0.854s] [33mCMake Warning (dev) at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:72 (while):
+[0.854s]   Policy CMP0130 is not set: while() diagnoses condition evaluation errors.
+[0.854s]   Run "cmake --help-policy CMP0130" for policy details.  Use the cmake_policy
+[0.854s]   command to set the policy and suppress this warning.
+[0.854s] 
+[0.854s]   while() given incorrect arguments:
+[0.854s] 
+[0.855s]     "TRUE"
+[0.855s] 
+[0.855s]   An argument named "TRUE" appears in a conditional statement.  Policy
+[0.855s]   CMP0012 is not set: if() recognizes numbers and boolean constants.  Run
+[0.855s]   "cmake --help-policy CMP0012" for policy details.  Use the cmake_policy
+[0.855s]   command to set the policy and suppress this warning.
+[0.855s] Call Stack (most recent call first):
+[0.855s]   /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:35 (_normalize_path__collapse_uplevel_reference)
+[0.856s]   /opt/ros/jazzy/share/builtin_interfaces/cmake/ament_cmake_export_include_directories-extras.cmake:13 (normalize_path)
+[0.856s]   /opt/ros/jazzy/share/builtin_interfaces/cmake/builtin_interfacesConfig.cmake:41 (include)
+[0.856s]   /opt/ros/jazzy/share/rclcpp/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.856s]   /opt/ros/jazzy/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)
+[0.856s]   CMakeLists.txt:8 (find_package)
+[0.856s] This warning is for project developers.  Use -Wno-dev to suppress it.
+[0.856s] [0m
+[0.877s] [33mCMake Warning (dev) at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:52 (while):
+[0.877s]   Policy CMP0130 is not set: while() diagnoses condition evaluation errors.
+[0.877s]   Run "cmake --help-policy CMP0130" for policy details.  Use the cmake_policy
+[0.877s]   command to set the policy and suppress this warning.
+[0.877s] 
+[0.877s]   while() given incorrect arguments:
+[0.878s] 
+[0.878s]     "TRUE"
+[0.878s] 
+[0.878s]   An argument named "TRUE" appears in a conditional statement.  Policy
+[0.878s]   CMP0012 is not set: if() recognizes numbers and boolean constants.  Run
+[0.878s]   "cmake --help-policy CMP0012" for policy details.  Use the cmake_policy
+[0.878s]   command to set the policy and suppress this warning.
+[0.878s] Call Stack (most recent call first):
+[0.879s]   /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:34 (_normalize_path__collapse_redundant)
+[0.879s]   /opt/ros/jazzy/share/rcutils/cmake/ament_cmake_export_include_directories-extras.cmake:13 (normalize_path)
+[0.879s]   /opt/ros/jazzy/share/rcutils/cmake/rcutilsConfig.cmake:41 (include)
+[0.879s]   /opt/ros/jazzy/share/rosidl_runtime_c/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.879s]   /opt/ros/jazzy/share/rosidl_runtime_c/cmake/rosidl_runtime_cConfig.cmake:41 (include)
+[0.879s]   /opt/ros/jazzy/share/builtin_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.879s]   /opt/ros/jazzy/share/builtin_interfaces/cmake/builtin_interfacesConfig.cmake:41 (include)
+[0.880s]   /opt/ros/jazzy/share/rclcpp/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.880s]   /opt/ros/jazzy/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)
+[0.880s]   CMakeLists.txt:8 (find_package)
+[0.880s] This warning is for project developers.  Use -Wno-dev to suppress it.
+[0.880s] [0m
+[0.880s] [33mCMake Warning (dev) at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:72 (while):
+[0.880s]   Policy CMP0130 is not set: while() diagnoses condition evaluation errors.
+[0.880s]   Run "cmake --help-policy CMP0130" for policy details.  Use the cmake_policy
+[0.880s]   command to set the policy and suppress this warning.
+[0.881s] 
+[0.881s]   while() given incorrect arguments:
+[0.881s] 
+[0.881s]     "TRUE"
+[0.881s] 
+[0.881s]   An argument named "TRUE" appears in a conditional statement.  Policy
+[0.882s]   CMP0012 is not set: if() recognizes numbers and boolean constants.  Run
+[0.882s]   "cmake --help-policy CMP0012" for policy details.  Use the cmake_policy
+[0.882s]   command to set the policy and suppress this warning.
+[0.882s] Call Stack (most recent call first):
+[0.882s]   /opt/ros/jazzy/share/ament_cmake_core/cmake/core/normalize_path.cmake:35 (_normalize_path__collapse_uplevel_reference)
+[0.882s]   /opt/ros/jazzy/share/rcutils/cmake/ament_cmake_export_include_directories-extras.cmake:13 (normalize_path)
+[0.882s]   /opt/ros/jazzy/share/rcutils/cmake/rcutilsConfig.cmake:41 (include)
+[0.882s]   /opt/ros/jazzy/share/rosidl_runtime_c/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.883s]   /opt/ros/jazzy/share/rosidl_runtime_c/cmake/rosidl_runtime_cConfig.cmake:41 (include)
+[0.883s]   /opt/ros/jazzy/share/builtin_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.883s]   /opt/ros/jazzy/share/builtin_interfaces/cmake/builtin_interfacesConfig.cmake:41 (include)
+[0.883s]   /opt/ros/jazzy/share/rclcpp/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.883s]   /opt/ros/jazzy/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)
+[0.883s]   CMakeLists.txt:8 (find_package)
+[0.883s] This warning is for project developers.  Use -Wno-dev to suppress it.
+[0.884s] [0m
+[0.886s] [33mCMake Warning (dev) at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/list_append_unique.cmake:30 (if):
+[0.887s]   Policy CMP0057 is not set: Support new IN_LIST if() operator.  Run "cmake
+[0.887s]   --help-policy CMP0057" for policy details.  Use the cmake_policy command to
+[0.887s]   set the policy and suppress this warning.
+[0.887s] 
+[0.887s]   IN_LIST will be interpreted as an operator when the policy is set to NEW.
+[0.887s]   Since the policy is not set the OLD behavior will be used.
+[0.887s] Call Stack (most recent call first):
+[0.887s]   /opt/ros/jazzy/share/rcutils/cmake/ament_cmake_export_dependencies-extras.cmake:84 (list_append_unique)
+[0.888s]   /opt/ros/jazzy/share/rcutils/cmake/rcutilsConfig.cmake:41 (include)
+[0.888s]   /opt/ros/jazzy/share/rosidl_runtime_c/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.888s]   /opt/ros/jazzy/share/rosidl_runtime_c/cmake/rosidl_runtime_cConfig.cmake:41 (include)
+[0.888s]   /opt/ros/jazzy/share/builtin_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.888s]   /opt/ros/jazzy/share/builtin_interfaces/cmake/builtin_interfacesConfig.cmake:41 (include)
+[0.888s]   /opt/ros/jazzy/share/rclcpp/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.888s]   /opt/ros/jazzy/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)
+[0.888s]   CMakeLists.txt:8 (find_package)
+[0.888s] This warning is for project developers.  Use -Wno-dev to suppress it.
+[0.888s] [0m
+[0.888s] [31mCMake Error at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/list_append_unique.cmake:30 (if):
+[0.888s]   if given arguments:
+[0.889s] 
+[0.889s]     "NOT" "element" "IN_LIST" "rcutils_RECURSIVE_DEPENDENCIES"
+[0.889s] 
+[0.889s]   Unknown arguments specified
+[0.889s] Call Stack (most recent call first):
+[0.889s]   /opt/ros/jazzy/share/rcutils/cmake/ament_cmake_export_dependencies-extras.cmake:84 (list_append_unique)
+[0.889s]   /opt/ros/jazzy/share/rcutils/cmake/rcutilsConfig.cmake:41 (include)
+[0.890s]   /opt/ros/jazzy/share/rosidl_runtime_c/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.890s]   /opt/ros/jazzy/share/rosidl_runtime_c/cmake/rosidl_runtime_cConfig.cmake:41 (include)
+[0.890s]   /opt/ros/jazzy/share/builtin_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.890s]   /opt/ros/jazzy/share/builtin_interfaces/cmake/builtin_interfacesConfig.cmake:41 (include)
+[0.890s]   /opt/ros/jazzy/share/rclcpp/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.890s]   /opt/ros/jazzy/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)
+[0.891s]   CMakeLists.txt:8 (find_package)
+[0.891s] 
+[0.891s] [0m
+[0.891s] -- Configuring incomplete, errors occurred!
+[0.902s] Invoked command in '/home/username/ros2_ws/build/detection' returned '1': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /home/username/ros2_ws/src/detection -DCMAKE_INSTALL_PREFIX=/home/username/ros2_ws/install/detection
