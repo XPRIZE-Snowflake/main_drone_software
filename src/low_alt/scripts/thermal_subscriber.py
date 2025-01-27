@@ -8,6 +8,7 @@ import tkinter as tk
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
+from std_msgs.msg import String 
 
 import matplotlib
 matplotlib.use('TkAgg')  # Use the TkAgg backend for matplotlib
@@ -15,6 +16,10 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from scipy.ndimage import gaussian_filter
+
+# Threshold for deciding "too far" in pixels
+DIRECTION_THRESHOLD = 50
+
 
 # -------------------------
 # Filtering function
@@ -97,6 +102,10 @@ class ThermalImageSubscriber(Node):
             10
         )
 
+        # ROS2 Publisher
+        global ros_publisher
+        ros_publisher = node.create_publisher(String, 'hotspot_info', 10)
+
     def listener_callback(self, msg):
         """Only accept the next frame if 'update_requested' is True; discard otherwise."""
         if not self.update_requested:
@@ -132,7 +141,7 @@ class ThermalImageSubscriber(Node):
 # Main GUI Application
 # -------------------------
 def main():
-    # 1) Load or create parameter file
+    # 1m) Load or create parameter file
     param_file = "detection_params.npy"
     if os.path.exists(param_file):
         # load parameters
@@ -152,13 +161,13 @@ def main():
     detection_filter_sigma       = params[2]
     detection_second_threshold   = params[3]
 
-    # 2) Initialize ROS and start background spinning
+    # 2m) Initialize ROS and start background spinning
     rclpy.init()
     node = ThermalImageSubscriber()
     spin_thread = threading.Thread(target=rclpy.spin, args=(node,), daemon=True)
     spin_thread.start()
 
-    # 3) Build the Tkinter UI with side-by-side images
+    # 3m) Build the Tkinter UI with side-by-side images
     root = tk.Tk()
     root.title("Thermal Viewer: Unfiltered + Filtered")
 
@@ -178,7 +187,7 @@ def main():
     canvas_widget = canvas.get_tk_widget()
     canvas_widget.pack()
 
-    # 4) Parameter entries
+    # 4m) Parameter entries
     # We'll create 4 label+entry pairs
     param_frame = tk.Frame(root)
     param_frame.pack(side=tk.TOP, pady=5)
@@ -217,13 +226,14 @@ def main():
 
     tk.Button(param_frame, text="Save Params", command=save_params).grid(row=2, column=0, columnspan=4, pady=5)
 
-    # 5) Update button logic
+    # 5m) Update button logic
     def update_plot():
         """
-        1) Request next live frame
-        2) Wait for it
-        3) Display unfiltered on left
-        4) Filter and display on right
+        1u) Request next live frame
+        2u) Wait for it
+        3u) Display unfiltered on left
+        4u) Filter and display on right
+        5u) Calculate hotspot distances from center
         """
         # parse param fields
         try:
@@ -235,21 +245,21 @@ def main():
             print("Cannot parse param fields. Aborting update.")
             return
 
-        # 1) request next image
+        # 1u) request next image
         node.request_next_image()
 
-        # 2) wait up to 3 seconds
+        # 2u) wait up to 3 seconds
         new_image = node.wait_for_new_image(timeout=3.0)
         if new_image is None:
             print("No new image within 3 seconds.")
             return
 
-        # 3) show unfiltered
+        # 3u) show unfiltered
         im_unfiltered.set_data(new_image)
         ax1.set_title(f"Unfiltered: {new_image.shape}")
         im_unfiltered.set_clim(0, 255)
 
-        # 4) filter
+        # 4u) filter
         camera_dims = new_image.shape
         filtered_img, hot_spots, weights = filter_image(
             new_image,
@@ -263,12 +273,56 @@ def main():
         ax2.set_title(f"Filtered: {filtered_img.shape}\nHot spots: {len(hot_spots)}")
         im_filtered.set_clim(0, 255)
 
-        canvas.draw()
+        # 5u) Find the hottest hot spot
+        if len(hot_spots) > 0:
+            hottest_spot = hot_spots[0]  # The first hotspot is the hottest due to the filtering logic
+            x, y = hottest_spot
+
+            # Calculate total distance
+            center = (camera_dims[0] // 2, camera_dims[1] // 2)
+            distance = np.sqrt((x - center[0])**2 + (y - center[1])**2)
+
+            # Calculate vertical and horizontal distances
+            vertical_distance = x - center[0]  # Positive = down, Negative = up
+            horizontal_distance = y - center[1]  # Positive = right, Negative = left
+
+            # Determine vertical direction
+            if vertical_distance > 0:
+                vertical_dir = f"{vertical_distance} pixels down"
+            elif vertical_distance < 0:
+                vertical_dir = f"{abs(vertical_distance)} pixels up"
+            else:
+                vertical_dir = "centered vertically"
+
+            # Determine horizontal direction
+            if horizontal_distance > 0:
+                horizontal_dir = f"{horizontal_distance} pixels right"
+            elif horizontal_distance < 0:
+                horizontal_dir = f"{abs(horizontal_distance)} pixels left"
+            else:
+                horizontal_dir = "centered horizontally"
+
+            # Create the message
+            message = (
+                f"Hottest Hotspot: Coordinates=({x}, {y}), "
+                f"Total Distance={distance:.2f} pixels, "
+                f"Vertical Offset={vertical_dir}, "
+                f"Horizontal Offset={horizontal_dir}"
+            )
+            print(message)  # Print to console
+
+            # 6) Publish the message to the ROS topic
+            ros_publisher.publish(String(data=message))
+        else:
+            print("No hotspot detected.")
+
+    
+    canvas.draw()
 
     btn_update = tk.Button(root, text="Update", command=update_plot)
     btn_update.pack(pady=5)
 
-    # 6) Cleanup on close
+    # 6m) Cleanup on close
     def on_closing():
         node.get_logger().info("Closing GUI, shutting down ROS...")
         rclpy.shutdown()
