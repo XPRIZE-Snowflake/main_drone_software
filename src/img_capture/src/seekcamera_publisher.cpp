@@ -48,9 +48,11 @@ public:
     }
 
     // Register manager event callback
-    res = seekcamera_manager_register_event_callback(manager_,
-                                                     cameraManagerEventCallback,
-                                                     /* user_data = */ this);
+    res = seekcamera_manager_register_event_callback(
+        manager_,
+        cameraManagerEventCallback,
+        /* user_data = */ this);
+
     if (res != SEEKCAMERA_SUCCESS) {
       RCLCPP_ERROR(this->get_logger(),
                    "seekcamera_manager_register_event_callback failed: %s",
@@ -77,7 +79,7 @@ public:
   }
 
   // This method is called by the static frame callback
-  void publishGrayscaleFrame(seekframe_t* frame)
+  void publishPreAgcFrame(seekframe_t* frame)
   {
     if (!frame) return;
 
@@ -90,19 +92,22 @@ public:
     msg.header.frame_id = "seek_thermal_frame";
     msg.height          = static_cast<uint32_t>(height);
     msg.width           = static_cast<uint32_t>(width);
-    msg.encoding        = "mono8";  // 8-bit grayscale
+
+    // Because PRE_AGC is 16 bits/pixel, publish as "mono16"
+    msg.encoding        = "mono16";
     msg.is_bigendian    = false;
-    msg.step            = static_cast<sensor_msgs::msg::Image::_step_type>(width);
+    // Each row is width * 2 bytes
+    msg.step            = static_cast<sensor_msgs::msg::Image::_step_type>(width * 2);
 
     // Resize data
-    msg.data.resize(height * width);
+    msg.data.resize(height * width * 2);
 
-    // Copy out the raw pixel data
+    // Copy out the raw 16-bit pixel data
     void* frame_data = seekframe_get_data(frame);
     if (!frame_data) {
       return; // no data
     }
-    std::memcpy(msg.data.data(), frame_data, width * height);
+    std::memcpy(msg.data.data(), frame_data, width * height * 2);
 
     // Publish
     image_pub_->publish(msg);
@@ -133,9 +138,10 @@ static void cameraManagerEventCallback(
   if (event == SEEKCAMERA_MANAGER_EVENT_CONNECT) {
     // Camera connected & paired
     if (status == SEEKCAMERA_SUCCESS) {
-      // Start streaming grayscale frames
-      seekcamera_error_t res = seekcamera_capture_session_start(camera,
-                                      SEEKCAMERA_FRAME_FORMAT_GRAYSCALE);
+      // Start streaming PRE-AGC frames (16-bit, minimal extra processing)
+      seekcamera_error_t res = seekcamera_capture_session_start(
+          camera,
+          SEEKCAMERA_FRAME_FORMAT_PRE_AGC);
       if (res != SEEKCAMERA_SUCCESS) {
         fprintf(stderr,
                 "[cameraManagerEventCallback] capture_session_start failed: %s\n",
@@ -145,21 +151,20 @@ static void cameraManagerEventCallback(
         res = seekcamera_register_frame_available_callback(
             camera,
             frameAvailableCallback,
-            /* user_data = */ node_ptr  // pass the same node pointer
+            /* user_data = */ node_ptr
         );
         if (res != SEEKCAMERA_SUCCESS) {
           fprintf(stderr,
                   "[cameraManagerEventCallback] register_frame_available_callback failed: %s\n",
                   seekcamera_error_get_str(res));
         } else {
-          fprintf(stdout,
-                  "[cameraManagerEventCallback] Grayscale streaming started.\n");
+          fprintf(stdout, "[cameraManagerEventCallback] PRE_AGC (16-bit) streaming started.\n");
         }
       }
     }
   } else if (event == SEEKCAMERA_MANAGER_EVENT_DISCONNECT) {
     fprintf(stdout, "[cameraManagerEventCallback] Camera disconnected.\n");
-    // If you want, call seekcamera_capture_session_stop(camera) here, etc.
+    // Optionally call seekcamera_capture_session_stop(camera) here
   } else if (event == SEEKCAMERA_MANAGER_EVENT_READY_TO_PAIR) {
     fprintf(stdout, "[cameraManagerEventCallback] Camera ready to pair (unpaired).\n");
   } else if (event == SEEKCAMERA_MANAGER_EVENT_ERROR) {
@@ -183,21 +188,21 @@ static void frameAvailableCallback(
     return;
   }
 
-  // We want the grayscale frame
-  seekframe_t* frame_grayscale = nullptr;
+  // We want the PRE_AGC 16-bit frame
+  seekframe_t* frame_preagc = nullptr;
   seekcamera_error_t res = seekcamera_frame_get_frame_by_format(
       camera_frame,
-      SEEKCAMERA_FRAME_FORMAT_GRAYSCALE,
-      &frame_grayscale
+      SEEKCAMERA_FRAME_FORMAT_PRE_AGC,
+      &frame_preagc
   );
 
-  if (res != SEEKCAMERA_SUCCESS || !frame_grayscale) {
+  if (res != SEEKCAMERA_SUCCESS || !frame_preagc) {
     // Not found or error
     return;
   }
 
-  // Let our node handle publishing
-  node_ptr->publishGrayscaleFrame(frame_grayscale);
+  // Let our node handle publishing (as "mono16")
+  node_ptr->publishPreAgcFrame(frame_preagc);
 }
 
 // -----------------------------
@@ -209,12 +214,10 @@ int main(int argc, char* argv[])
 
   auto node = std::make_shared<SeekCameraNode>();
 
-  // Spin in a multi-threaded executor or single-thread, your choice.
-  // This call blocks until Ctrl-C or shutdown:
+  // Spin in a multi-threaded or single-threaded executor
   rclcpp::spin(node);
 
-  // After spin exits, shut down ROS (which will eventually destroy the node).
+  // After spin exits, shut down ROS (which destroys the node eventually).
   rclcpp::shutdown();
-
   return 0;
 }
