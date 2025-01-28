@@ -6,8 +6,8 @@
 
 #include "rosidl_typesupport_interface/macros.h"
 #include "px4_msgs/msg/detail/vehicle_constraints__type_support.h"
-#include "px4_msgs/msg/detail/vehicle_constraints__functions.h"
 #include "px4_msgs/msg/detail/vehicle_constraints__struct.h"
+#include "px4_msgs/msg/detail/vehicle_constraints__functions.h"
 
 #ifdef __cplusplus
 extern "C"

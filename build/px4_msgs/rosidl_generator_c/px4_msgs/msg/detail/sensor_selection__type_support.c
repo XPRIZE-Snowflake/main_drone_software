@@ -5,9 +5,9 @@
 #include <string.h>
 
 #include "rosidl_typesupport_interface/macros.h"
-#include "px4_msgs/msg/detail/sensor_selection__type_support.h"
 #include "px4_msgs/msg/detail/sensor_selection__functions.h"
 #include "px4_msgs/msg/detail/sensor_selection__struct.h"
+#include "px4_msgs/msg/detail/sensor_selection__type_support.h"
 
 #ifdef __cplusplus
 extern "C"
