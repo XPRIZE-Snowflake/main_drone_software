@@ -17,6 +17,9 @@ class DynamicKMeans(Node):
     self.elements = np.empty((0, 2))  # Start with no elements
     self.labels = []  # Store labels for the most recent batch of added elements
 
+    self.create_subscription(Pixels, '/hot_spots', self.add_elements) #FIXME: Subscribe to correct topic
+    self.pub = self.create_publisher(Clusters, '/clusters', 10); #FIXME: find out what to publish
+
   def add_elements(self, elements):
     """
     Add elements to the clustering object.
