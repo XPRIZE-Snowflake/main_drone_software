@@ -5,9 +5,9 @@
 #include <string.h>
 
 #include "rosidl_typesupport_interface/macros.h"
-#include "px4_msgs/msg/detail/differential_pressure__struct.h"
 #include "px4_msgs/msg/detail/differential_pressure__functions.h"
 #include "px4_msgs/msg/detail/differential_pressure__type_support.h"
+#include "px4_msgs/msg/detail/differential_pressure__struct.h"
 
 #ifdef __cplusplus
 extern "C"

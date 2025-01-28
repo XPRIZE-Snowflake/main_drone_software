@@ -1,0 +1,19 @@
+[100%] Built target seekcamera_publisher
+-- Install configuration: ""
+-- Up-to-date: /home/username/ros2_ws/install/low_alt/lib/low_alt/seekcamera_publisher
+-- Up-to-date: /home/username/ros2_ws/install/low_alt/lib/low_alt/thermal_subscriber.py
+-- Up-to-date: /home/username/ros2_ws/install/low_alt/share/ament_index/resource_index/package_run_dependencies/low_alt
+-- Up-to-date: /home/username/ros2_ws/install/low_alt/share/ament_index/resource_index/parent_prefix_path/low_alt
+-- Up-to-date: /home/username/ros2_ws/install/low_alt/share/low_alt/environment/ament_prefix_path.sh
+-- Up-to-date: /home/username/ros2_ws/install/low_alt/share/low_alt/environment/ament_prefix_path.dsv
+-- Up-to-date: /home/username/ros2_ws/install/low_alt/share/low_alt/environment/path.sh
+-- Up-to-date: /home/username/ros2_ws/install/low_alt/share/low_alt/environment/path.dsv
+-- Up-to-date: /home/username/ros2_ws/install/low_alt/share/low_alt/local_setup.bash
+-- Up-to-date: /home/username/ros2_ws/install/low_alt/share/low_alt/local_setup.sh
+-- Up-to-date: /home/username/ros2_ws/install/low_alt/share/low_alt/local_setup.zsh
+-- Up-to-date: /home/username/ros2_ws/install/low_alt/share/low_alt/local_setup.dsv
+-- Installing: /home/username/ros2_ws/install/low_alt/share/low_alt/package.dsv
+-- Up-to-date: /home/username/ros2_ws/install/low_alt/share/ament_index/resource_index/packages/low_alt
+-- Up-to-date: /home/username/ros2_ws/install/low_alt/share/low_alt/cmake/low_altConfig.cmake
+-- Up-to-date: /home/username/ros2_ws/install/low_alt/share/low_alt/cmake/low_altConfig-version.cmake
+-- Up-to-date: /home/username/ros2_ws/install/low_alt/share/low_alt/package.xml

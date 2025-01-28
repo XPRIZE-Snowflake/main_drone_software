@@ -10,7 +10,7 @@
 /home/username/ros2_ws/build/px4_msgs/CMakeFiles/px4_msgs__rosidl_typesupport_c.dir
 /home/username/ros2_ws/build/px4_msgs/CMakeFiles/px4_msgs__rosidl_typesupport_introspection_cpp.dir
 /home/username/ros2_ws/build/px4_msgs/CMakeFiles/px4_msgs__rosidl_typesupport_cpp.dir
-/home/username/ros2_ws/build/px4_msgs/CMakeFiles/ament_cmake_python_symlink_px4_msgs.dir
+/home/username/ros2_ws/build/px4_msgs/CMakeFiles/ament_cmake_python_copy_px4_msgs.dir
 /home/username/ros2_ws/build/px4_msgs/CMakeFiles/ament_cmake_python_build_px4_msgs_egg.dir
 /home/username/ros2_ws/build/px4_msgs/CMakeFiles/px4_msgs__rosidl_generator_py.dir
 /home/username/ros2_ws/build/px4_msgs/CMakeFiles/px4_msgs_s__rosidl_typesupport_fastrtps_c.dir
