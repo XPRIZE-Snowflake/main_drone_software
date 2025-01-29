@@ -1,0 +1,37 @@
+-- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Override CMake install command with custom implementation using symlinks instead of copying resources
+-- Found rclcpp: 28.1.6 (/opt/ros/jazzy/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 7.3.1 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 8.4.1 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found sensor_msgs: 5.3.5 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+-- Configuring done (0.9s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/username/ros2_ws/build/img_capture
+[ 50%] [32m[1mLinking CXX executable seekcamera_publisher[0m
+[100%] Built target seekcamera_publisher
+-- Install configuration: ""
+-- Execute custom install script
+-- Symlinking: /home/username/ros2_ws/install/img_capture/lib/img_capture/seekcamera_publisher
+-- Symlinking: /home/username/ros2_ws/install/img_capture/lib/img_capture/thermal_subscriber.py
+-- Symlinking: /home/username/ros2_ws/install/img_capture/lib/img_capture/odometry_publisher.py
+-- Symlinking: /home/username/ros2_ws/install/img_capture/share/ament_index/resource_index/package_run_dependencies/img_capture
+-- Symlinking: /home/username/ros2_ws/install/img_capture/share/ament_index/resource_index/parent_prefix_path/img_capture
+-- Symlinking: /home/username/ros2_ws/install/img_capture/share/img_capture/environment/ament_prefix_path.sh
+-- Symlinking: /home/username/ros2_ws/install/img_capture/share/img_capture/environment/ament_prefix_path.dsv
+-- Symlinking: /home/username/ros2_ws/install/img_capture/share/img_capture/environment/path.sh
+-- Symlinking: /home/username/ros2_ws/install/img_capture/share/img_capture/environment/path.dsv
+-- Symlinking: /home/username/ros2_ws/install/img_capture/share/img_capture/local_setup.bash
+-- Symlinking: /home/username/ros2_ws/install/img_capture/share/img_capture/local_setup.sh
+-- Symlinking: /home/username/ros2_ws/install/img_capture/share/img_capture/local_setup.zsh
+-- Symlinking: /home/username/ros2_ws/install/img_capture/share/img_capture/local_setup.dsv
+-- Symlinking: /home/username/ros2_ws/install/img_capture/share/img_capture/package.dsv
+-- Symlinking: /home/username/ros2_ws/install/img_capture/share/ament_index/resource_index/packages/img_capture
+-- Symlinking: /home/username/ros2_ws/install/img_capture/share/img_capture/cmake/img_captureConfig.cmake
+-- Symlinking: /home/username/ros2_ws/install/img_capture/share/img_capture/cmake/img_captureConfig-version.cmake
+-- Symlinking: /home/username/ros2_ws/install/img_capture/share/img_capture/package.xml
+-- Symlinking: /home/username/ros2_ws/install/img_capture/share/img_capture//launch/img_capture.launch.py

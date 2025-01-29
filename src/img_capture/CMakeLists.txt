@@ -28,6 +28,7 @@ install(TARGETS
 # Install Python node
 install(PROGRAMS
   scripts/thermal_subscriber.py
+  scripts/odometry_publisher.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

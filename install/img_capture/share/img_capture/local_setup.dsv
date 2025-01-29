@@ -1,2 +1,1 @@
-source;share/img_capture/environment/ament_prefix_path.sh
-source;share/img_capture/environment/path.sh
+/home/username/ros2_ws/build/img_capture/ament_cmake_environment_hooks/local_setup.dsv
