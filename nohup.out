@@ -1,5 +1,0 @@
-[INFO] [1738078952.087795949] [seekcamera_node]: Seek Camera Manager created and callback registered.
-[cameraManagerEventCallback] PRE_AGC (16-bit) streaming started.
-[INFO] [1738079321.536323660] [rclcpp]: signal_handler(signum=15)
-[cameraManagerEventCallback] Camera disconnected.
-[INFO] [1738079322.869483857] [seekcamera_node]: Seek Camera Manager destroyed.

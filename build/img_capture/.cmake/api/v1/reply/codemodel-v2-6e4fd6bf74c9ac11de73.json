@@ -7,7 +7,7 @@
 				{
 					"build" : ".",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-.-fa6f42ee4c84f29387f2.json",
+					"jsonFile" : "directory-.-efa7da6ae0a038c1f5d7.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.15"
@@ -51,7 +51,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "seekcamera_publisher::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-seekcamera_publisher-2fda878a54de9968c65c.json",
+					"jsonFile" : "target-seekcamera_publisher-58489cf567f2409ff6dd.json",
 					"name" : "seekcamera_publisher",
 					"projectIndex" : 0
 				},
