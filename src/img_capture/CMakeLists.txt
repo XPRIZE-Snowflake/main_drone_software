@@ -29,6 +29,7 @@ install(TARGETS
 install(PROGRAMS
   scripts/thermal_subscriber.py
   scripts/odometry_publisher.py
+  scripts/kmeans.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

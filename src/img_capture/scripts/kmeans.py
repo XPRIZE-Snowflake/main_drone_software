@@ -5,14 +5,16 @@ from rclpy.node import Node
 import numpy as np
 from px4_msgs.msg import VehicleCommand
 import math
+from std_msgs.msg import String
 
 class DynamicKMeans(Node):
-  def __init__(self, max_radius, min_size=1):
+  def __init__(self, max_radius, min_size):
     """
     Initialize the dynamic k-means object.
     :param max_radius: The maximum radius to consider a point close to a centroid.
     :param min_size: Minimum number of elements required for a centroid to be returned.
     """
+    super().__init__('dynamic_kmeans')
     self.max_radius = max_radius
     self.min_size = min_size
     self.centroids = np.empty((0, 2))  # Start with no centroids
@@ -22,30 +24,30 @@ class DynamicKMeans(Node):
     self.create_subscription(String, '/thermal_with_odom', self.add_elements)
     self.pub = self.create_publisher(VehicleCommand, '/fmu/in/vehicle_command', 10)
 
-  def send_command(self):
-    msg = VehicleCommand()
-    msg.command = 16  # MAV_CMD_NAV_WAYPOINT
-    msg.param1 = 0.0  # Hold time at waypoint
-    msg.param2 = 5.0  # Acceptance radius (meters)
-    msg.param3 = 0.0  # Pass radius
-    msg.param4 = math.nan  # Yaw angle (don’t care)
-    msg.param5 = 47.3977417  # Latitude
-    msg.param6 = 8.5455939   # Longitude
-    msg.param7 = 10.0  # Altitude (meters)
-    msg.target_system = 1
-    msg.target_component = 1
-    msg.source_system = 1
-    msg.source_component = 1
-    msg.confirmation = 0
-    self.publisher.publish(msg)
-    self.get_logger().info(f’Sent mission command to {msg.param5}, {msg.param6}, {msg.param7}’)
+  def send_command(self, msg):
+    output = VehicleCommand()
+    output.command = 16  # MAV_CMD_NAV_WAYPOINT
+    output.param1 = 0.0  # Hold time at waypoint
+    output.param2 = 5.0  # Acceptance radius (meters)
+    output.param3 = 0.0  # Pass radius
+    output.param4 = math.nan  # Yaw angle (don’t care)
+    output.param5 = 47.3977417  # Latitude
+    output.param6 = 8.5455939   # Longitude
+    output.param7 = 10.0  # Altitude (meters)
+    output.target_system = 1
+    output.target_component = 1
+    output.source_system = 1
+    output.source_component = 1
+    output.confirmation = 0
+    self.pub.publish(output)
+    self.get_logger().info(f’Sent mission command to {output.param5}, {output.param6}, {output.param7}’)
 
-  def add_elements(self, elements):
+  def add_elements(self, msg):
     """
     Add elements to the clustering object.
     :param elements: A list or NumPy array of 2D points to add.
     """
-    elements = np.array(elements)
+    elements = np.array(msg)
     for element in elements:
       self.elements = np.vstack([self.elements, element])
       if self.centroids.shape[0] == 0:
@@ -100,7 +102,7 @@ class DynamicKMeans(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = Node('kmeans')
+    node = DynamicKMeans(max_radius=0.5, min_size=1) # Adjust max_radius and min_size as needed
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
