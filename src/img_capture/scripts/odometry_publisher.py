@@ -117,7 +117,7 @@ class CombinedOdometryPublisher(Node):
         # Log
         self.get_logger().info(f"timestamp: {self.timestamp}, latitude: {self.latitude}, longitude: {self.longitude}, altitude: {self.altitude}, pitch: {self.pitch}, roll: {self.roll}, yaw: {self.yaw}")
 
-    def save_data_to_csv(self, file_name="odometry_data"):
+    def save_data_to_csv(self, file_name="odometry_csvs/odometry_data"):
         """Save saved data to a CSV file."""
         end_time = datetime.now().strftime("%Y:%m:%d-%H:%M:%S")
         pd.DataFrame(self.saved_data).to_csv(f"{file_name}_{self.start_time}_to_{end_time}.csv", index=False)
@@ -130,7 +130,7 @@ def main(args=None):
     except KeyboardInterrupt:
         pass
     finally:
-        node.save_data_to_csv(file_name="odometry_data")
+        node.save_data_to_csv(file_name="odometry_csvs/odometry_data")
         node.destroy_node()
         rclpy.shutdown()
 
