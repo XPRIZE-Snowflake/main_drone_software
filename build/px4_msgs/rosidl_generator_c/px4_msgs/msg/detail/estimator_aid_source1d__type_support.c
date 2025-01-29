@@ -5,9 +5,9 @@
 #include <string.h>
 
 #include "rosidl_typesupport_interface/macros.h"
-#include "px4_msgs/msg/detail/estimator_aid_source1d__functions.h"
 #include "px4_msgs/msg/detail/estimator_aid_source1d__type_support.h"
 #include "px4_msgs/msg/detail/estimator_aid_source1d__struct.h"
+#include "px4_msgs/msg/detail/estimator_aid_source1d__functions.h"
 
 #ifdef __cplusplus
 extern "C"
