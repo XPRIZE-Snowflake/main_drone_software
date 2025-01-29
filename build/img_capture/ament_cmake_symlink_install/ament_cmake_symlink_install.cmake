@@ -313,8 +313,8 @@ message(STATUS "Execute custom install script")
 # install("TARGETS" "seekcamera_publisher" "DESTINATION" "lib/img_capture")
 include("/home/username/ros2_ws/build/img_capture/ament_cmake_symlink_install_targets_0_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
 
-# install(PROGRAMS "scripts/thermal_subscriber.py" "DESTINATION" "lib/img_capture")
-ament_cmake_symlink_install_programs("/home/username/ros2_ws/src/img_capture" PROGRAMS "scripts/thermal_subscriber.py" "DESTINATION" "lib/img_capture")
+# install(PROGRAMS "scripts/thermal_subscriber.py" "scripts/odometry_publisher.py" "DESTINATION" "lib/img_capture")
+ament_cmake_symlink_install_programs("/home/username/ros2_ws/src/img_capture" PROGRAMS "scripts/thermal_subscriber.py" "scripts/odometry_publisher.py" "DESTINATION" "lib/img_capture")
 
 # install(FILES "/home/username/ros2_ws/build/img_capture/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/img_capture" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")
 ament_cmake_symlink_install_files("/home/username/ros2_ws/src/img_capture" FILES "/home/username/ros2_ws/build/img_capture/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/img_capture" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")
@@ -357,3 +357,6 @@ ament_cmake_symlink_install_files("/home/username/ros2_ws/src/img_capture" FILES
 
 # install(FILES "/home/username/ros2_ws/src/img_capture/package.xml" "DESTINATION" "share/img_capture")
 ament_cmake_symlink_install_files("/home/username/ros2_ws/src/img_capture" FILES "/home/username/ros2_ws/src/img_capture/package.xml" "DESTINATION" "share/img_capture")
+
+# install(DIRECTORY "launch" "DESTINATION" "share/img_capture/")
+ament_cmake_symlink_install_directory("/home/username/ros2_ws/src/img_capture" DIRECTORY "launch" "DESTINATION" "share/img_capture/")

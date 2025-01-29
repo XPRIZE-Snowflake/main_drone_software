@@ -1,3 +1,0 @@
-Invoking command in '/home/username/ros2_ws/build/img_capture': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /home/username/ros2_ws/src/img_capture -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/username/ros2_ws/install/img_capture
-Invoked command in '/home/username/ros2_ws/build/img_capture' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /home/username/ros2_ws/src/img_capture -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/username/ros2_ws/install/img_capture
-Invoking command in '/home/username/ros2_ws/build/img_capture': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/username/ros2_ws/build/img_capture -- -j4 -l4
