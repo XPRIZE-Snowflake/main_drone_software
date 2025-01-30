@@ -50,16 +50,16 @@ class DynamicKMeans(Node):
     for element in msg:
     x, y, _, _ = element  # Unpack the tuple, ignoring longitude and latitude
     point = np.array([x, y])  # Create a NumPy array with x and y values
-    self.elements = np.vstack([self.elements, element]) if self.elements.size else element  # Add the element to the self.elements array
+      self.elements = np.vstack([self.elements, point]) if self.elements.size else point  # Add the point to the self.elements array
     if self.centroids.shape[0] == 0:
       # If no centroids exist, add the first one
-      self.centroids = np.array([element])
+      self.centroids = np.array([point])
     else:
       # Check distances to all centroids
-      distances = np.linalg.norm(self.centroids - element, axis=1)
+      distances = np.linalg.norm(self.centroids - point, axis=1)
       if np.all(distances > self.max_radius):
         # Add a new centroid if no centroids are within max_radius
-        self.centroids = np.vstack([self.centroids, element])
+        self.centroids = np.vstack([self.centroids, point])
 
     # Assign each element to the nearest centroid
     self.labels = []
