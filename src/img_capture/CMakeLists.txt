@@ -30,6 +30,7 @@ install(PROGRAMS
   scripts/thermal_subscriber.py
   scripts/odometry_publisher.py
   scripts/kmeans.py
+  scripts/low_alt_thermal.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
