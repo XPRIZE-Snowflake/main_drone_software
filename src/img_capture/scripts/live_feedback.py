@@ -17,7 +17,7 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import String
 
 import matplotlib
-matplotlib.use('TkAgg')  # Use the TkAgg backend
+matplotlib.use('TkAgg')
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -53,13 +53,14 @@ def filter_image(img, first_threshold, filter_boost, filter_sigma, second_thresh
 class LiveFeedbackNode(Node):
     """
     Subscribes to camera images (mono16 -> scaled to [0..100]) and odometry.
-    Maintains latest camera frame and latest odometry.
+    Maintains latest camera and odometry.
     Has a timer at 5 Hz that updates a GUI with:
       1) Normalized image (image / image.max)
       2) Raw scaled image [0..100]
       3) Filtered image [0..100]
     Also shows the latest odometry in a label.
-    Has param entries and a Save Params button.
+    Has param fields for filter thresholds, etc., with "Save Params" button.
+    No "Update" button. It's all live.
     """
 
     def __init__(self, freq_hz=5.0):
@@ -101,6 +102,9 @@ class LiveFeedbackNode(Node):
         period_s = 1.0 / freq_hz
         self.gui_timer = self.create_timer(period_s, self.gui_update_callback)
 
+        # We'll set up the GUI in a separate function after spin() starts
+        # but we can start it now in constructor if we want.
+
     def load_params(self):
         """Load filter parameters from a .npy file if present."""
         if os.path.exists(self.param_file):
@@ -110,7 +114,6 @@ class LiveFeedbackNode(Node):
                 self.filter_boost     = arr[1]
                 self.filter_sigma     = arr[2]
                 self.second_thresh    = arr[3]
-                self.get_logger().info(f"Loaded filter params: {arr}")
             else:
                 self.get_logger().warn("Param file shape mismatch. Using defaults.")
         else:
@@ -118,204 +121,177 @@ class LiveFeedbackNode(Node):
             arr = np.array([self.first_threshold, self.filter_boost,
                             self.filter_sigma, self.second_thresh], dtype=float)
             np.save(self.param_file, arr)
-            self.get_logger().info(f"Created default params: {arr}")
 
     def save_params(self):
         """Save current filter parameters to .npy file."""
         arr = np.array([self.first_threshold, self.filter_boost,
                         self.filter_sigma, self.second_thresh], dtype=float)
         np.save(self.param_file, arr)
-        self.get_logger().info(f"Params saved to {self.param_file}: {arr}")
+        self.get_logger().info(f"Params saved to {self.param_file}")
 
     def camera_callback(self, msg):
         """Receive the camera image, convert to float [0..100]."""
         try:
             raw_16 = np.frombuffer(msg.data, dtype=np.uint16).reshape(msg.height, msg.width)
-            scaled = (raw_16.astype(float) / 65535.0) * 100.0
-            self.latest_image = scaled
-            self.get_logger().debug(f"Received image with shape {scaled.shape} and max {scaled.max():.2f}")
         except ValueError as e:
             self.get_logger().error(f"Failed to decode camera image: {e}")
             return
+        scaled = (raw_16.astype(float) / 65535.0) * 100.0
+        self.latest_image = scaled
 
     def odom_callback(self, msg):
         """Store the latest odometry JSON as a dictionary."""
         try:
             data = json.loads(msg.data)
             self.latest_odom = data  # store as dictionary
-            self.get_logger().debug(f"Received odometry data: {data}")
         except Exception as e:
             self.get_logger().error(f"Failed to parse odometry JSON: {e}")
 
     def gui_update_callback(self):
         """
-        Timer callback at 5 Hz to refresh the GUI.
-        Updates the plots and odometry data.
+        Timer callback at 5 Hz to refresh the GUI. We'll store references
+        to our figure/axes in the node or pass them in via a global.
+        For minimal code, we can set a global GUI reference or static var.
         """
-        if node_gui is not None:
-            node_gui.refresh_gui()
+        # This is a placeholder. The actual GUI updates will happen in the
+        # main "live_feedback.py" code, once we integrate node + GUI. We need
+        # a shared approach or a callback from the outside. We'll handle that
+        # in "main()" below.
+        pass
+
 
 # -------------------------
 # The main function w/ GUI
 # -------------------------
-class LiveFeedbackGUI:
-    def __init__(self, node):
-        self.node = node
+def main():
+    rclpy.init()
+    node = LiveFeedbackNode(freq_hz=5.0)
 
-        # Create the Tkinter UI
-        self.root = tk.Tk()
-        self.root.title("Live Feedback (5 Hz)")
+    # We'll create a background spin thread
+    spin_thread = threading.Thread(target=rclpy.spin, args=(node,), daemon=True)
+    spin_thread.start()
 
-        # 3 subplots in one row
-        self.fig = Figure(figsize=(15, 5), dpi=100)
-        self.ax1, self.ax2, self.ax3 = self.fig.subplots(1, 3)
+    # Now create the Tkinter UI
+    root = tk.Tk()
+    root.title("Live Feedback (5 Hz)")
 
-        # Create a canvas
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.root)
-        self.canvas_widget = self.canvas.get_tk_widget()
-        self.canvas_widget.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+    # 3 subplots in one row
+    fig = Figure(figsize=(12,4), dpi=100)
+    (ax1, ax2, ax3) = fig.subplots(1,3)
 
-        # Create dummy images
-        dummy_img = np.zeros((10,10), dtype=float)
-        self.im_norm    = self.ax1.imshow(dummy_img, cmap='gray', vmin=0, vmax=1)
-        self.ax1.set_title("Normalized")
+    # Create a canvas
+    canvas = FigureCanvasTkAgg(fig, master=root)
+    canvas_widget = canvas.get_tk_widget()
+    canvas_widget.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-        self.im_raw     = self.ax2.imshow(dummy_img, cmap='gray', vmin=0, vmax=100)
-        self.ax2.set_title("Raw [0..100]")
+    # Create dummy images
+    dummy_img = np.zeros((10,10), dtype=float)
+    im_norm    = ax1.imshow(dummy_img, cmap='gray', vmin=0, vmax=1)
+    ax1.set_title("Normalized")
 
-        self.im_filt    = self.ax3.imshow(dummy_img, cmap='gray', vmin=0, vmax=100)
-        self.ax3.set_title("Filtered")
+    im_raw     = ax2.imshow(dummy_img, cmap='gray', vmin=0, vmax=100)
+    ax2.set_title("Raw [0..100]")
 
-        # A small label to show odometry
-        self.odom_label = tk.Label(self.root, text="No odom yet", font=("Arial", 10))
-        self.odom_label.pack(side=tk.TOP, pady=5)
+    im_filt    = ax3.imshow(dummy_img, cmap='gray', vmin=0, vmax=100)
+    ax3.set_title("Filtered")
 
-        # Param area
-        self.param_frame = tk.Frame(self.root)
-        self.param_frame.pack(side=tk.TOP, pady=5)
+    # A small label to show odometry
+    odom_label = tk.Label(root, text="No odom yet", font=("Arial", 10))
+    odom_label.pack(side=tk.TOP, pady=5)
 
-        # First Threshold
-        tk.Label(self.param_frame, text="First Threshold").grid(row=0, column=0, padx=5)
-        self.ent_first_threshold = tk.Entry(self.param_frame, width=6)
-        self.ent_first_threshold.insert(0, str(node.first_threshold))
-        self.ent_first_threshold.grid(row=0, column=1)
+    # Param area
+    param_frame = tk.Frame(root)
+    param_frame.pack(side=tk.TOP, pady=5)
 
-        # Filter Boost
-        tk.Label(self.param_frame, text="Filter Boost").grid(row=0, column=2, padx=5)
-        self.ent_filter_boost = tk.Entry(self.param_frame, width=6)
-        self.ent_filter_boost.insert(0, str(node.filter_boost))
-        self.ent_filter_boost.grid(row=0, column=3)
+    tk.Label(param_frame, text="First Threshold").grid(row=0, column=0, padx=5)
+    ent_first_threshold = tk.Entry(param_frame, width=6)
+    ent_first_threshold.insert(0, str(node.first_threshold))
+    ent_first_threshold.grid(row=0, column=1)
 
-        # Filter Sigma
-        tk.Label(self.param_frame, text="Filter Sigma").grid(row=1, column=0, padx=5)
-        self.ent_filter_sigma = tk.Entry(self.param_frame, width=6)
-        self.ent_filter_sigma.insert(0, str(node.filter_sigma))
-        self.ent_filter_sigma.grid(row=1, column=1)
+    tk.Label(param_frame, text="Filter Boost").grid(row=0, column=2, padx=5)
+    ent_filter_boost = tk.Entry(param_frame, width=6)
+    ent_filter_boost.insert(0, str(node.filter_boost))
+    ent_filter_boost.grid(row=0, column=3)
 
-        # Second Threshold
-        tk.Label(self.param_frame, text="Second Threshold").grid(row=1, column=2, padx=5)
-        self.ent_second_threshold = tk.Entry(self.param_frame, width=6)
-        self.ent_second_threshold.insert(0, str(node.second_thresh))
-        self.ent_second_threshold.grid(row=1, column=3)
+    tk.Label(param_frame, text="Filter Sigma").grid(row=1, column=0, padx=5)
+    ent_filter_sigma = tk.Entry(param_frame, width=6)
+    ent_filter_sigma.insert(0, str(node.filter_sigma))
+    ent_filter_sigma.grid(row=1, column=1)
 
-        # Save Params Button
-        self.btn_save_params = tk.Button(self.param_frame, text="Save Params", command=self.save_params)
-        self.btn_save_params.grid(row=2, column=0, columnspan=4, pady=5)
+    tk.Label(param_frame, text="Second Threshold").grid(row=1, column=2, padx=5)
+    ent_second_threshold = tk.Entry(param_frame, width=6)
+    ent_second_threshold.insert(0, str(node.second_thresh))
+    ent_second_threshold.grid(row=1, column=3)
 
-    def save_params(self):
-        """Save filter parameters from the GUI entries to the node."""
+    def save_params():
         try:
-            p1 = float(self.ent_first_threshold.get())
-            p2 = float(self.ent_filter_boost.get())
-            p3 = float(self.ent_filter_sigma.get())
-            p4 = float(self.ent_second_threshold.get())
-            self.node.first_threshold = p1
-            self.node.filter_boost    = p2
-            self.node.filter_sigma    = p3
-            self.node.second_thresh   = p4
-            self.node.save_params()
-            print(f"Saved params: {p1}, {p2}, {p3}, {p4}")
+            node.first_threshold = float(ent_first_threshold.get())
+            node.filter_boost    = float(ent_filter_boost.get())
+            node.filter_sigma    = float(ent_filter_sigma.get())
+            node.second_thresh   = float(ent_second_threshold.get())
+            node.save_params()
         except ValueError:
             print("Invalid param input, cannot save.")
 
-    def refresh_gui(self):
-        """Update the plots and odometry label."""
-        print("reached")
-        if self.node.latest_image is not None:
-            img = self.node.latest_image
+    tk.Button(param_frame, text="Save Params", command=save_params).grid(
+        row=2, column=0, columnspan=4, pady=5
+    )
+
+    # We'll define a function that runs at 5 Hz
+    def refresh_gui():
+        if node.latest_image is not None:
+            # 1) Normalized => in [0..1]
+            img = node.latest_image
             max_val = img.max() if img.size > 0 else 0.0
-
-            # Debug: Print max value
-            print(f"[DEBUG] Image max: {max_val:.2f}")
-
             if max_val < 1e-9:
                 norm_img = np.zeros_like(img)
             else:
                 norm_img = img / max_val
 
+            # 2) Raw => [0..100]
             raw_img = img
 
-            # Apply filter
+            # 3) Filtered => apply current node params
             filt_img = filter_image(
                 img,
-                self.node.first_threshold,
-                self.node.filter_boost,
-                self.node.filter_sigma,
-                self.node.second_thresh
+                node.first_threshold,
+                node.filter_boost,
+                node.filter_sigma,
+                node.second_thresh
             )
 
-            # Update Normalized Image
-            self.im_norm.set_data(norm_img)
-            self.ax1.set_title(f"Normalized (max={max_val:.1f})")
-            self.im_norm.set_clim(0, 1)
+            im_norm.set_data(norm_img)
+            ax1.set_title(f"Normalized (max={max_val:.1f})")
+            im_norm.set_clim(0, 1)
 
-            # Update Raw Image
-            self.im_raw.set_data(raw_img)
-            self.ax2.set_title(f"Raw [0..100] (max={raw_img.max():.1f})")
-            self.im_raw.set_clim(0, 100)
+            im_raw.set_data(raw_img)
+            im_raw.set_clim(0, 100)
 
-            # Update Filtered Image
-            self.im_filt.set_data(filt_img)
-            self.ax3.set_title(f"Filtered (max={filt_img.max():.1f}, Spots={np.count_nonzero(filt_img > 0)})")
-            self.im_filt.set_clim(0, 100)
+            im_filt.set_data(filt_img)
+            im_filt.set_clim(0, 100)
 
-            # Refresh the canvas
-            self.canvas.draw()
+        # Show latest odom
+        if node.latest_odom is not None:
+            txt = f"Latest Odom:\n{json.dumps(node.latest_odom, indent=2)}"
+            odom_label.config(text=txt)
 
-        # Update odometry label
-        if self.node.latest_odom is not None:
-            odom_text = (
-                f"Latest Odom:\n"
-                f"Timestamp: {self.node.latest_odom.get('timestamp', 'N/A')}\n"
-                f"Latitude: {self.node.latest_odom.get('latitude', 'N/A')}\n"
-                f"Longitude: {self.node.latest_odom.get('longitude', 'N/A')}\n"
-                f"Altitude: {self.node.latest_odom.get('altitude', 'N/A')}\n"
-                f"Pitch: {self.node.latest_odom.get('pitch', 'N/A'):.2f}\n"
-                f"Roll: {self.node.latest_odom.get('roll', 'N/A'):.2f}\n"
-                f"Yaw: {self.node.latest_odom.get('yaw', 'N/A'):.2f}"
-            )
-            self.odom_label.config(text=odom_text)
+        canvas.draw()
 
-    def run(self):
-        """Run the Tkinter main loop."""
-        self.root.mainloop()
+        # Schedule next refresh
+        root.after(200, refresh_gui)  # 5 Hz => 200 ms
 
-# -------------------------
-# Main function
-# -------------------------
-def main():
-    rclpy.init()
-    node = LiveFeedbackNode(freq_hz=5.0)
-    gui = LiveFeedbackGUI(node)
+    # Kick off the first refresh
+    root.after(200, refresh_gui)
 
-    # Start the GUI in the main thread
-    try:
-        gui.run()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        node.get_logger().info("Shutting down Live Feedback Node...")
+    def on_closing():
+        node.get_logger().info("Shutting down live_feedback.py ...")
         rclpy.shutdown()
+        spin_thread.join(timeout=1.0)
+        root.destroy()
+
+    root.protocol("WM_DELETE_WINDOW", on_closing)
+    root.mainloop()
+
 
 if __name__ == "__main__":
     main()
