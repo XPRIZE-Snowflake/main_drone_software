@@ -139,7 +139,7 @@ class ThermalImageSubscriber(Node):
             self.odom_callback,
             qos_profile
         )
-
+        
         # Publisher for final "thermal + odom" message
         self.combo_pub = self.create_publisher(String, '/thermal_with_odom', 10)
 

@@ -29,6 +29,8 @@ install(TARGETS
 install(PROGRAMS
   scripts/thermal_subscriber.py
   scripts/odometry_publisher.py
+  scripts/live_feedback.py
+  scripts/high_alt_filter.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
