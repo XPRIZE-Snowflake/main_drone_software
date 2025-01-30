@@ -31,9 +31,9 @@ class DynamicKMeans(Node):
     output.param2 = 5.0  # Acceptance radius (meters)
     output.param3 = 0.0  # Pass radius
     output.param4 = math.nan  # Yaw angle (don’t care)
-    output.param5 = 47.3977417  # Latitude
-    output.param6 = 8.5455939   # Longitude
-    output.param7 = 10.0  # Altitude (meters)
+    output.param5 = msg.latitude  # Latitude
+    output.param6 = msg.longitude   # Longitude
+    output.param7 = 20.0  # Altitude (meters)
     output.target_system = 1
     output.target_component = 1
     output.source_system = 1
@@ -47,18 +47,19 @@ class DynamicKMeans(Node):
     Add elements to the clustering object.
     :param elements: A list or NumPy array of 2D points to add.
     """
-    elements = np.array(msg)
-    for element in elements:
-      self.elements = np.vstack([self.elements, element])
-      if self.centroids.shape[0] == 0:
-        # If no centroids exist, add the first one
-        self.centroids = np.array([element])
-      else:
-        # Check distances to all centroids
-        distances = np.linalg.norm(self.centroids - element, axis=1)
-        if np.all(distances > self.max_radius):
-          # Add a new centroid if no centroids are within max_radius
-          self.centroids = np.vstack([self.centroids, element])
+    for element in msg:
+    x, y, _, _ = element  # Unpack the tuple, ignoring longitude and latitude
+    point = np.array([x, y])  # Create a NumPy array with x and y values
+    self.elements = np.vstack([self.elements, element]) if self.elements.size else element  # Add the element to the self.elements array
+    if self.centroids.shape[0] == 0:
+      # If no centroids exist, add the first one
+      self.centroids = np.array([element])
+    else:
+      # Check distances to all centroids
+      distances = np.linalg.norm(self.centroids - element, axis=1)
+      if np.all(distances > self.max_radius):
+        # Add a new centroid if no centroids are within max_radius
+        self.centroids = np.vstack([self.centroids, element])
 
     # Assign each element to the nearest centroid
     self.labels = []
