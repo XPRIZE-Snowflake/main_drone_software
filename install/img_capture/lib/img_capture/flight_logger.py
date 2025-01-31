@@ -1,0 +1,1 @@
+/home/username/ros2_ws/src/img_capture/scripts/flight_logger.py
