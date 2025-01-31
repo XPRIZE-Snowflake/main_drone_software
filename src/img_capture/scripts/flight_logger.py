@@ -136,7 +136,7 @@ class HighAltFilterNode(Node):
         # Save odom
         # convert to DataFrame
         df = pd.DataFrame(self.saved_odom)
-        odom_filename = f"high_alt_odom_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        odom_filename = f"flight_logs/flight_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
         df.to_csv(odom_filename, index=False)
         self.get_logger().info(f"Saved {len(self.saved_odom)} odometry entries to {odom_filename}")
 

@@ -21,7 +21,7 @@ class CustomPoseMsg:
         self.yaw = yaw
 
 class CombinedOdometryPublisher(Node):
-    def __init__(self, save_data=False, max_saved_data_points=1000000):
+    def __init__(self):
         super().__init__('combined_odometry_publisher')
 
         # Initialize variables
@@ -44,22 +44,6 @@ class CombinedOdometryPublisher(Node):
 
         # Timer for periodic publishing at 20 Hz (50 ms interval)
         self.timer = self.create_timer(1.0 / 20.0, self.timer_callback)
-
-        # Create dictionary to save data if enabled
-        self.saved_data = {
-            "timestamp": [],
-            "latitude": [],
-            "longitude": [],
-            "altitude": [],
-            "pitch": [],
-            "roll": [],
-            "yaw": []
-        }
-        self.save_data = save_data
-        self.max_saved_data_points = max_saved_data_points
-
-        # Save start time
-        self.start_time = datetime.now().strftime("%Y:%m:%d-%H:%M:%S")
 
     def timer_callback(self):
         """Timer callback to publish combined odometry data."""
@@ -91,21 +75,6 @@ class CombinedOdometryPublisher(Node):
             yaw=self.yaw
         )
 
-        # Save data if enabled
-        if self.save_data:
-            self.saved_data["timestamp"].append(self.timestamp)
-            self.saved_data["latitude"].append(self.latitude)
-            self.saved_data["longitude"].append(self.longitude)
-            self.saved_data["altitude"].append(self.altitude)
-            self.saved_data["pitch"].append(self.pitch)
-            self.saved_data["roll"].append(self.roll)
-            self.saved_data["yaw"].append(self.yaw)
-
-            # Trim saved data if it exceeds the maximum allowed points
-            if len(self.saved_data["timestamp"]) > self.max_saved_data_points:
-                for key in self.saved_data:
-                    self.saved_data[key].pop(0)
-
         # Convert CustomPoseMsg to JSON string and publish it
         json_str = json.dumps(custom_pose.__dict__)
         msg = String()
@@ -117,20 +86,14 @@ class CombinedOdometryPublisher(Node):
         # Log
         self.get_logger().info(f"timestamp: {self.timestamp}, latitude: {self.latitude}, longitude: {self.longitude}, altitude: {self.altitude}, pitch: {self.pitch}, roll: {self.roll}, yaw: {self.yaw}")
 
-    def save_data_to_csv(self, file_name="odometry_csvs/odometry_data"):
-        """Save saved data to a CSV file."""
-        end_time = datetime.now().strftime("%Y:%m:%d-%H:%M:%S")
-        pd.DataFrame(self.saved_data).to_csv(f"{file_name}_{self.start_time}_to_{end_time}.csv", index=False)
-
 def main(args=None):
     rclpy.init(args=args)
-    node = CombinedOdometryPublisher(save_data=True, max_saved_data_points=1000000)
+    node = CombinedOdometryPublisher()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
         pass
     finally:
-        node.save_data_to_csv(file_name="odometry_csvs/odometry_data")
         node.destroy_node()
         rclpy.shutdown()
 
