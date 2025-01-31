@@ -313,8 +313,8 @@ message(STATUS "Execute custom install script")
 # install("TARGETS" "seekcamera_publisher" "DESTINATION" "lib/img_capture")
 include("/home/username/ros2_ws/build/img_capture/ament_cmake_symlink_install_targets_0_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
 
-# install(PROGRAMS "scripts/flight_logger.py" "scripts/odometry_publisher.py" "scripts/live_feedback.py" "scripts/high_alt_filter.py" "scripts/low_alt_filter.py" "DESTINATION" "lib/img_capture")
-ament_cmake_symlink_install_programs("/home/username/ros2_ws/src/img_capture" PROGRAMS "scripts/flight_logger.py" "scripts/odometry_publisher.py" "scripts/live_feedback.py" "scripts/high_alt_filter.py" "scripts/low_alt_filter.py" "DESTINATION" "lib/img_capture")
+# install(PROGRAMS "scripts/flight_logger.py" "scripts/odometry_publisher.py" "scripts/live_feedback.py" "scripts/high_alt_filter.py" "scripts/low_alt_filter.py" "scripts/sim_odometry_publisher.py" "scripts/sim_seekcamera_publisher.py" "DESTINATION" "lib/img_capture")
+ament_cmake_symlink_install_programs("/home/username/ros2_ws/src/img_capture" PROGRAMS "scripts/flight_logger.py" "scripts/odometry_publisher.py" "scripts/live_feedback.py" "scripts/high_alt_filter.py" "scripts/low_alt_filter.py" "scripts/sim_odometry_publisher.py" "scripts/sim_seekcamera_publisher.py" "DESTINATION" "lib/img_capture")
 
 # install(FILES "/home/username/ros2_ws/build/img_capture/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/img_capture" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")
 ament_cmake_symlink_install_files("/home/username/ros2_ws/src/img_capture" FILES "/home/username/ros2_ws/build/img_capture/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/img_capture" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")

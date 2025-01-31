@@ -1,0 +1,1 @@
+/home/username/ros2_ws/src/img_capture/scripts/sim_seekcamera_publisher.py
