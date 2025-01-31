@@ -27,7 +27,7 @@ install(TARGETS
 
 # Install Python node
 install(PROGRAMS
-  scripts/thermal_subscriber.py
+  scripts/flight_logger.py
   scripts/odometry_publisher.py
   scripts/live_feedback.py
   scripts/high_alt_filter.py
