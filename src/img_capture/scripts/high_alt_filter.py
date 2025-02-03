@@ -254,11 +254,11 @@ class HotspotDetectorNode(Node):
         # }
         # Save them to member variables.
         # --------------------------------------------------------------
-        detection_params = np.load("detection_params.npy", allow_pickle=True)
-        self.first_threshold  = detection_params[0]
-        self.filter_boost = detection_params[0]
-        self.filter_sigma = detection_params[0]
-        self.second_threshold = detection_params[0]
+        detection_params = np.load("detection_params.npy", allow_pickle=True).item()
+        self.first_threshold   = detection_params["first_threshold"]
+        self.filter_boost      = detection_params["filter_boost"]
+        self.filter_sigma      = detection_params["filter_sigma"]
+        self.second_threshold  = detection_params["second_threshold"]
 
         # Camera parameters
         self.camera_dims = np.array([320, 240])       # width=320, height=240
