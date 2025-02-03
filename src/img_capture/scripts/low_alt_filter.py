@@ -147,10 +147,12 @@ class LowAltFilterNode(Node):
         # Convert FOV to radians
         fov_x_rad = np.radians(self.fov_x)
         fov_y_rad = np.radians(self.fov_y)
+        img_width = scaled_img.shape[0]
+        img_height = scaled_img.shape[1]
 
         # Calculate angular offsets
-        theta_x = ((x - (image_width / 2)) / image_width) * fov_x_rad
-        theta_y = ((y - (image_height / 2)) / image_height) * fov_y_rad
+        theta_x = ((hotspot_x - (img_width / 2)) / img_width) * fov_x_rad
+        theta_y = ((hotspot_y - (img_height / 2)) / img_height) * fov_y_rad
         
         meters_per_pixel = altitude / 100.0  # Example: Adjust based on actual camera specs
         offset_x_meters = pixel_offset_x * meters_per_pixel
@@ -162,6 +164,7 @@ class LowAltFilterNode(Node):
         self.get_logger().info(
             f"Hotspot offset (m): X={adjusted_x:.2f}, Y={adjusted_y:.2f}, Alt={altitude:.2f}"
         )
+        ##
 
         self.saved_images.append(scaled_img)
         self.saved_odom.append(best_odom)
