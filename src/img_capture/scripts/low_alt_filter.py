@@ -106,6 +106,7 @@ class LowAltFilterNode(Node):
 
     def img_callback(self, msg):
         self.latest_img_msg = msg
+        self.camera_dims = msg.shape
 
     def odom_callback(self, msg):
         try:
