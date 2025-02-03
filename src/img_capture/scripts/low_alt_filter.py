@@ -88,6 +88,7 @@ class LowAltFilterNode(Node):
         self.fov_x = 56
         self.fov_y = 45
         self.alt = 100
+        self.camera_dims
 
         self.img_sub = self.create_subscription(
             Image, "camera/thermal_image", self.img_callback, 10
