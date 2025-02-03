@@ -15,6 +15,65 @@ from std_msgs.msg import String
 from collections import deque
 from datetime import datetime
 
+
+# -------------------------
+# Filtering function
+# -------------------------
+def filter_image(img, first_threshold, filter_boost, filter_sigma, second_threshold, camera_dims):
+    """
+    1) Zero out values below first_threshold
+    2) Add filter_boost to remaining (non-zero) pixels
+    3) Apply gaussian blur with sigma=filter_sigma
+    4) Zero out values below second_threshold
+    5) Produce visual_img (white=255 where >0, black=0 otherwise)
+    6) Find "hot spots" by repeated max search & clearing around it
+    """
+    # Make a float copy
+    filtered_img = img.astype(float)
+
+    # 1) Apply first threshold
+    filtered_img[filtered_img < first_threshold] = 0
+
+    # 2) Add boost to non-zero
+    mask_nonzero = (filtered_img > 0)
+    filtered_img[mask_nonzero] += filter_boost
+
+    # 3) Gaussian blur
+    filtered_img = gaussian_filter(filtered_img, sigma=filter_sigma)
+
+    # 4) Second threshold
+    filtered_img[filtered_img < second_threshold] = 0
+
+    # 5) Make a visual copy
+    visual_img = filtered_img.copy()
+    visual_img[visual_img > 0] = 255
+
+    # 6) Locate hot spots
+    hot_spots = []
+    weights = []
+    black_out_edge = int(np.ceil(2 * filter_sigma))
+
+    # Make a separate array for “peak finding”
+    search_img = filtered_img.copy()
+
+    while search_img.max() > 0:
+        # find the maximum
+        hot_spot = np.unravel_index(np.argmax(search_img), search_img.shape)
+        # sum of the region near that hotspot
+        lower_x = max(0, hot_spot[0] - black_out_edge)
+        upper_x = min(camera_dims[0], hot_spot[0] + black_out_edge + 1)
+        lower_y = max(0, hot_spot[1] - black_out_edge)
+        upper_y = min(camera_dims[1], hot_spot[1] + black_out_edge + 1)
+
+        weights.append(np.sum(search_img[lower_x:upper_x, lower_y:upper_y]))
+        # zero out that area
+        search_img[lower_x:upper_x, lower_y:upper_y] = 0
+        hot_spots.append(hot_spot)
+
+    return visual_img.astype(np.uint8), np.array(hot_spots).astype(int), np.array(weights)
+
+
+
 class LowAltFilterNode(Node):
     def __init__(self, odom_queue_size=25, freq_hz=3.0):
         super().__init__("low_alt_filter_node")
@@ -24,6 +83,11 @@ class LowAltFilterNode(Node):
         self.saved_images = []
         self.saved_odom = []
         self.latest_img_msg = None
+
+        ## Camera Intrinsic Characteristics ##
+        self.fov_x = 56
+        self.fov_y = 45
+        self.alt = 100
 
         self.img_sub = self.create_subscription(
             Image, "camera/thermal_image", self.img_callback, 10
@@ -72,10 +136,19 @@ class LowAltFilterNode(Node):
             self.get_logger().info("No odom match found for this image. Skipping.")
             return
 
+        ## take odom data and locate hotspots
         altitude = 100 #best_odom.get("altitude", 100)
         pitch = math.radians(best_odom.get("pitch", 0))
         roll = math.radians(best_odom.get("roll", 0))
         yaw = math.radians(best_odom.get("yaw", 0))
+
+        # Convert FOV to radians
+        fov_x_rad = np.radians(self.fov_x)
+        fov_y_rad = np.radians(self.fov_y)
+
+        # Calculate angular offsets
+        theta_x = ((x - (image_width / 2)) / image_width) * fov_x_rad
+        theta_y = ((y - (image_height / 2)) / image_height) * fov_y_rad
         
         meters_per_pixel = altitude / 100.0  # Example: Adjust based on actual camera specs
         offset_x_meters = pixel_offset_x * meters_per_pixel
@@ -105,6 +178,25 @@ class LowAltFilterNode(Node):
                 best_diff = diff
                 best = odom
         return best
+    
+    def calculate_hotspot_distance(x, y, image_width, image_height, fov_x, fov_y, altitude):
+        # Convert FOV to radians
+        fov_x_rad = np.radians(fov_x)
+        fov_y_rad = np.radians(fov_y)
+    
+        # Calculate angular offsets
+        theta_x = ((x - (image_width / 2)) / image_width) * fov_x_rad
+        theta_y = ((y - (image_height / 2)) / image_height) * fov_y_rad
+    
+        # Calculate ground distances
+        dx = altitude * np.tan(theta_x)
+        dy = altitude * np.tan(theta_y)
+    
+        # Euclidean distance from image center
+        distance = np.sqrt(dx**2 + dy**2)
+        return distance
+    
+    def calculate
 
     def save_and_exit(self):
         arr = np.array(self.saved_images, dtype=np.float32)
