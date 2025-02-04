@@ -37,6 +37,7 @@ class SimCombinedOdometryPublisher(Node):
 
         # Determine the publishing frequency from timestamps (which are in microseconds).
         timestamps = self.odom_data[:, 0].astype(np.int64)
+        print(timestamps[:10])
         if timestamps.shape[0] > 1:
             dt_us = np.diff(timestamps)
             avg_dt_us = np.mean(dt_us)

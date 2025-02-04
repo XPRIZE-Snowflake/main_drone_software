@@ -120,8 +120,13 @@ class LowAltFilterNode(Node):
         FOV_y = math.radians(45)  # Example: Adjust based on vertical FOV
         img_width, img_height = msg.width, msg.height
 
-        # Calculate relative hotspot position
-        relative_hotspot = self.calculate_hotspot_location([(hotspot_x, hotspot_y)], (img_width, img_height))
+        # # Calculate relative hotspot position
+        # relative_hotspot = self.calculate_hotspot_location([(hotspot_x, hotspot_y)], (img_width, img_height))
+
+        # # Log results
+        # self.get_logger().info(
+        #     f"Hotspot relative to camera: {relative_hotspot} | Altitude Difference: {altitude_difference:.2f}m"
+        # )
 
         # Convert pixel offset to angle offsets
         angle_offset_x = (pixel_offset_x / img_width) * FOV_x
@@ -138,8 +143,15 @@ class LowAltFilterNode(Node):
         # Rotate by yaw to align with world coordinates
         world_x = adjusted_x * math.cos(yaw) - adjusted_y * math.sin(yaw)
         world_y = adjusted_x * math.sin(yaw) + adjusted_y * math.cos(yaw)
+        
+        self.get_logger().info(f"Hotspot in world coords (m): X={world_x:.2f}, Y={world_y:.2f}, Alt={altitude:.2f}")
 
-        self.get_logger().info(f"Hotspot offset (m): X={world_x:.2f}, Y={world_y:.2f}, Alt={altitude:.2f}")
+        # Calculate relative hotspot position
+        relative_hotspot = self.calculate_hotspot_location([(hotspot_x, hotspot_y)], (img_width, img_height))
+        # Log results
+        self.get_logger().info(
+            f"Hotspot relative to camera: {relative_hotspot} | Altitude Difference: {altitude_difference:.2f}m"
+        )
         
         self.saved_images.append(scaled_img)
         self.saved_odom.append(best_odom)
