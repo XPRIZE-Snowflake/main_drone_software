@@ -28,8 +28,13 @@ class LowAltFilterNode(Node):
         self.saved_images = []
         self.saved_odom = []
         self.latest_img_msg = None
+
         self.home_location = None
         self.sim = False
+        self.pitch =0
+        self.roll = 0
+        self.yaw = 0
+        self.altitude = 0
 
         ## Camera Intrinsic Characteristics ##
         self.fov_x = 56
@@ -57,7 +62,7 @@ class LowAltFilterNode(Node):
         self.timer_ = self.create_timer(self.timer_period, self.timer_callback)
 
         ## Publishers ##
-        hotspot_pub = self.create_publisher(String, 'hotspot_info', 10)
+        self.hotspot_pub = self.create_publisher(String, 'hotspot_info', 10)
 
 
     def img_callback(self, msg):
@@ -105,15 +110,18 @@ class LowAltFilterNode(Node):
         pixel_offset_x, pixel_offset_y = hotspot_x - center_x, hotspot_y - center_y
 
         # ## take odom data and locate hotspots
-        # altitude = 100 
-        altitude = best_odom.get("altitude", 100)
-        pitch = math.radians(best_odom.get("pitch", 0))
-        roll = math.radians(best_odom.get("roll", 0))
-        yaw = math.radians(best_odom.get("yaw", 0))
+        self.altitude = 100 
+        #self.altitude = best_odom.get("altitude", 100)
+        self.pitch = math.radians(best_odom.get("pitch", 0))
+        self.roll = math.radians(best_odom.get("roll", 0))
+        self.yaw = math.radians(best_odom.get("yaw", 0))
 
         # Compare altitude with home location
-        home_altitude = self.home_location.get("altitude", 0)  # Default home altitude
-        altitude_difference = altitude - home_altitude
+        if(self.home_location is None):
+            self.home_altitude = 100
+        else:
+            self.home_altitude = self.home_location.get("altitude", 100)  # Default home altitude
+        altitude_difference = self.altitude - self.home_altitude
 
         # Camera properties
         FOV_x = math.radians(56)  # Example: Adjust based on your camera's FOV (horizontal)
@@ -133,18 +141,18 @@ class LowAltFilterNode(Node):
         angle_offset_y = (pixel_offset_y / img_height) * FOV_y
 
         # Compute ground distances using altitude and pitch
-        dx = altitude * math.tan(angle_offset_x)
-        dy = altitude * math.tan(angle_offset_y)
+        dx = self.altitude * math.tan(angle_offset_x)
+        dy = self.altitude * math.tan(angle_offset_y)
 
         # Apply pitch and roll corrections
-        adjusted_x = dx * math.cos(pitch) + dy * math.sin(roll)
-        adjusted_y = dy * math.cos(roll) - dx * math.sin(pitch)
+        adjusted_x = dx * math.cos(self.pitch) + dy * math.sin(self.roll)
+        adjusted_y = dy * math.cos(self.roll) - dx * math.sin(self.pitch)
 
         # Rotate by yaw to align with world coordinates
-        world_x = adjusted_x * math.cos(yaw) - adjusted_y * math.sin(yaw)
-        world_y = adjusted_x * math.sin(yaw) + adjusted_y * math.cos(yaw)
+        world_x = adjusted_x * math.cos(self.yaw) - adjusted_y * math.sin(self.yaw)
+        world_y = adjusted_x * math.sin(self.yaw) + adjusted_y * math.cos(self.yaw)
         
-        self.get_logger().info(f"Hotspot in world coords (m): X={world_x:.2f}, Y={world_y:.2f}, Alt={altitude:.2f}")
+        self.get_logger().info(f"Hotspot in world coords: X={world_x:.2f}, Y={world_y:.2f}, Alt={self.altitude:.2f}")
 
         # Calculate relative hotspot position
         relative_hotspot = self.calculate_hotspot_location([(hotspot_x, hotspot_y)], (img_width, img_height))
@@ -161,17 +169,29 @@ class LowAltFilterNode(Node):
         # Convert FOV to radians
         fov_x_rad = np.radians(fov_x)
         fov_y_rad = np.radians(fov_y)
+
+        center_x, center_y = image_width / 2, image_height / 2
+        pixel_offset_x = x - center_x
+        pixel_offset_y = y - center_y
     
         # Calculate angular offsets
-        theta_x = ((x - (image_width / 2)) / image_width) * fov_x_rad
-        theta_y = ((y - (image_height / 2)) / image_height) * fov_y_rad
+        theta_x = (pixel_offset_x / image_width)  * fov_x_rad
+        theta_y = (pixel_offset_y / image_height) * fov_y_rad
     
+        # Compute forward distance
+        forward_distance = self.home_altitude / np.cos(self.pitch)  # Adjusted altitude-based distance
+
         # Calculate ground distances
-        dx = altitude * np.tan(theta_x)
-        dy = altitude * np.tan(theta_y)
+        dx = forward_distance * np.tan(theta_x)
+        dy = forward_distance * np.tan(theta_y)
+
+        # Adjust using pitch and roll
+        adjusted_x = dx * np.cos(self.pitch) + dy * np.sin(self.roll)
+        adjusted_y = dy * np.cos(self.roll) - dx * np.sin(self.pitch)
+
+        # Compute final 3D Euclidean distance from the camera to the hotspot
+        distance = np.sqrt(adjusted_x**2 + adjusted_y**2 + self.home_altitude**2)
     
-        # Euclidean distance from image center
-        distance = np.sqrt(dx**2 + dy**2)
         return distance
     
     def calculate_hotspot_location(self, hot_spots, camera_dims):
