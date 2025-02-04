@@ -67,7 +67,15 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/img_capture" TYPE PROGRAM FILES "/home/username/ros2_ws/src/img_capture/scripts/thermal_subscriber.py")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/img_capture" TYPE PROGRAM FILES
+    "/home/username/ros2_ws/src/img_capture/scripts/flight_logger.py"
+    "/home/username/ros2_ws/src/img_capture/scripts/odometry_publisher.py"
+    "/home/username/ros2_ws/src/img_capture/scripts/live_feedback.py"
+    "/home/username/ros2_ws/src/img_capture/scripts/high_alt_filter.py"
+    "/home/username/ros2_ws/src/img_capture/scripts/low_alt_filter.py"
+    "/home/username/ros2_ws/src/img_capture/scripts/sim_odometry_publisher.py"
+    "/home/username/ros2_ws/src/img_capture/scripts/sim_seekcamera_publisher.py"
+    )
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)

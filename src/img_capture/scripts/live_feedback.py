@@ -186,13 +186,13 @@ def main():
 
     # Create dummy images
     dummy_img = np.zeros((10,10), dtype=float)
-    im_norm    = ax1.imshow(dummy_img, cmap='gray', vmin=0, vmax=1)
+    im_norm    = ax1.imshow(dummy_img, cmap='gray', vmin=0, vmax=1, origin="lower")
     ax1.set_title("Normalized")
 
-    im_raw     = ax2.imshow(dummy_img, cmap='gray', vmin=0, vmax=100)
+    im_raw     = ax2.imshow(dummy_img, cmap='gray', vmin=0, vmax=100, origin="lower")
     ax2.set_title("Raw [0..100]")
 
-    im_filt    = ax3.imshow(dummy_img, cmap='gray', vmin=0, vmax=100)
+    im_filt    = ax3.imshow(dummy_img, cmap='gray', vmin=0, vmax=100, origin="lower")
     ax3.set_title("Filtered")
 
     # A small label to show odometry
@@ -246,7 +246,7 @@ def main():
             if max_val < 1e-9:
                 norm_img = np.zeros_like(img)
             else:
-                norm_img = img / max_val
+                norm_img = (img - img.min()) / (max_val - img.min())
 
             # 2) Raw => [0..100]
             raw_img = img

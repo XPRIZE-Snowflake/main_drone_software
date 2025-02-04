@@ -86,30 +86,46 @@ public:
     size_t width  = seekframe_get_width(frame);
     size_t height = seekframe_get_height(frame);
 
-    // Prepare a sensor_msgs::msg::Image
+    // Prepare a sensor_msgs::msg::Image message
     sensor_msgs::msg::Image msg;
-    msg.header.stamp    = this->now();  // or rclcpp::Clock(RCL_ROS_TIME).now()
+    msg.header.stamp    = this->now();  // using current time as header stamp
     msg.header.frame_id = "seek_thermal_frame";
     msg.height          = static_cast<uint32_t>(height);
     msg.width           = static_cast<uint32_t>(width);
 
     // Because PRE_AGC is 16 bits/pixel, publish as "mono16"
-    msg.encoding        = "mono16";
-    msg.is_bigendian    = false;
+    msg.encoding     = "mono16";
+    msg.is_bigendian = false;
     // Each row is width * 2 bytes
-    msg.step            = static_cast<sensor_msgs::msg::Image::_step_type>(width * 2);
+    msg.step         = static_cast<sensor_msgs::msg::Image::_step_type>(width * 2);
 
-    // Resize data
+    // Resize the data buffer (each pixel is 2 bytes)
     msg.data.resize(height * width * 2);
 
-    // Copy out the raw 16-bit pixel data
+    // Retrieve the raw 16-bit pixel data from the frame
     void* frame_data = seekframe_get_data(frame);
     if (!frame_data) {
-      return; // no data
+      return; // no data available
     }
-    std::memcpy(msg.data.data(), frame_data, width * height * 2);
 
-    // Publish
+    // Adjust the data as follows:
+    // 1. Ensure that the first dimension of the image is rows and the second is columns.
+    //    (The sensor_msgs::Image message expects data in row-major order.)
+    // 2. Flip the image vertically so that the coordinate (0,0) is at the bottom left rather than the top left.
+    //    To do this, copy each row from the source, starting with the last row, into the destination.
+    uint8_t* src = static_cast<uint8_t*>(frame_data);
+    uint8_t* dst = msg.data.data();
+    size_t row_size = width * 2; // number of bytes per row (2 bytes per pixel)
+
+    for (size_t row = 0; row < height; ++row) {
+      // Compute the source row index (flipping vertically)
+      size_t src_row = height - 1 - row;
+      std::memcpy(dst + row * row_size,
+                  src + src_row * row_size,
+                  row_size);
+    }
+
+    // Publish the modified image message
     image_pub_->publish(msg);
   }
 
