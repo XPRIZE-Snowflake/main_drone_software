@@ -34,6 +34,7 @@ install(PROGRAMS
   scripts/low_alt_filter.py
   scripts/sim_odometry_publisher.py
   scripts/sim_seekcamera_publisher.py
+  scripts/sim_flight_publisher.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
