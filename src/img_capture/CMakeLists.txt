@@ -32,9 +32,8 @@ install(PROGRAMS
   scripts/live_feedback.py
   scripts/high_alt_filter.py
   scripts/low_alt_filter.py
-  scripts/sim_odometry_publisher.py
-  scripts/sim_seekcamera_publisher.py
   scripts/sim_flight_publisher.py
+  scripts/hot_spot_viewer.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

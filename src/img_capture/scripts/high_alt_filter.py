@@ -1,49 +1,62 @@
 #!/usr/bin/env python3
 
-import os
-import math
-import json
-import numpy as np
-import pandas as pd
-from collections import deque
-from datetime import datetime
-
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import QoSProfile, ReliabilityPolicy
 
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
 
-# ---------------------------------------------------------------------
-# 1) HELPER FUNCTIONS (copy your versions in full).
-#    For brevity, they are shown condensed here:
-# ---------------------------------------------------------------------
+import numpy as np
+import math
+import json
+import time
+import threading
+from collections import deque
+from scipy.ndimage import gaussian_filter
+
+###############################################################################
+# Utilities for GPS <-> ENU conversions
+###############################################################################
 
 def latlon_to_ecef(lat_deg, lon_deg, alt_m):
-    # ... same as your provided function ...
+    """
+    Convert geodetic latitude/longitude/altitude into ECEF (X,Y,Z) in meters.
+    WGS84 ellipsoid.
+    """
+    # Convert degrees to radians
     lat = math.radians(lat_deg)
     lon = math.radians(lon_deg)
+
+    # WGS84 constants
     a = 6378137.0
     f = 1.0 / 298.257223563
-    e2 = 2*f - f*f
+    e2 = 2*f - f*f  # eccentricity^2
+
     sin_lat = math.sin(lat)
     cos_lat = math.cos(lat)
+
+    # Radius of curvature in the prime vertical
     N = a / math.sqrt(1 - e2 * sin_lat*sin_lat)
+
     X = (N + alt_m) * cos_lat * math.cos(lon)
     Y = (N + alt_m) * cos_lat * math.sin(lon)
     Z = (N*(1 - e2) + alt_m) * sin_lat
     return X, Y, Z
 
 def ecef_to_enu(dX, dY, dZ, ref_lat_deg, ref_lon_deg):
-    # ... same as your provided function ...
+    """
+    Rotate ECEF delta coordinates (dX, dY, dZ) into ENU coordinates,
+    given the reference lat/lon in degrees.
+    """
     lat0 = math.radians(ref_lat_deg)
     lon0 = math.radians(ref_lon_deg)
+
     sin_lat0 = math.sin(lat0)
     cos_lat0 = math.cos(lat0)
     sin_lon0 = math.sin(lon0)
     cos_lon0 = math.cos(lon0)
 
+    # Transformation matrix
     r11 = -sin_lon0
     r12 =  cos_lon0
     r13 =  0.0
@@ -56,26 +69,42 @@ def ecef_to_enu(dX, dY, dZ, ref_lat_deg, ref_lon_deg):
     r32 =  cos_lat0*sin_lon0
     r33 =  sin_lat0
 
-    e = r11*dX + r12*dY + r13*dZ
-    n = r21*dX + r22*dY + r23*dZ
-    u = r31*dX + r32*dY + r33*dZ
+    e = r11*dX + r12*dY + r13*dZ  # East
+    n = r21*dX + r22*dY + r23*dZ  # North
+    u = r31*dX + r32*dY + r33*dZ  # Up
     return np.array([e, n, u])
 
+def latlonalt_to_enu(lat_deg, lon_deg, alt_m,
+                     ref_lat_deg, ref_lon_deg, ref_alt_m,
+                     X0, Y0, Z0):
+    """
+    Convert a lat/lon/alt to local ENU, given reference lat/lon/alt
+    (and the precomputed reference ECEF X0, Y0, Z0).
+    """
+    X, Y, Z = latlon_to_ecef(lat_deg, lon_deg, alt_m)
+    dX = X - X0
+    dY = Y - Y0
+    dZ = Z - Z0
+    return ecef_to_enu(dX, dY, dZ, ref_lat_deg, ref_lon_deg)
+
 def ecef_to_latlonalt(X, Y, Z):
-    # ... same as your provided function ...
+    """
+    Convert ECEF X,Y,Z (m) back to geodetic latitude (deg), longitude (deg), altitude (m).
+    """
     a = 6378137.0
-    f = 1.0/298.257223563
-    e2 = 2*f - f*f
-    b = a*(1 - f)
+    f = 1.0 / 298.257223563
+    e2 = 2*f - f*f  # eccentricity^2
+
+    eps = 1e-11
+
     lon = math.atan2(Y, X)
     p = math.sqrt(X*X + Y*Y)
-    eps = 1e-11
 
     lat = math.atan2(Z, p*(1 - e2))
     while True:
         sin_lat = math.sin(lat)
         N = a / math.sqrt(1 - e2*sin_lat*sin_lat)
-        alt = p / math.cos(lat) - N
+        alt = p/math.cos(lat) - N
         new_lat = math.atan2(Z + e2*N*sin_lat, p)
         if abs(new_lat - lat) < eps:
             lat = new_lat
@@ -87,117 +116,57 @@ def ecef_to_latlonalt(X, Y, Z):
     return lat_deg, lon_deg, alt
 
 def enu_to_ecef(e, n, u, ref_lat_deg, ref_lon_deg):
-    # ... same as your provided function ...
+    """
+    Inverse of ecef_to_enu. Convert local ENU (e,n,u) back to ECEF delta (dX,dY,dZ).
+    """
     lat0 = math.radians(ref_lat_deg)
     lon0 = math.radians(ref_lon_deg)
+
     sin_lat0 = math.sin(lat0)
     cos_lat0 = math.cos(lat0)
     sin_lon0 = math.sin(lon0)
     cos_lon0 = math.cos(lon0)
 
-    dX = -sin_lon0*e + -sin_lat0*cos_lon0*n + cos_lat0*cos_lon0*u
-    dY =  cos_lon0*e + -sin_lat0*sin_lon0*n + cos_lat0*sin_lon0*u
-    dZ =                        cos_lat0*n +          sin_lat0*u
+    # Transpose of the matrix in ecef_to_enu
+    dX = -sin_lon0*e - sin_lat0*cos_lon0*n + cos_lat0*cos_lon0*u
+    dY =  cos_lon0*e - sin_lat0*sin_lon0*n + cos_lat0*sin_lon0*u
+    dZ =                     cos_lat0     *n + sin_lat0         *u
     return dX, dY, dZ
 
 def enu_to_latlonalt(e, n, u, ref_lat_deg, ref_lon_deg, ref_alt_m):
+    """
+    Convert ENU back to lat/lon/alt, given a reference lat/lon/alt.
+    """
+    # Reference point in ECEF
     X0, Y0, Z0 = latlon_to_ecef(ref_lat_deg, ref_lon_deg, ref_alt_m)
+    # ENU -> ECEF (delta)
     dX, dY, dZ = enu_to_ecef(e, n, u, ref_lat_deg, ref_lon_deg)
+    # Add the reference
     X = X0 + dX
     Y = Y0 + dY
     Z = Z0 + dZ
     return ecef_to_latlonalt(X, Y, Z)
 
-def pixels_to_world(pixel_coords, camera_dims, fov_deg, pitch_deg, roll_deg, yaw_deg, camera_coords_enu):
-    """
-    Convert pixel coordinates in the 2D thermal image to 2D ground-plane
-    coordinates in the local ENU frame (x=East, y=North), ignoring altitude variations.
-    
-    Inputs:
-    -------
-    - pixel_coords: Nx2 array of (x,y) pixel indices
-    - camera_dims: 2D array [width, height], e.g. (320, 240)
-    - fov_deg: [fov_x_deg, fov_y_deg]
-    - pitch_deg, roll_deg, yaw_deg: camera orientation in degrees
-    - camera_coords_enu: [E, N, U] of the camera in the local ENU frame
-    """
-    # Convert to radians
-    fov_rad = np.radians(fov_deg)   # e.g. [fov_x_rad, fov_y_rad]
-    pitch_rad = np.radians(pitch_deg)
-    roll_rad  = np.radians(roll_deg)
-    yaw_rad   = np.radians(yaw_deg)
-
-    # Rotation matrices
-    R_roll = np.array([
-        [ np.cos(roll_rad), 0, np.sin(roll_rad)],
-        [0,                 1,               0],
-        [-np.sin(roll_rad), 0, np.cos(roll_rad)],
-    ])
-    R_pitch = np.array([
-        [1,               0,                0],
-        [0, np.cos(pitch_rad), -np.sin(pitch_rad)],
-        [0, np.sin(pitch_rad),  np.cos(pitch_rad)],
-    ])
-    R_yaw = np.array([
-        [ np.cos(yaw_rad),  np.sin(yaw_rad), 0],
-        [-np.sin(yaw_rad),  np.cos(yaw_rad), 0],
-        [0,                0,               1],
-    ])
-    R = R_yaw @ R_pitch @ R_roll
-
-    # Pixel coords in [0..(w-1)], [0..(h-1)]
-    # shape: pixel_coords is Nx2
-    w, h = camera_dims
-    # Pixel as fraction of the image dimension (0.0 to 1.0)
-    pixel_ratios = pixel_coords / (camera_dims - 1)  # Nx2
-
-    # Convert fraction to angle offset from center
-    # (pixel_ratios - 0.5) => range [-0.5..+0.5]
-    angle_x = (pixel_ratios[:,0] - 0.5) * fov_rad[0]
-    angle_y = (pixel_ratios[:,1] - 0.5) * fov_rad[1]
-
-    # Direction in camera space
-    sin_ax = np.sin(angle_x)
-    sin_ay = np.sin(angle_y)
-    cos_ax = np.cos(angle_x)
-    cos_ay = np.cos(angle_y)
-    dir_cam_x = sin_ax * cos_ay
-    dir_cam_y = sin_ay
-    dir_cam_z = -cos_ax * cos_ay  # negative to look "down" in front
-
-    # shape => Nx3
-    direction_camera_space = np.stack([dir_cam_x, dir_cam_y, dir_cam_z], axis=-1)
-    direction_camera_space /= np.linalg.norm(direction_camera_space, axis=1, keepdims=True)
-
-    # Rotate to world space
-    direction_world = (R @ direction_camera_space.T).T
-    direction_world /= np.linalg.norm(direction_world, axis=1, keepdims=True)
-
-    # Intersect with ground plane: solve for t s.t. world_z + t*dir_z = 0
-    # But here, camera_coords_enu[2] = camera altitude above ground
-    cam_alt = camera_coords_enu[2]
-    eps = 1e-12
-    t = -cam_alt / (direction_world[:,2] + eps)  # Nx
-
-    # Project to ground plane in ENU
-    ground_x = camera_coords_enu[0] + direction_world[:,0]*t
-    ground_y = camera_coords_enu[1] + direction_world[:,1]*t
-
-    return np.stack([ground_x, ground_y], axis=-1)
-
-# Example thermal-image filter function (adapted).
-from scipy.ndimage import gaussian_filter
+###############################################################################
+# Hotspot filtering
+###############################################################################
 def filter_image(img, first_threshold, filter_boost, filter_sigma, second_threshold):
     """
-    Given a (H,W) thermal image, do a simple threshold->boost->blur->threshold pipeline
-    and then extract "hot spots." Returns (filtered_img, hot_spots, weights).
+    Return (hot_spots, weights).
+    Steps:
+      1) Zero out anything < first_threshold
+      2) Add filter_boost to surviving pixels
+      3) Gaussian blur
+      4) Zero out anything < second_threshold
+      5) Repeatedly pick the max, record coordinate & sum in a small neighborhood,
+         zero that out, repeat.
     """
-    filtered_img = img.astype(float)
+    filtered_img = img.copy()
 
-    # 1) First threshold => zero out below
-    filtered_img[filtered_img < first_threshold] = 0
+    # 1) First threshold
+    filtered_img[filtered_img < first_threshold] = 0.0
 
-    # 2) Boost anything not zero
+    # 2) Boost
     mask = (filtered_img > 0)
     filtered_img[mask] += filter_boost
 
@@ -205,260 +174,346 @@ def filter_image(img, first_threshold, filter_boost, filter_sigma, second_thresh
     filtered_img = gaussian_filter(filtered_img, sigma=filter_sigma)
 
     # 4) Second threshold
-    filtered_img[filtered_img < second_threshold] = 0
+    filtered_img[filtered_img < second_threshold] = 0.0
 
-    # Identify hot spots
+    # 5) Pick hotspots
     hot_spots = []
     weights = []
     black_out_edge = int(np.ceil(2 * filter_sigma))
 
-    tmp = filtered_img.copy()
     while True:
-        val = tmp.max()
-        if val <= 0:
+        max_val = filtered_img.max()
+        if max_val <= 0:
             break
-        max_idx = np.unravel_index(np.argmax(tmp), tmp.shape)
-        hot_spots.append(max_idx)
-        # sum of that region
-        x0, y0 = max_idx
-        lower_x = max(0, x0 - black_out_edge)
-        upper_x = min(tmp.shape[0], x0 + black_out_edge+1)
-        lower_y = max(0, y0 - black_out_edge)
-        upper_y = min(tmp.shape[1], y0 + black_out_edge+1)
-        w = np.sum(tmp[lower_x:upper_x, lower_y:upper_y])
-        weights.append(w)
-        # zero out that region
-        tmp[lower_x:upper_x, lower_y:upper_y] = 0
+        # Argmax
+        hotspot_idx = np.unravel_index(np.argmax(filtered_img), filtered_img.shape)
+        x0, y0 = hotspot_idx
+        # Local sum
+        lx = max(0, x0 - black_out_edge)
+        ux = min(filtered_img.shape[0], x0 + black_out_edge + 1)
+        ly = max(0, y0 - black_out_edge)
+        uy = min(filtered_img.shape[1], y0 + black_out_edge + 1)
+        local_sum = np.sum(filtered_img[lx:ux, ly:uy])
+        weights.append(local_sum)
+        hot_spots.append(hotspot_idx)
+        filtered_img[lx:ux, ly:uy] = 0.0
 
-    hot_spots = np.array(hot_spots, dtype=int)  # shape: (N,2) in (row,col)
-    weights = np.array(weights, dtype=float)
-    return filtered_img, hot_spots, weights
+    hot_spots = np.array(hot_spots).astype(int)   # shape (N,2), row-major
+    weights = np.array(weights)
+    return hot_spots, weights
 
-# ---------------------------------------------------------------------
-# 2) THE NEW NODE
-# ---------------------------------------------------------------------
-class HotspotDetectorNode(Node):
-    def __init__(self, odom_queue_size=25, freq_hz=3.0):
-        super().__init__("hotspot_detector_node")
-        self.get_logger().info("HotspotDetectorNode started.")
+###############################################################################
+# Pixel -> ground-plane projection
+###############################################################################
+def pixels_to_world(pixel_coords, camera_dims, fov_radians, pitch_rad, roll_rad, yaw_rad, camera_coords_enu):
+    """
+    Project pixel coordinates (x,y) onto the ground plane z=0 in local ENU coords.
 
-        # --------------------------------------------------------------
-        # Load detection parameters
-        # (Adjust the filename/path to match your setup)
-        # We'll assume they were stored in a dict with keys matching the usage below.
-        # e.g. detection_params = {
-        #   "first_threshold": 30,
-        #   "filter_boost": 15,
-        #   "filter_sigma": 2.0,
-        #   "second_threshold": 40
-        # }
-        # Save them to member variables.
-        # --------------------------------------------------------------
-        detection_params = np.load("detection_params.npy", allow_pickle=True).item()
-        self.first_threshold   = detection_params["first_threshold"]
-        self.filter_boost      = detection_params["filter_boost"]
-        self.filter_sigma      = detection_params["filter_sigma"]
-        self.second_threshold  = detection_params["second_threshold"]
+    - pitch_rad, roll_rad, yaw_rad are already in radians!
+    - camera_dims = [width, height]
+    - fov_radians = [fov_x (rad), fov_y (rad)]  (Because user said no conversion needed.)
+    - camera_coords_enu = [E, N, U]
+    """
+    fovx_rad = fov_radians[0]
+    fovy_rad = fov_radians[1]
 
-        # Camera parameters
-        self.camera_dims = np.array([320, 240])       # width=320, height=240
-        self.fov = np.array([56.0, 42.0])             # degrees: [FOV_x, FOV_y]
-        self.fixed_camera_tilt = 30.0                 # degrees to add to pitch
+    # Build rotation matrices (already in rad).
+    R_roll = np.array([
+        [ np.cos(roll_rad), 0, np.sin(roll_rad)],
+        [ 0,                1, 0               ],
+        [-np.sin(roll_rad), 0, np.cos(roll_rad)]
+    ])
+    R_pitch = np.array([
+        [1, 0,                0              ],
+        [0, np.cos(pitch_rad), -np.sin(pitch_rad)],
+        [0, np.sin(pitch_rad),  np.cos(pitch_rad)]
+    ])
+    R_yaw = np.array([
+        [ np.cos(yaw_rad),  np.sin(yaw_rad), 0],
+        [-np.sin(yaw_rad),  np.cos(yaw_rad), 0],
+        [ 0,                0,               1]
+    ])
 
-        # Odom queue
-        self.odom_history = deque(maxlen=odom_queue_size)
+    R = R_yaw @ R_pitch @ R_roll  # 3x3
 
-        # Reference ECEF / lat-lon-alt (None until first fix)
-        self.X0 = None
-        self.Y0 = None
-        self.Z0 = None
+    w = camera_dims[0]
+    h = camera_dims[1]
+    px = pixel_coords[:, 0]  # x
+    py = pixel_coords[:, 1]  # y
+
+    # Scale to angles
+    angle_x = (px / (w - 1) - 0.5) * fovx_rad
+    angle_y = (py / (h - 1) - 0.5) * fovy_rad
+
+    sin_ax = np.sin(angle_x)
+    cos_ax = np.cos(angle_x)
+    sin_ay = np.sin(angle_y)
+    cos_ay = np.cos(angle_y)
+
+    # direction in camera frame:
+    dir_x = sin_ax * cos_ay
+    dir_y = sin_ay
+    dir_z = -cos_ax * cos_ay
+
+    dir_cam = np.stack([dir_x, dir_y, dir_z], axis=-1)
+    dir_cam /= np.linalg.norm(dir_cam, axis=1, keepdims=True)
+
+    # rotate to world
+    dir_world = (R @ dir_cam.T).T
+    dir_world /= np.linalg.norm(dir_world, axis=1, keepdims=True)
+
+    cam_e = camera_coords_enu[0]
+    cam_n = camera_coords_enu[1]
+    cam_u = camera_coords_enu[2]
+
+    dz = dir_world[:, 2]
+    # t for z=0 => -cam_u / dz
+    t = -cam_u / dz
+
+    ground_e = cam_e + t * dir_world[:, 0]
+    ground_n = cam_n + t * dir_world[:, 1]
+    return np.stack([ground_e, ground_n], axis=-1)
+
+###############################################################################
+# Main node
+###############################################################################
+class HotSpotNode(Node):
+    def __init__(self):
+        super().__init__("hot_spot_node")
+
+        self.get_logger().info("HotSpotNode is starting...")
+
+        # Load filter parameters from JSON
+        try:
+            detection_params = np.load("detection_params.npy")
+            self.first_threshold   = detection_params[0]
+            self.filter_boost      = detection_params[1]
+            self.filter_sigma      = detection_params[2]
+            self.second_threshold  = detection_params[3]
+        except Exception as e:
+            self.get_logger().error(f"Failed to read detection_params.npy: {e}")
+            # Fallback defaults:
+            self.first_threshold   = 30
+            self.filter_boost      = 5
+            self.filter_sigma      = 2
+            self.second_threshold  = 35
+
+        # ENU reference
         self.ref_lat = None
         self.ref_lon = None
         self.ref_alt = None
+        self.X0 = None
+        self.Y0 = None
+        self.Z0 = None
 
-        # For storing latest image
-        self.latest_img_msg = None
+        # Don’t process images until altitude is at least 30 m above ref
+        self.required_alt_buffer = 30.0
 
-        # Subscribe to the thermal image
-        self.img_sub = self.create_subscription(
+        # Rolling buffer of odometry
+        self.odom_history = deque(maxlen=50)
+
+        # Store only the most recent image
+        self.newest_img_msg = None
+
+        # Publishers
+        self.hotspot_pub = self.create_publisher(
+            String, "/hot_spots", 10
+        )
+
+        # Subscribers
+        self.create_subscription(
             Image,
             "camera/thermal_image",
             self.img_callback,
             10
         )
-
-        # Subscribe to odometry
-        qos_profile = QoSProfile(
-            reliability=ReliabilityPolicy.BEST_EFFORT,
-            depth=10
-        )
-        self.odom_sub = self.create_subscription(
+        self.create_subscription(
             String,
             "/combined_odometry",
             self.odom_callback,
-            qos_profile
+            10
         )
 
-        # Publisher for hot spots
-        self.hotspot_pub = self.create_publisher(String, "/hotspots", 10)
+        # Start a background thread to process images
+        self.processing_thread = threading.Thread(target=self.process_loop, daemon=True)
+        self.processing_thread.start()
 
-        # Create a timer to process images
-        self.timer_period = 1.0 / freq_hz
-        self.timer_ = self.create_timer(self.timer_period, self.timer_callback)
-
-    def img_callback(self, msg):
-        self.latest_img_msg = msg
+        self.get_logger().info("HotSpotNode started successfully.")
 
     def odom_callback(self, msg):
-        """Parse JSON odometry; store in a queue."""
+        """
+        Odom JSON:
+          {
+            "timestamp": <int microseconds>,
+            "latitude": <float deg>,
+            "longitude": <float deg>,
+            "altitude": <float m>,
+            "pitch": <float rad>,
+            "roll": <float rad>,
+            "yaw": <float rad>
+          }
+        """
         try:
             data = json.loads(msg.data)
-            self.odom_history.append(data)
         except Exception as e:
-            self.get_logger().error(f"Failed to parse odom: {e}")
-
-    def timer_callback(self):
-        """Process the latest image at the set frequency."""
-        if self.latest_img_msg is None:
-            return
-        # Convert the image to a 2D np.float32 array scaled [0..100]
-        msg = self.latest_img_msg
-        try:
-            raw_16 = np.frombuffer(msg.data, dtype=np.uint16).reshape(msg.height, msg.width)
-        except ValueError as e:
-            self.get_logger().error(f"Cannot reshape image: {e}")
+            self.get_logger().error(f"Cannot parse odom JSON: {e}")
             return
 
-        scaled_img = (raw_16.astype(np.float32) / 65535.0) * 100.0
-        # Try to find matching odom
-        img_time_us = (msg.header.stamp.sec * 1_000_000) + (msg.header.stamp.nanosec // 1000)
-        best_odom = self.find_closest_odom(img_time_us)
-        if best_odom is None:
-            self.get_logger().info("No odom match found for this image. Skipping.")
-            return
-
-        # If reference hasn't been set, set it now
-        # We assume odom has "lat", "lon", "alt"
-        if self.X0 is None:
-            self.ref_lat = best_odom["lat"]
-            self.ref_lon = best_odom["lon"]
-            self.ref_alt = best_odom["alt"]
+        # If first time, set ENU reference
+        if self.ref_lat is None:
+            self.ref_lat = data["latitude"]
+            self.ref_lon = data["longitude"]
+            self.ref_alt = data["altitude"]
             self.X0, self.Y0, self.Z0 = latlon_to_ecef(self.ref_lat, self.ref_lon, self.ref_alt)
-            self.get_logger().info(f"Reference GPS set to ({self.ref_lat:.6f}, {self.ref_lon:.6f}, {self.ref_alt:.1f} m)")
-
-        # Extract camera position/orientation from odom
-        # We assume best_odom has: lat, lon, alt, pitch, roll, yaw (all in degrees).
-        lat = best_odom["lat"]
-        lon = best_odom["lon"]
-        alt = best_odom["alt"]
-        pitch = best_odom.get("pitch", 0.0)
-        roll  = best_odom.get("roll",  0.0)
-        yaw   = best_odom.get("yaw",   0.0)
-
-        # Add the fixed camera tilt to pitch
-        pitch += self.fixed_camera_tilt
-
-        # Convert (lat,lon,alt) to ENU
-        X, Y, Z = latlon_to_ecef(lat, lon, alt)
-        dX = X - self.X0
-        dY = Y - self.Y0
-        dZ = Z - self.Z0
-        camera_coords_enu = ecef_to_enu(dX, dY, dZ, self.ref_lat, self.ref_lon)
-        # camera_coords_enu => [E, N, U]
-
-        # Filter the image
-        _, hot_spots, weights = filter_image(
-            scaled_img,
-            self.first_threshold,
-            self.filter_boost,
-            self.filter_sigma,
-            self.second_threshold
-        )
-
-        # For each hot spot, convert (row,col) -> (x=col, y=row) so we do x as width
-        if len(hot_spots) == 0:
-            # No hot spots => publish empty list
-            self.publish_hotspots([])
-            self.get_logger().info("No hot spots found in this image.")
-        else:
-            # Convert from (row, col) to (x, y)
-            # row => y, col => x, but your pixels_to_world function expects
-            # pixel_coords in the form [x, y] = [col, row].
-            pixel_coords = []
-            for (r, c) in hot_spots:
-                pixel_coords.append([c, r])
-            pixel_coords = np.array(pixel_coords, dtype=float)
-
-            # Project to ground in local ENU
-            ground_points_enu = pixels_to_world(
-                pixel_coords, 
-                self.camera_dims,
-                self.fov,
-                pitch,
-                roll,
-                yaw,
-                camera_coords_enu
+            self.get_logger().info(
+                f"Reference lat/lon/alt = ({self.ref_lat}, {self.ref_lon}, {self.ref_alt})"
             )
 
-            # Convert each ground ENU point back to absolute lat/lon
-            # We'll store (lat, lon, e, n) in a list
-            hotspots_out = []
-            for i, (gx, gy) in enumerate(ground_points_enu):
-                # e = gx, n = gy
-                e = gx
-                n = gy
-                u = 0.0  # ground level (assuming same reference altitude)
-                lat_out, lon_out, alt_out = enu_to_latlonalt(
-                    e, n, u,
-                    self.ref_lat, self.ref_lon, self.ref_alt
-                )
-                hotspots_out.append( (lat_out, lon_out, gx, gy) )
+        self.odom_history.append(data)
 
-            # Publish them
-            self.publish_hotspots(hotspots_out)
-            self.get_logger().info(f"Detected {len(hot_spots)} hot spots and published them.")
+    def img_callback(self, msg):
+        """
+        Each image's header.stamp is also in microseconds (sec/nsec chosen by publisher).
+        We just store the newest image.
+        """
+        self.newest_img_msg = msg
 
-        # Mark image as consumed
-        self.latest_img_msg = None
+    def process_loop(self):
+        CAMERA_DIMS = np.array([320, 240])  # Example: 320x240
+        # If your actual FOV is 56°,42° *in radians*, that's about 0.977... & 0.733...
+        # or if your code is actually passing them in degrees, you can do np.radians below.
+        # But user says they're already in radians. We'll store them as numeric rad values:
+        CAMERA_FOV = np.array([0.97738438, 0.73303829])  # ~ 56°, 42° in radians
 
-    def find_closest_odom(self, img_time_us):
-        if not self.odom_history:
-            return None
-        best = None
-        best_diff = float('inf')
-        for odom in self.odom_history:
-            if "timestamp" not in odom:
+        while rclpy.ok():
+            if self.newest_img_msg is None:
+                time.sleep(0.01)
                 continue
-            diff = abs(odom["timestamp"] - img_time_us)
+
+            msg = self.newest_img_msg
+            self.newest_img_msg = None
+
+            if len(self.odom_history) == 0:
+                self.get_logger().warn("No odometry yet - skipping this image.")
+                continue
+
+            # Convert image to float [0..100]
+            try:
+                img_16 = np.frombuffer(msg.data, dtype=np.uint16).reshape(msg.height, msg.width)
+            except ValueError as e:
+                self.get_logger().error(f"Cannot reshape image: {e}")
+                continue
+
+            img_float = (img_16.astype(float) / 65535.0) * 100.0
+
+            # Extract the image timestamp in microseconds
+            # (Assuming the publisher set sec/nanosec so that this is consistent.)
+            img_time_us = msg.header.stamp.sec * 1_000_000 + (msg.header.stamp.nanosec // 1000)
+
+            # Find best odom
+            odom = self.find_closest_odom(img_time_us)
+            if odom is None:
+                self.get_logger().warn("Could not find matching odom. Skipping image.")
+                continue
+
+            # Must have reference lat/lon/alt
+            if self.ref_lat is None or self.X0 is None:
+                self.get_logger().warn("Reference GPS not set yet. Skipping image.")
+                continue
+
+            # Check altitude threshold
+            curr_alt = odom["altitude"]
+            if curr_alt < (self.ref_alt + self.required_alt_buffer):
+                self.get_logger().info(
+                    f"Altitude {curr_alt:.2f} < {self.ref_alt + self.required_alt_buffer:.2f} "
+                    "=> ignoring this image (drone not high enough)."
+                )
+                continue
+
+            # Filter & get hotspots
+            hot_spots, weights = filter_image(
+                img_float,
+                self.first_threshold,
+                self.filter_boost,
+                self.filter_sigma,
+                self.second_threshold
+            )
+
+            if len(hot_spots) == 0:
+                # Publish empty list
+                out_msg = {
+                    "timestamp_us": img_time_us,
+                    "hotspots": []
+                }
+                self.hotspot_pub.publish(String(data=json.dumps(out_msg)))
+                self.get_logger().info(f"No hotspots found (timestamp={img_time_us}).")
+                continue
+
+            # Convert camera location to ENU
+            lat_   = odom["latitude"]
+            lon_   = odom["longitude"]
+            alt_   = odom["altitude"]
+            pitch_ = odom["pitch"]  # radians
+            roll_  = odom["roll"]   # radians
+            yaw_   = odom["yaw"]    # radians
+
+            camera_enu = latlonalt_to_enu(
+                lat_, lon_, alt_,
+                self.ref_lat, self.ref_lon, self.ref_alt,
+                self.X0, self.Y0, self.Z0
+            )
+
+            # Re-map hotspots from (row,col) => (x=col, y=row)
+            pixel_coords = np.stack([hot_spots[:,1], hot_spots[:,0]], axis=-1)
+
+            # Project to ground
+            ground_enu_xy = pixels_to_world(
+                pixel_coords,
+                CAMERA_DIMS,
+                CAMERA_FOV,
+                pitch_, roll_, yaw_,
+                camera_enu
+            )
+
+            # Convert each ENU hotspot to lat/lon
+            final_hotspots = []
+            for i in range(len(ground_enu_xy)):
+                e_val = ground_enu_xy[i,0]
+                n_val = ground_enu_xy[i,1]
+                w_val = weights[i]
+                lat2, lon2, alt2 = enu_to_latlonalt(e_val, n_val, 0.0,
+                                                    self.ref_lat, self.ref_lon, self.ref_alt)
+                final_hotspots.append([lat2, lon2, float(e_val), float(n_val), float(w_val)])
+
+            # Publish
+            out_msg = {
+                "timestamp_us": img_time_us,
+                "hotspots": final_hotspots
+            }
+            self.hotspot_pub.publish(String(data=json.dumps(out_msg)))
+            self.get_logger().info(
+                f"Published {len(final_hotspots)} hotspot(s) (ts={img_time_us})."
+            )
+
+    def find_closest_odom(self, stamp_us):
+        best = None
+        best_diff = float("inf")
+        for od in self.odom_history:
+            diff = abs(od["timestamp"] - stamp_us)
             if diff < best_diff:
                 best_diff = diff
-                best = odom
+                best = od
         return best
-
-    def publish_hotspots(self, hotspot_list):
-        # hotspot_list: list of (lat, lon, x, y)
-        # Publish as JSON
-        # Example: [ [lat1, lon1, e1, n1], [lat2, lon2, e2, n2], ...]
-        msg = String()
-        msg.data = json.dumps(hotspot_list)
-        self.hotspot_pub.publish(msg)
-
-    def save_and_exit(self):
-        # Not strictly required unless you want to save some logs to disk.
-        # For now, do nothing or add code if needed.
-        pass
 
 
 def main(args=None):
     rclpy.init(args=args)
-    node = HotspotDetectorNode(odom_queue_size=25, freq_hz=3.0)
-
+    node = HotSpotNode()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        pass
+        node.get_logger().info("Keyboard interrupt. Shutting down.")
     finally:
-        node.save_and_exit()
         node.destroy_node()
         rclpy.shutdown()
 
