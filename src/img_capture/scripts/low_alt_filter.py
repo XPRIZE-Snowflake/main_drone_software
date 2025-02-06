@@ -21,10 +21,12 @@ from scipy.ndimage import gaussian_filter
 
 # Setting up json string message for location
 class CustomPoseMsg:
-    def __init__(self, x, y, altitude):
-        self.x = x
-        self.y = y
+    def __init__(self, rel_x, rel_y, altitude, world_x, world_y):
+        self.rel_x = rel_x
+        self.rel_y = rel_y
         self.altitude = altitude
+        self.world_x = world_x
+        self.world_y = world_y
 
 
 class LowAltFilterNode(Node):
@@ -124,6 +126,9 @@ class LowAltFilterNode(Node):
         self.pitch = math.radians(best_odom.get("pitch", 0))
         self.roll = math.radians(best_odom.get("roll", 0))
         self.yaw = math.radians(best_odom.get("yaw", 0))
+
+        # world_long = best_odom.get("longitude", 0)
+        # world_lat = best_odom.get("lattitude", 0)
 
         # Compare altitude with home location
         if(self.home_location is None):
@@ -254,18 +259,6 @@ class LowAltFilterNode(Node):
         self.hotspot_pub.publish(msg)
 
 
-    def save_and_exit(self):
-        arr = np.array(self.saved_images, dtype=np.float32)
-        img_filename = f"low_alt_images_{datetime.now().strftime('%Y%m%d_%H%M%S')}.npy"
-        np.save(img_filename, arr)
-        self.get_logger().info(f"Saved {len(self.saved_images)} images to {img_filename}")
-
-        df = pd.DataFrame(self.saved_odom)
-        odom_filename = f"low_alt_odom_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
-        df.to_csv(odom_filename, index=False)
-        self.get_logger().info(f"Saved {len(self.saved_odom)} odometry entries to {odom_filename}")
-
-
 def main(args=None):
     rclpy.init(args=args)
     node = LowAltFilterNode(odom_queue_size=25, freq_hz=3.0)
@@ -275,7 +268,6 @@ def main(args=None):
     except KeyboardInterrupt:
         pass
     finally:
-        node.save_and_exit()
         node.destroy_node()
         rclpy.shutdown()
 

@@ -21,7 +21,7 @@ class CustomPoseMsg:
         self.yaw = yaw
 
 class CombinedOdometryPublisher(Node):
-    def __init__(self):
+    def __init__(self, camera_angle=0.0):
         super().__init__('combined_odometry_publisher')
 
         # Initialize variables
@@ -45,6 +45,9 @@ class CombinedOdometryPublisher(Node):
         # Timer for periodic publishing at 20 Hz (50 ms interval)
         self.timer = self.create_timer(1.0 / 20.0, self.timer_callback)
 
+        # Add camera angle
+        self.camera_angle = camera_angle * 3.141526 / 180
+
     def timer_callback(self):
         """Timer callback to publish combined odometry data."""
         self.publish_combined_odometry()
@@ -53,7 +56,7 @@ class CombinedOdometryPublisher(Node):
         """Callback for VehicleAttitude messages to extract roll, pitch, yaw."""
         w, x, y, z = msg.q  # Quaternion components from VehicleAttitude message
         self.roll = math.atan2(2 * (w * x + y * z), 1 - 2 * (x * x + y * y))
-        self.pitch = math.asin(2 * (w * y - z * x))
+        self.pitch = math.asin(2 * (w * y - z * x)) + self.camera_angle
         self.yaw = math.atan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z))
 
     def gps_position_callback(self, msg):
@@ -88,7 +91,7 @@ class CombinedOdometryPublisher(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = CombinedOdometryPublisher()
+    node = CombinedOdometryPublisher(camera_angle=50.0)
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
