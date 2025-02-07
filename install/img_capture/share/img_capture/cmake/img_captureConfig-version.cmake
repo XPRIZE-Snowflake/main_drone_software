@@ -1,1 +1,0 @@
-/home/username/ros2_ws/build/img_capture/ament_cmake_core/img_captureConfig-version.cmake

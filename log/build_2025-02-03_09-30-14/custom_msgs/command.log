@@ -1,1 +1,0 @@
-Invoking command in '/home/username/ros2_ws/build/custom_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/username/ros2_ws/install/odometry_pkg:/opt/ros/jazzy /usr/bin/cmake /home/username/ros2_ws/src/custom_msgs -DCMAKE_INSTALL_PREFIX=/home/username/ros2_ws/install/custom_msgs

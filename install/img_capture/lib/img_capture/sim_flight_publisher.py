@@ -1,1 +1,0 @@
-/home/username/ros2_ws/src/img_capture/scripts/sim_flight_publisher.py
