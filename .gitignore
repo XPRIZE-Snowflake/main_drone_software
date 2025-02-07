@@ -1,4 +1,27 @@
-# Logs and databases #
-######################
-*.csv
-*.npy
+# ROS2 workspace artifacts
+/build/
+/install/
+/log/
+/**/build/
+/**/install/
+/**/log/
+/build/**/*
+/install/**/*
+/log/**/*
+
+# IDE and config files
+.vscode/
+.idea/
+.config/
+
+# Temporary files
+.ros/
+.colcon/
+*.swp
+*.suo
+
+# Generated files
+src/**/build/
+src/**/msg/
+src/**/srv/
+src/**/action/
