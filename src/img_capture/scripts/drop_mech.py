@@ -36,7 +36,7 @@ class DropMechNode(Node):
         self.y = 0
         self.alt = 0
 
-        self.servo = Servo(25)
+        # self.servo = Servo(25)
         self.openVal = -1
         self.closeVal = 0
 
@@ -54,7 +54,7 @@ class DropMechNode(Node):
             self.hot_location = data
             if math.abs(self.x) < 5 and math.abs(self.y) < 5:
                 self.get_logger().info(f"Drop mech activated")
-                self.servo.value = self.val
+                # self.servo.value = self.val
         except Exception as e:
             self.get_logger().error(f"Failed to parse hotspot data in mech drop code: {e}")
         # self.hot_location = msg
