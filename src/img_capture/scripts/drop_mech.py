@@ -18,8 +18,8 @@ from std_msgs.msg import String
 
 ## Following will be needed to open drop mechanism
 # from gpiozero.pins.pigpio import PiGPIOFactory
-# from gpiozero import Servo
-# #from time import sleep
+from gpiozero import Servo
+from time import sleep
 
 # factory = PiGPIOFactory()
 # servo = Servo(25, pin_factory=factory)
@@ -36,6 +36,10 @@ class DropMechNode(Node):
         self.y = 0
         self.alt = 0
 
+        self.servo = Servo(25)
+        self.openVal = -1
+        self.closeVal = 0
+
         ## Subscribers ##
         self.img_sub = self.create_subscription(
             String, "hotspot_info", self.drop_callback, 10
@@ -50,7 +54,7 @@ class DropMechNode(Node):
             self.hot_location = data
             if math.abs(self.x) < 5 and math.abs(self.y) < 5:
                 self.get_logger().info(f"Drop mech activated")
-                # servo.value = 0.5
+                self.servo.value = self.val
         except Exception as e:
             self.get_logger().error(f"Failed to parse hotspot data in mech drop code: {e}")
         # self.hot_location = msg
