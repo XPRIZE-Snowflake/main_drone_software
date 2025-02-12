@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 
-## comparing home location to world coordinates. distance is constantly around 100
+## module filtering for hotspots and 
+# determines how far left/right, forward/back hotspot is from plane
+
+## comparing home location to world coordinates. 
+## sending hotspot location data to topic
+## drop_mech is recieving the data
+## TODO: sim doesn't give gps locations through odom topic
+##          when fixed low alt only publishes hotspot location when close to waypoint
 
 import os
 import math
@@ -21,12 +28,10 @@ from scipy.ndimage import gaussian_filter
 
 # Setting up json string message for location
 class CustomPoseMsg:
-    def __init__(self, rel_x, rel_y, altitude, world_x, world_y):
-        self.rel_x = rel_x
-        self.rel_y = rel_y
-        self.altitude = altitude
-        self.world_x = world_x
-        self.world_y = world_y
+    def __init__(self, x, y, alt):
+        self.x = x
+        self.y = y
+        self.alt = alt
 
 
 class LowAltFilterNode(Node):
@@ -114,6 +119,7 @@ class LowAltFilterNode(Node):
 
         img_time_us = (msg.header.stamp.sec * 1_000_000) + (msg.header.stamp.nanosec // 1000)
         best_odom = self.find_closest_odom(img_time_us)
+
         if best_odom is None:
             self.get_logger().info("No odom match found for this image. Skipping.")
             return
@@ -127,9 +133,12 @@ class LowAltFilterNode(Node):
         self.roll = math.radians(best_odom.get("roll", 0))
         self.yaw = math.radians(best_odom.get("yaw", 0))
 
+        ## used for debugging purposes
         # world_long = best_odom.get("longitude", 0)
         # world_lat = best_odom.get("lattitude", 0)
-
+        # self.get_logger().info(f"World Location; Lat: {world_lat}, Long: {world_long}")
+        
+        # Alt 70
         # Compare altitude with home location
         if(self.home_location is None):
             self.home_altitude = 1300
@@ -145,6 +154,7 @@ class LowAltFilterNode(Node):
         if(altitude_difference < 30):
             return
         
+
         # Camera properties
         FOV_x = 56
         FOV_y = 42
@@ -162,8 +172,9 @@ class LowAltFilterNode(Node):
         self.get_logger().info(
             f"Relative coords: X:{x:.2f}m, Y: {y:.2f}m, Altitude: {altitude_difference:.2f}m"
         )
-        
-        self.publish_location(x, y, altitude_difference)
+
+        if(altitude_difference > 65):
+            self.publish_location(x, y, altitude_difference)
 
         self.saved_images.append(scaled_img)
         self.saved_odom.append(best_odom)
@@ -247,7 +258,7 @@ class LowAltFilterNode(Node):
         custom_pose = CustomPoseMsg(
             x=hot_x,
             y=hot_y,
-            altitude=hot_alt
+            alt=hot_alt
         )
 
         # Convert CustomPoseMsg to JSON string and publish it

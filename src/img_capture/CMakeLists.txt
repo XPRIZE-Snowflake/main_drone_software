@@ -34,6 +34,7 @@ install(PROGRAMS
   scripts/low_alt_filter.py
   scripts/sim_flight_publisher.py
   scripts/hot_spot_viewer.py
+  scripts/drop_mech.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
