@@ -1,1 +1,0 @@
-/home/username/ros2_ws/src/img_capture/scripts/hot_spot_viewer.py

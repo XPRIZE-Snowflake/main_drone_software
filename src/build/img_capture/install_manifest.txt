@@ -4,8 +4,8 @@
 /home/username/ros2_ws/src/install/img_capture/lib/img_capture/live_feedback.py
 /home/username/ros2_ws/src/install/img_capture/lib/img_capture/high_alt_filter.py
 /home/username/ros2_ws/src/install/img_capture/lib/img_capture/low_alt_filter.py
-/home/username/ros2_ws/src/install/img_capture/lib/img_capture/sim_odometry_publisher.py
-/home/username/ros2_ws/src/install/img_capture/lib/img_capture/sim_seekcamera_publisher.py
+/home/username/ros2_ws/src/install/img_capture/lib/img_capture/sim_flight_publisher.py
+/home/username/ros2_ws/src/install/img_capture/lib/img_capture/hot_spot_viewer.py
 /home/username/ros2_ws/src/install/img_capture/share/ament_index/resource_index/package_run_dependencies/img_capture
 /home/username/ros2_ws/src/install/img_capture/share/ament_index/resource_index/parent_prefix_path/img_capture
 /home/username/ros2_ws/src/install/img_capture/share/img_capture/environment/ament_prefix_path.sh
@@ -21,4 +21,5 @@
 /home/username/ros2_ws/src/install/img_capture/share/img_capture/cmake/img_captureConfig.cmake
 /home/username/ros2_ws/src/install/img_capture/share/img_capture/cmake/img_captureConfig-version.cmake
 /home/username/ros2_ws/src/install/img_capture/share/img_capture/package.xml
+/home/username/ros2_ws/src/install/img_capture/share/img_capture//launch/new_img_capture.launch.py
 /home/username/ros2_ws/src/install/img_capture/share/img_capture//launch/img_capture.launch.py
