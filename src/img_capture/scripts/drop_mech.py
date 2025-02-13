@@ -3,7 +3,7 @@
 ## opens drop mechanism when receives command
 # changes servo value/angle when it recieves true from dropcommand topic
 
-# TODO: pigpio library not installing. need to fix
+# TODO: 
 
 # import os
 import math
@@ -36,9 +36,11 @@ class DropMechNode(Node):
         self.y = 0
         self.alt = 0
 
-        # self.servo = Servo(25)
-        self.openVal = -1
-        self.closeVal = 0
+        self.servo = Servo(25)
+        self.openVal = 1
+        self.closeVal = 0.5
+
+        self.servo.value = self.closeVal
 
         ## Subscribers ##
         self.img_sub = self.create_subscription(
@@ -52,9 +54,9 @@ class DropMechNode(Node):
             self.y = data.get("y", 0)
             self.alt = data.get("alt", 70)
             self.hot_location = data
-            if math.abs(self.x) < 5 and math.abs(self.y) < 5:
+            if self.x < 5 and self.y < 5:
                 self.get_logger().info(f"Drop mech activated")
-                # self.servo.value = self.val
+                self.servo.value = self.openVal
         except Exception as e:
             self.get_logger().error(f"Failed to parse hotspot data in mech drop code: {e}")
         # self.hot_location = msg
