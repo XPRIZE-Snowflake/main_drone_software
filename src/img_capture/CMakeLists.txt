@@ -34,6 +34,8 @@ install(PROGRAMS
   scripts/low_alt_filter.py
   scripts/sim_flight_publisher.py
   scripts/hot_spot_viewer.py
+  scripts/drop_mech.py
+  scripts/kmeans.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -41,5 +43,5 @@ ament_package()
 
 install(DIRECTORY
   launch
-  DESTINATION share/${PROJECT_NAME}/
+  DESTINATION share/${PROJECT_NAME}
 )
