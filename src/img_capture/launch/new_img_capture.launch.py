@@ -20,8 +20,8 @@ def generate_launch_description():
         package='img_capture', executable='sim_flight_publisher.py', name='sim_flight_publisher', output='screen'
     )
     
-    seek_camera_publisher_node = launch_ros.actions.Node(
-        package='img_capture', executable='seek_camera_publisher', name='seek_camera_publisher', output='screen'
+    seekcamera_publisher_node = launch_ros.actions.Node(
+        package='img_capture', executable='seekcamera_publisher', name='seekcamera_publisher', output='screen'
     )
     
     odometry_publisher_python_node = launch_ros.actions.Node(
@@ -51,7 +51,7 @@ def generate_launch_description():
     
     default_group = GroupAction(
         condition=launch.conditions.UnlessCondition(LaunchConfiguration('sim')),
-        actions=[seek_camera_publisher_node, odometry_publisher_python_node],
+        actions=[seekcamera_publisher_node, odometry_publisher_python_node],
     )
     
     logging_group = GroupAction(
