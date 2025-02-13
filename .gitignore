@@ -25,3 +25,8 @@ src/**/build/
 src/**/msg/
 src/**/srv/
 src/**/action/
+
+src/px4_ros_com/scripts/__pycache__
+# sim_data
+sim_data/video_matrix16.npy
+*/video_matrix16.npy
