@@ -22,8 +22,6 @@
 
 # Generated files
 src/**/build/
-src/**/msg/
-src/**/srv/
 src/**/action/
 
 src/px4_ros_com/scripts/__pycache__
