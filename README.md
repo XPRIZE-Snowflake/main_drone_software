@@ -16,7 +16,7 @@ This repository contains the code for the autonomous drones for the XPRIZE Snowf
 # Code Organization: 
 
 ## Src:
-All current and future packages will be found in the src folder.
+All current and future packages will be found in the **/src** folder.
 
 ### custom_msgs
 This folder houses the custom message files for the repository. This will to publish custom message types and recieve the necessary data.
