@@ -3,26 +3,29 @@
 ## opens drop mechanism when receives command
 # changes servo value/angle when it recieves true from dropcommand topic
 
-# TODO: 
+# TODO: install packages if not working
+# sudo apt install python3-gpiozero
+# sudo apt-get install python3-rpi.gpio
+
+## Following will be needed to open drop mechanism and change settings:
+# ros2 topic pub /servo_command std_msgs/msg/String "{data: "open"}"
+# ros2 topic pub /servo_command std_msgs/msg/String "{data: "close"}"
+# ros2 topic pub /servo_command std_msgs/msg/String "{data: "auto"}"
+# ros2 topic pub /servo_command std_msgs/msg/String "{data: "manual"}"
+
 
 # import os
-import math
+#import math
 import json
-import numpy as np
-import pandas as pd
+#import numpy as np
+#import pandas as pd
 import rclpy
 from rclpy.node import Node
 
 from std_msgs.msg import String
 
-
-## Following will be needed to open drop mechanism
-# from gpiozero.pins.pigpio import PiGPIOFactory
 from gpiozero import Servo
 from time import sleep
-
-# factory = PiGPIOFactory()
-# servo = Servo(25, pin_factory=factory)
 
 
 class DropMechNode(Node):
@@ -37,35 +40,56 @@ class DropMechNode(Node):
         self.alt = 0
 
         self.servo = Servo(25)
-        self.openVal = 1
-        self.closeVal = 0.5
-
+        self.openVal = 0.7
+        self.closeVal = -1
         self.servo.value = self.closeVal
+        self.automatic = False
 
         ## Subscribers ##
         self.img_sub = self.create_subscription(
             String, "hotspot_info", self.drop_callback, 10
         )
 
+        self.img_sub = self.create_subscription(
+            String, "servo_command", self.servo_command_callback, 10
+        )
+
     def drop_callback(self, msg):
-        try: 
-            data = json.loads(msg.data)
-            self.x = data.get("x", 0)
-            self.y = data.get("y", 0)
-            self.alt = data.get("alt", 70)
-            self.hot_location = data
-            if self.x < 5 and self.y < 5:
-                self.get_logger().info(f"Drop mech activated")
-                self.servo.value = self.openVal
+        if self.automatic:
+            try: 
+                data = json.loads(msg.data)
+                self.x = data.get("x", 0)
+                self.y = data.get("y", 0)
+                self.alt = data.get("alt", 70)
+                self.hot_location = data
+                if self.x <  5 and self.y < 5:
+                    self.get_logger().info(f"Drop mech activated")
+                    self.servo.value = self.openVal
+            except Exception as e:
+                self.get_logger().error(f"Failed to parse hotspot data in mech drop code: {e}")
+
+    def servo_command_callback(self, msg):
+        try:
+            # using command words
+            command = msg.data.strip().lower()  # Get the string and normalize
+            
+            if command == "auto" :
+                self.automatic = True
+            elif command == "manual" :
+                self.automatic = False
+            elif self.automatic == False:
+                if command == "open":
+                    self.servo.value = self.openVal
+                elif command == "close" :
+                    self.servo.value = self.closeVal
+            # self.newAngle = msg.data
+            # self.get_logger().info(f"topic data: {self.newAngle}")
+            # if(self.newAngle == "1"):
+            #     self.servo.value = self.openVal
+            # if(self.newAngle == "0"):
+            #     self.servo.value = self.closeVal
         except Exception as e:
-            self.get_logger().error(f"Failed to parse hotspot data in mech drop code: {e}")
-        # self.hot_location = msg
-        # # probably use json to unpack data
-        # if msg.data is True:
-        #     ## figure out what position to move the servo to
-        #     #servo.min()
-        #     #servo.max()
-        #     servo.value = 0.5
+            self.get_logger().info(f"Fail to parse user command: {e}")
 	
 
 def main(args=None):
