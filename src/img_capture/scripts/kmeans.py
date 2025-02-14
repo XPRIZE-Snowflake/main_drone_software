@@ -3,6 +3,7 @@
 import rclpy
 from rclpy.node import Node
 import numpy as np
+import json
 from msg.msg import LatLon
 import math
 from std_msgs.msg import String
@@ -23,18 +24,16 @@ class DynamicKMeans(Node):
 
     # Rolling lists for all hotspot coordinates
     self.lat_lon_elements = np.empty((0,2))
-    self.enu_xs = []
-    self.enu_ys = []
 
-    self.create_subscription(String, "/hot_spots", self.add_elements)
-    self.pub = self.create_publisher(Float32, '/fire_gps_pin', 10)
+    self.create_subscription(String, "/hot_spots", self.hotspot_callback)
+    self.pub = self.create_publisher(LatLon, '/fire_gps_pin', 10)
 
-  def send_command(self, msg):
-    output = LatLon()
-    output.latitude = msg.latitude
-    output.longitude = msg.longitude
-    self.pub.publish(output)
-
+  def send_command(self, centroids):
+    for centroid in centroids:
+      msg = LatLon()
+      msg.latitude, msg.longitude = centroid
+      self.get_logger().info(f"Publishing centroid: {msg.latitude}, {msg.longitude}")
+      self.pub.publish(msg)
 
   def hotspot_callback(self, msg):
     """
@@ -43,24 +42,25 @@ class DynamicKMeans(Node):
     try:
         data = json.loads(msg.data)
         hotspots = data.get("hotspots", [])
-        for h in hotspots:
-            lat, lon, ex, ey, w = h
+      for h in hotspots:
+        if len(h) >= 2 and isinstance(h[0], (int, float)) and isinstance(h[1], (int, float)):
+            lat, lon = h[:2]
             new_row = np.array([[lat, lon]])
             self.lat_lon_elements = np.vstack((self.lat_lon_elements, new_row))
+        else:
+            self.get_logger().error(f"Invalid hotspot data: {h}")
 
-        self.get_logger().info(f"Received {len(hotspots)} hotspots (total={len(self.lats)}).")
-        add_elements(self.lat_lon_elements);
+        self.get_logger().info(f"Received {len(hotspots)} hotspots (total={len(self.lat_lon_elements)}).")
+        add_elements(self.lat_lon_elements)
     except Exception as e:
         self.get_logger().error(f"Failed to parse hotspot JSON: {e}")
 
-
-  def add_elements(self):
-    def add_elements(self, elements):
+  def add_elements(self, msg):
     """
     Add elements to the clustering object.
     :param elements: A list or NumPy array of 2D points to add.
     """
-    elements = np.array(elements)
+    elements = np.array(msg)
     for element in elements:
       self.elements = np.vstack([self.elements, element])
       if self.centroids.shape[0] == 0:
@@ -80,7 +80,6 @@ class DynamicKMeans(Node):
       self.labels.append(np.argmin(distances))
     self.labels = np.array(self.labels)
 
-    # Update centroids as the mean of their assigned points
     new_centroids = []
     for i in range(self.centroids.shape[0]):
       points = self.elements[self.labels == i]
@@ -90,13 +89,6 @@ class DynamicKMeans(Node):
         new_centroids.append(self.centroids[i])  # Keep unchanged if no points assigned
 
     self.centroids = np.array(new_centroids)
-
-  def convert_to_coords(self):
-    """
-    Convert the current centroids to a list of Coords messages.
-    :return: A list of Coords messages.
-    """
-    return [Coords(x=self.centroids[i, 0], y=self.centroids[i, 1]) for i in range(self.centroids.shape[0])]
 
   def get_centroids(self):
     """
