@@ -18,9 +18,6 @@ This repository contains the code for the autonomous drones for the XPRIZE Snowf
 ## Src:
 All current and future packages will be found in the **/src** folder.
 
-### custom_msgs
-This folder houses the custom message files for the repository. This will to publish custom message types and recieve the necessary data.
-
 ### img_capture
 Contains the ROS2 nodes and python scripts for the subteams. The **/scripts** folder contains the python scripts to receive and send camera data. The **/src** folder contains the C++ seekcamera_publisher.cpp. This publisher sends the camera images to the ROS network so that our python scripts can filter and gather data.
 
