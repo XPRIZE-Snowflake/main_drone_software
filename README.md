@@ -21,5 +21,9 @@ All current and future packages will be found in the **/src** folder.
 ### img_capture
 Contains the ROS2 nodes and python scripts for the subteams. The **/scripts** folder contains the python scripts to receive and send camera data. The **/src** folder contains the C++ seekcamera_publisher.cpp. This publisher sends the camera images to the ROS network so that our python scripts can filter and gather data.
 
-### new_px4_msgs & new_px4_ros_com
-These use to be nested repositories, but caused extra issues when cloning. We now only use the files themselves. In these folders are everything we need to communicate with the PX4. We can send commands via preset messages.
+### px4_msgs
+This is a nested repository from PX4. From their README: ROS 2 message definitions for the PX4 Autopilot project.
+Building this package generates all the required interfaces to interface ROS 2 nodes with the PX4 internals.
+
+### px4_ros_com
+This is a nested repository from PX4. From their README: This package provides example nodes for exchanging data and commands between ROS2 and PX4. It also provides a library to ease the conversion between ROS2 and PX4 frame conventions. It has a straight dependency on the px4_msgs package.
