@@ -16,18 +16,21 @@ from collections import deque
 from datetime import datetime
 
 """
-'High Alt Filter' node that:
+'Flight Logger' node that:
 - Subscribes to camera/thermal_image + /combined_odometry
 - Queues last N=25 odometry messages
 - Has a timer at 3 Hz that checks for the 'latest image', 
   finds best-match odometry, and stores them in lists.
-- On shutdown (KeyboardInterrupt), saves images (numpy) + odometry (csv).
+- Saves data every second to npy log files
+- On shutdown , saves last image and odom data
+
+Made Feb 23 to ensure data logs even when UAV shutdowns unexpectedly
 """
 
-class HighAltFilterNode(Node):
+class FlightLoggerNode(Node):
     def __init__(self, odom_queue_size=25, freq_hz=3.0):
-        super().__init__("high_alt_filter_node")
-        self.get_logger().info("HighAltFilterNode started.")
+        super().__init__("flight_logger_node")
+        self.get_logger().info("FlightLoggerNode started.")
 
         # Odom queue
         self.odom_history = deque(maxlen=odom_queue_size)
@@ -36,6 +39,14 @@ class HighAltFilterNode(Node):
         self.saved_images = []   # list of 2D NumPy arrays
         self.saved_odom   = []   # list of dictionaries
 
+        # log directory
+        os.makedirs("flight_logs", exist_ok=True)
+
+        # Setup image and odom log files
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        self.img_filename = f"flight_logs/therm_images_{timestamp}.npy"
+        self.odom_filename = f"flight_logs/flight_odom_{timestamp}.csv"
+ 
         # Latest camera msg (None if not arrived yet)
         self.latest_img_msg = None
 
@@ -61,7 +72,9 @@ class HighAltFilterNode(Node):
 
         # Timer at freq_hz => gather data
         self.timer_period = 1.0 / freq_hz
-        self.timer_ = self.create_timer(self.timer_period, self.timer_callback)
+        self.match_timer = self.create_timer(self.timer_period, self.timer_callback)
+        # Timer for 1 sec => log data
+        self.log_timer = self.create_timer(1.0, self.save_periodically)
 
     def img_callback(self, msg):
         """Just store the latest image msg."""
@@ -109,6 +122,22 @@ class HighAltFilterNode(Node):
         # (otherwise we'll store it again next cycle).
         self.latest_img_msg = None
 
+    def save_periodically(self):
+        """Save images and odometry data every second"""
+        if self.saved_images:
+            arr = np.array(self.saved_images, dtype=np.float32)
+            np.save(self.img_filename, arr)  # Overwrites but maintains continuous saving
+            self.get_logger().info(f"Saved {len(self.saved_images)} images to {self.img_filename}")
+
+        if self.saved_odom:
+            df = pd.DataFrame(self.saved_odom)
+            df.to_csv(self.odom_filename, mode='a', header=not os.path.exists(self.odom_filename), index=False)
+            self.get_logger().info(f"Appended {len(self.saved_odom)} odometry entries to {self.odom_filename}")
+
+        # Clear lists after saving to prevent duplication
+        self.saved_images.clear()
+        self.saved_odom.clear()
+
     def find_closest_odom(self, img_time_us):
         """Find odom in self.odom_history with closest 'timestamp' field to img_time_us."""
         if not self.odom_history:
@@ -126,23 +155,14 @@ class HighAltFilterNode(Node):
         return best
 
     def save_and_exit(self):
-        """On shutdown, save images & odom to disk."""
+        """On shutdown, save last images & odom to disk."""
         # Save images
-        arr = np.array(self.saved_images, dtype=np.float32)  # shape = (N, H, W)
-        img_filename = f"flight_logs/high_alt_images_{datetime.now().strftime('%Y%m%d_%H%M%S')}.npy"
-        np.save(img_filename, arr)
-        self.get_logger().info(f"Saved {len(self.saved_images)} images to {img_filename}")
-
-        # Save odom
-        # convert to DataFrame
-        df = pd.DataFrame(self.saved_odom)
-        odom_filename = f"flight_logs/flight_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.npy"
-        np.save(odom_filename, df.values)
-        self.get_logger().info(f"Saved {len(self.saved_odom)} odometry entries to {odom_filename}")
+        self.save_periodically()
+        self.get_logger().info("Final save completed before shutdown")
 
 def main(args=None):
     rclpy.init(args=args)
-    node = HighAltFilterNode(odom_queue_size=25, freq_hz=3.0)
+    node = FlightLoggerNode(odom_queue_size=25, freq_hz=3.0)
 
     try:
         rclpy.spin(node)

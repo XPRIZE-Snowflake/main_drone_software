@@ -39,7 +39,7 @@ class DropMechNode(Node):
         self.y = 0
         self.alt = 0
 
-        self.servo = Servo(25)
+        self.servo = Servo(25) #25 is the output pin number
         self.openVal = 0.7
         self.closeVal = -1
         self.servo.value = self.closeVal

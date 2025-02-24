@@ -31,6 +31,7 @@ install(PROGRAMS
   scripts/odometry_publisher.py
   scripts/live_feedback.py
   scripts/high_alt_filter.py
+  scripts/kmeans.py
   scripts/low_alt_filter.py
   scripts/sim_flight_publisher.py
   scripts/hot_spot_viewer.py
