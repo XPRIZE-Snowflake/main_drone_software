@@ -3,7 +3,6 @@
 import rclpy
 from rclpy.node import Node
 import numpy as np
-from msg.msg import LatLon
 import math
 from std_msgs.msg import String
 
@@ -30,7 +29,7 @@ class DynamicKMeans(Node):
     self.pub = self.create_publisher(Float32, '/fire_gps_pin', 10)
 
   def send_command(self, msg):
-    output = LatLon()
+    output = Float32()
     output.latitude = msg.latitude
     output.longitude = msg.longitude
     self.pub.publish(output)
