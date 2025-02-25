@@ -57,8 +57,9 @@ ros2 run img_capture odometry_publisher.py
 ros2 run img_capture flight_logger.py 
 ros2 run img_capture live_feedback.py
 ```
-Run the last command in Putty, see FullSetupDoc
-For more Field Testing, [go here.] (#running_in_the_field)
+Run the last command in Putty, see FullSetupDoc.
+
+For more Field Testing, [go here](#running-in-the-field).
 
 **Option 3:** Launch files 
 ```
