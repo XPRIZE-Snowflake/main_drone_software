@@ -58,6 +58,7 @@ ros2 run img_capture flight_logger.py
 ros2 run img_capture live_feedback.py
 ```
 Run the last command in Putty, see FullSetupDoc
+For more Field Testing, [go here.] (#running_in_the_field)
 
 **Option 3:** Launch files 
 ```
@@ -92,6 +93,23 @@ Print – both: prints to screen and saves to the logger
 
 4. Shutdown the scripts 
 This command will stop running code and save the log from flight_logger.py: `pgrep -f img_capture | xargs kill –9 ` 
+
+## Running in the Field
+
+**1.** From a different putty terminal run this (also from ros2_ws):
+`ros2 run img_capture live_feedback`
+
+**2.** Here are all the commands to run from ros2_ws in your main terminal:
+```
+nohup ros2 run img_capture seekcamera_publisher
+nohup ros2 run img_capture odometry_publisher
+nohup ros2 run img_capture flight_logger
+```
+Even if you lose wifi or close your first terminal, these nodes will continue running.
+If you lose wifi, you will need to rerun live feedback to get visuals again.
+
+**3.** When you are done with the flight and want to terminate the nohup commands to save the flight, run:
+`pgrep -f img_capture | xargs kill -9`
 
 
 # Code Organization: 
