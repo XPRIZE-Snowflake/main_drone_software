@@ -6,8 +6,8 @@
 ## comparing home location to world coordinates. 
 ## sending hotspot location data to topic
 ## drop_mech is recieving the data
-## TODO: sim doesn't give gps locations through odom topic
-##          when fixed low alt only publishes hotspot location when close to waypoint
+## TODO: Working on saving the hotspot_location sent from the user
+
 
 import os
 import math
@@ -18,12 +18,14 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy
 
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, NavSatFix
 from std_msgs.msg import String
 
 from collections import deque
 from datetime import datetime
 from scipy.ndimage import gaussian_filter
+
+
 
 
 # Setting up json string message for location
@@ -45,6 +47,7 @@ class LowAltFilterNode(Node):
         self.saved_odom = []
         self.latest_img_msg = None
 
+        ## data extracted from topics
         self.home_location = None
         self.home_altitude = 1300
         self.sim = False
@@ -52,6 +55,12 @@ class LowAltFilterNode(Node):
         self.roll  = 0
         self.yaw   = 0
         self.altitude = 0
+
+        ## data sent from User
+        # self.hot_location = None
+        self.user_hot_lat = None
+        self.user_hot_long = None
+        # self.user_hot_alt = None
 
         ## Camera Intrinsic Characteristics ##
         self.fov_x = 56
@@ -72,6 +81,10 @@ class LowAltFilterNode(Node):
         )
         self.odom_sub = self.create_subscription(
             String, "/combined_odometry", self.odom_callback, qos_profile
+        )
+
+        self.hot_sub = self.create_subscription(
+            NavSatFix, "/user_hotspot", self.hot_coord_callback, 10
         )
 
         self.timer_period = 1.0 / freq_hz
@@ -97,6 +110,14 @@ class LowAltFilterNode(Node):
             self.odom_history.append(data)
         except Exception as e:
             self.get_logger().error(f"Failed to parse odom: {e}")
+    
+    def hot_coord_callback(self, msg):
+        # self.hot_location = msg.data
+        self.user_hot_lat = msg.latitude
+        self.user_hot_long = msg.longitude
+        # self.user_hot_alt = msg.altitude
+
+        self.get_logger().info(f"Recieved hotspot location from user - Lat: {self.user_hot_lat}, Long: {self.user_hot_long}")
 
 
     def timer_callback(self):

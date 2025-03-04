@@ -6,6 +6,7 @@ import launch.conditions
 
 
 def generate_launch_description():
+
     sim_arg = DeclareLaunchArgument(
         'sim', default_value='false', description='Set to true to launch sim_flight_publisher.py, otherwise start seekcamera_publisher.cpp and odometry_publisher.py'
     )
@@ -41,7 +42,14 @@ def generate_launch_description():
     )
     
     kmeans_node = launch_ros.actions.Node(
-        package='img_capture', executable='kmeans.py', name='kmeans', output='screen'
+        package='img_capture', 
+        executable='kmeans.py', 
+        name='kmeans', 
+        output='screen', 
+        parameters=[
+            {"max_radius": 15.0},
+            {"min_size": 10}
+        ]
     )
 
     sim_group = GroupAction(

@@ -122,7 +122,7 @@ class CombinedOdometryPublisher(Node):
         self.publisher.publish(json_msg)
 
         # Log (optional)
-        self.get_logger().info(
+        self.get_logger().debug(
             f"GPS timestamp={self.timestamp}, "
             f"lat={self.latitude}, lon={self.longitude}, alt_ellipsoid={self.altitude_ellipsoid}, "
             f"vel_n={self.vel_n_m_s}, vel_e={self.vel_e_m_s}, vel_d={self.vel_d_m_s}, "

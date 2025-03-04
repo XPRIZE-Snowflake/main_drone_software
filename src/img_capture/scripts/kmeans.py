@@ -8,15 +8,20 @@ from std_msgs.msg import String
 from sensor_msgs.msg import NavSatFix
 
 class DynamicKMeans(Node):
-    def __init__(self, max_radius, min_size):
+    def __init__(self):
         """
         Initialize the dynamic k-means object.
         :param max_radius: The maximum radius to consider a point close to a centroid.
         :param min_size: Minimum number of elements required for a centroid to be returned.
         """
         super().__init__('dynamic_kmeans')
-        self.max_radius = max_radius
-        self.min_size = min_size
+
+        self.declare_parameter('max_radius', 10.0)  # Default: 10.0
+        self.declare_parameter('min_size', 5)       # Default: 5
+
+        self.max_radius = self.get_parameter('max_radius').value
+        self.min_size = self.get_parameter('min_size').value
+
         self.centroids = np.empty((0, 2))  # Start with no centroids
         self.elements = np.empty((0, 2))  # Start with no elements
         self.labels = np.array([])  # Store labels for the most recent batch of added elements
@@ -34,7 +39,7 @@ class DynamicKMeans(Node):
         msg.latitude = centroid[0]
         msg.longitude = centroid[1]
         self.pub.publish(msg)
-        self.get_logger().info(f"Published GPS coordinate: lat={centroid[0]}, lon={centroid[1]}")
+        self.get_logger().debug(f"Published GPS coordinate: lat={centroid[0]}, lon={centroid[1]}")
 
     def hotspot_callback(self, msg):
         """
@@ -49,7 +54,7 @@ class DynamicKMeans(Node):
                 new_row = np.array([[lat, lon]])
                 self.lat_lon_elements = np.vstack((self.lat_lon_elements, new_row))
             
-            self.get_logger().info(f"Received {len(hotspots)} new hotspots (total={len(self.lat_lon_elements)}).")
+            self.get_logger().debug(f"Received {len(hotspots)} new hotspots (total={len(self.lat_lon_elements)}).")
             self.add_elements(self.lat_lon_elements)
         except Exception as e:
             self.get_logger().error(f"Failed to parse hotspot JSON: {e}")
@@ -82,7 +87,7 @@ class DynamicKMeans(Node):
                 new_centroids.append(self.centroids[i])  # Keep unchanged if no points assigned
         
         self.centroids = np.array(new_centroids)
-        self.get_logger().info(f"Updated centroids: {self.centroids}")
+        self.get_logger().debug(f"Updated centroids: {self.centroids}")
         self.get_centroids()
 
     def get_centroids(self):
@@ -102,7 +107,7 @@ class DynamicKMeans(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = DynamicKMeans(max_radius=10, min_size=5)
+    node = DynamicKMeans()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
