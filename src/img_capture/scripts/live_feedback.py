@@ -98,12 +98,12 @@ class LiveFeedbackNode(Node):
             qos_profile
         )
 
+        # [ADDED] Publisher to send drop command to the first node
+        self.drop_publisher = self.create_publisher(String, "servo_command", 10)
+
         # Timer at freq_hz to invoke the GUI update callback
         period_s = 1.0 / freq_hz
         self.gui_timer = self.create_timer(period_s, self.gui_update_callback)
-
-        # We'll set up the GUI in a separate function after spin() starts
-        # but we can start it now in constructor if we want.
 
     def load_params(self):
         """Load filter parameters from a .npy file if present."""
@@ -158,7 +158,6 @@ class LiveFeedbackNode(Node):
         # a shared approach or a callback from the outside. We'll handle that
         # in "main()" below.
         pass
-
 
 # -------------------------
 # The main function w/ GUI
@@ -237,7 +236,15 @@ def main():
         row=2, column=0, columnspan=4, pady=5
     )
 
-    # We'll define a function that runs at 5 Hz
+    # [ADDED] Button to publish a drop command
+    def on_drop_button():
+        msg = String()
+        msg.data = "open"  # or whatever triggers your drop
+        node.drop_publisher.publish(msg)
+
+    drop_button = tk.Button(root, text="Trigger Drop", command=on_drop_button)
+    drop_button.pack(side=tk.TOP, pady=5)
+
     def refresh_gui():
         if node.latest_image is not None:
             # 1) Normalized => in [0..1]
@@ -276,7 +283,6 @@ def main():
             odom_label.config(text=txt)
 
         canvas.draw()
-
         # Schedule next refresh
         root.after(200, refresh_gui)  # 5 Hz => 200 ms
 
