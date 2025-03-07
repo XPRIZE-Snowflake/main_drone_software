@@ -53,7 +53,7 @@ class FlightLoggerNode(Node):
         # Subscribe to camera
         self.img_sub = self.create_subscription(
             Image,
-            "camera/thermal_image",
+            "camera/low_pi_thermal_image",
             self.img_callback,
             10
         )
