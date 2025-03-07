@@ -83,6 +83,9 @@ class LiveFeedbackNode(Node):
         # Latest odometry data (stored as a Python dictionary from JSON)
         self.latest_odom = None
 
+        # Latest hotspot location
+        self.hotspot_location = None
+
         # Default filter params
         self.param_file = "detection_params.npy"
         self.first_threshold = 10.0
@@ -109,6 +112,15 @@ class LiveFeedbackNode(Node):
             self.odom_callback,
             qos_profile
         )
+        self.hot_sub = self.create_subscription(
+            String, "hotspot_info", 
+            self.hot_callback, 10
+        )
+
+        #publishers
+        self.drop_mech_pub = self.create_publisher(
+            String, "/move_command", 10
+        )
 
         # Timer at freq_hz => call a GUI update callback
         period_s = 1.0 / freq_hz
@@ -124,7 +136,7 @@ class LiveFeedbackNode(Node):
                 self.filter_sigma     = arr[2]
                 self.second_thresh    = arr[3]
             else:
-                self.get_logger().warn("Param file shape mismatch. Using defaults.")
+                self.get_logger().error("Param file shape mismatch. Using defaults.")
         else:
             # Save defaults if no file
             arr = np.array([self.first_threshold, self.filter_boost,
@@ -161,6 +173,13 @@ class LiveFeedbackNode(Node):
             self.latest_odom = data
         except Exception as e:
             self.get_logger().error(f"Failed to parse odometry JSON: {e}")
+
+    def hot_callback(self, msg):
+        try: 
+            data = json.loads(msg.data)
+            self.hot_location = data
+        except Exception as e:
+            self.get_logger().error(f"Failed to parse hotspot data in mech drop code: {e}")
 
     def gui_update_callback(self):
         """
@@ -210,6 +229,10 @@ def main():
     odom_label = tk.Label(root, text="No odom yet", font=("Arial", 10))
     odom_label.pack(side=tk.TOP, pady=5)
 
+    # The label to show hotspot location
+    hot_label = tk.Label(root, text="No hotspot found", font=("Ariel", 10))
+    hot_label.pack(side=tk.TOP, pady=5)
+
     # Param controls
     param_frame = tk.Frame(root)
     param_frame.pack(side=tk.TOP, pady=5)
@@ -248,6 +271,16 @@ def main():
         row=2, column=0, columnspan=4, pady=5
     )
 
+    def drop_mech():
+        command = String()
+        command.data = "open"
+        node.drop_mech_pub.publish(command)
+        node.get_logger().info(f"Opened drop mechanism")
+    
+    tk.Button(param_frame, text="Drop", command=drop_mech).grid(
+        row=2, column=2, columnspan=4, pady=5
+    )
+
     # GUI refresh function, called ~5 Hz
     def refresh_gui():
         # 1) If we have a new image, update the plots
@@ -284,6 +317,10 @@ def main():
         if node.latest_odom is not None:
             txt = f"Latest Odom:\n{json.dumps(node.latest_odom, indent=2)}"
             odom_label.config(text=txt)
+        # 3) Display hotspot relative location
+        if node.hotspot_location is not None:
+            hot_txt = f"Hotspot location: {json.dumps(node.hot_location, indent=2)}\n"
+            hot_label.config(text=hot_txt)
 
         canvas.draw()
         # Schedule next update

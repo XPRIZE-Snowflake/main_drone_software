@@ -45,7 +45,7 @@ class FlightLoggerNode(Node):
         # Setup image and odom log files
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         self.img_filename = f"flight_logs/therm_images_{timestamp}.npy"
-        self.odom_filename = f"flight_logs/flight_odom_{timestamp}.csv"
+        self.odom_filename = f"flight_logs/flight_odom_{timestamp}.npy"
  
         # Latest camera msg (None if not arrived yet)
         self.latest_img_msg = None
@@ -108,7 +108,7 @@ class FlightLoggerNode(Node):
         best_odom = self.find_closest_odom(img_time_us)
         if best_odom is None:
             # no odom => skip
-            self.get_logger().info("No odom match found for this image. Skipping.")
+            self.get_logger().debug("No odom match found for this image. Skipping.")
             return
 
         # store them
@@ -116,7 +116,7 @@ class FlightLoggerNode(Node):
         self.saved_odom.append(best_odom)
 
         # Optionally log something
-        self.get_logger().info(f"Stored 1 image & matching odom. Now have {len(self.saved_images)} samples.")
+        self.get_logger().debug(f"Stored 1 image & matching odom. Now have {len(self.saved_images)} samples.")
 
         # Mark the image as consumed if you want to skip re-using it 
         # (otherwise we'll store it again next cycle).
@@ -131,12 +131,8 @@ class FlightLoggerNode(Node):
 
         if self.saved_odom:
             df = pd.DataFrame(self.saved_odom)
-            df.to_csv(self.odom_filename, mode='a', header=not os.path.exists(self.odom_filename), index=False)
+            np.save(self.odom_filename, df.values)
             self.get_logger().info(f"Appended {len(self.saved_odom)} odometry entries to {self.odom_filename}")
-
-        # Clear lists after saving to prevent duplication
-        self.saved_images.clear()
-        self.saved_odom.clear()
 
     def find_closest_odom(self, img_time_us):
         """Find odom in self.odom_history with closest 'timestamp' field to img_time_us."""

@@ -11,6 +11,7 @@ import json
 class CombinedOdometryPublisher(Node):
     def __init__(self):
         super().__init__('combined_odometry_publisher')
+        self.get_logger().info("Combined Odometry Publisher started.\n")
 
         # -- Internal storage for raw data
         # We'll store them as Python floats or integers,

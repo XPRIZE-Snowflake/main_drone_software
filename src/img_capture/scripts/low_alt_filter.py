@@ -117,7 +117,7 @@ class LowAltFilterNode(Node):
         self.user_hot_long = msg.longitude
         # self.user_hot_alt = msg.altitude
 
-        self.get_logger().info(f"Recieved hotspot location from user - Lat: {self.user_hot_lat}, Long: {self.user_hot_long}")
+        self.get_logger().debug(f"Recieved hotspot location from user - Lat: {self.user_hot_lat}, Long: {self.user_hot_long}")
 
 
     def timer_callback(self):
@@ -142,7 +142,7 @@ class LowAltFilterNode(Node):
         best_odom = self.find_closest_odom(img_time_us)
 
         if best_odom is None:
-            self.get_logger().info("No odom match found for this image. Skipping.")
+            self.get_logger().debug("No odom match found for this image. Skipping.")
             return
         
         # center_x, center_y = msg.width // 2, msg.height // 2
@@ -190,7 +190,7 @@ class LowAltFilterNode(Node):
             np.array([0, 0, altitude_difference]) )[0]
         
         
-        self.get_logger().info(
+        self.get_logger().debug(
             f"Relative coords: X:{x:.2f}m, Y: {y:.2f}m, Altitude: {altitude_difference:.2f}m"
         )
 

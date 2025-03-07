@@ -15,6 +15,7 @@ class DynamicKMeans(Node):
         :param min_size: Minimum number of elements required for a centroid to be returned.
         """
         super().__init__('dynamic_kmeans')
+        self.get_logger().info("Dynamic K Means Node started.\n")
 
         self.declare_parameter('max_radius', 10.0)  # Default: 10.0
         self.declare_parameter('min_size', 5)       # Default: 5
