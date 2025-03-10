@@ -62,7 +62,7 @@ class DropMechNode(Node):
                 self.y = data.get("y", 0)
                 self.alt = data.get("alt", 70)
                 self.hot_location = data
-                if self.x <  5 and self.y < 5:
+                if abs(self.x) <  5 and abs(self.y) < 5:
                     self.get_logger().info(f"Drop mech activated")
                     self.servo.value = self.openVal
             except Exception as e:
@@ -82,12 +82,7 @@ class DropMechNode(Node):
                     self.servo.value = self.openVal
                 elif command == "close" :
                     self.servo.value = self.closeVal
-            # self.newAngle = msg.data
-            # self.get_logger().info(f"topic data: {self.newAngle}")
-            # if(self.newAngle == "1"):
-            #     self.servo.value = self.openVal
-            # if(self.newAngle == "0"):
-            #     self.servo.value = self.closeVal
+
         except Exception as e:
             self.get_logger().info(f"Fail to parse user command: {e}")
 	

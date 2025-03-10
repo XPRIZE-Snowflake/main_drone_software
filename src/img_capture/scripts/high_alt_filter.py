@@ -329,7 +329,7 @@ class HotSpotNode(Node):
         )
         self.create_subscription(
             String,
-            "/combined_odometry",
+            "/low_alt_combined_odometry",
             self.odom_callback,
             10
         )
@@ -424,7 +424,7 @@ class HotSpotNode(Node):
             # Check altitude threshold
             curr_alt = odom["altitude"]
             if curr_alt < (self.ref_alt + self.required_alt_buffer):
-                self.get_logger().info(
+                self.get_logger().debug(
                     f"Altitude {curr_alt:.2f} < {self.ref_alt + self.required_alt_buffer:.2f} "
                     "=> ignoring this image (drone not high enough)."
                 )

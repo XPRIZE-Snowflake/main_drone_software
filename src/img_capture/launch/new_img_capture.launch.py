@@ -11,7 +11,7 @@ def generate_launch_description():
         description='Set to true to launch sim_flight_publisher.py, otherwise start seekcamera_publisher.cpp and odometry_publisher.py'
     )
     log_arg = DeclareLaunchArgument(
-        'log', default_value='false', 
+        'log', default_value='true', 
         description='Set to true to enable flight_logger.py'
     )
     high_arg = DeclareLaunchArgument(
