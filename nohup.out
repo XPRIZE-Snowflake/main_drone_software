@@ -6992,3 +6992,39 @@ publishing #4: std_msgs.msg.String(data='open')
 [INFO] [1741107026.909550199] [flight_logger_node]: Appended 3 odometry entries to flight_logs/flight_odom_20250304_094919.csv
 [INFO] [1741107026.914701111] [combined_odometry_publisher]: timestamp: 0, latitude: 0.0, longitude: 0.0, altitude: 0.0, pitch: 0.0, roll: 0.0, yaw: 0.0
 [INFO] [1741107026.965107008] [combined_odometry_publisher]: timestamp: 0, latitude: 0.0, longitude: 0.0, altitude: 0.0, pitch: 0.0, roll: 0.0, yaw: 0.0
+Traceback (most recent call last):
+  File "/opt/ros/jazzy/bin/ros2", line 33, in <module>
+    sys.exit(load_entry_point('ros2cli==0.32.2', 'console_scripts', 'ros2')())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/ros2cli/cli.py", line 91, in main
+    rc = extension.main(parser=parser, args=args)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/ros2run/command/run.py", line 70, in main
+    return run_executable(path=path, argv=args.argv, prefix=prefix)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/ros2run/api/__init__.py", line 64, in run_executable
+    process = subprocess.Popen(cmd)
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/usr/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+OSError: [Errno 8] Exec format error: '/home/username/ros2_ws/install/img_capture/lib/img_capture/seekcamera_publisher'
+Traceback (most recent call last):
+  File "/opt/ros/jazzy/bin/ros2", line 33, in <module>
+    sys.exit(load_entry_point('ros2cli==0.32.2', 'console_scripts', 'ros2')())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/ros2cli/cli.py", line 91, in main
+    rc = extension.main(parser=parser, args=args)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/ros2run/command/run.py", line 70, in main
+    return run_executable(path=path, argv=args.argv, prefix=prefix)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/ros2run/api/__init__.py", line 64, in run_executable
+    process = subprocess.Popen(cmd)
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/usr/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+OSError: [Errno 8] Exec format error: '/home/username/ros2_ws/install/img_capture/lib/img_capture/seekcamera_publisher'

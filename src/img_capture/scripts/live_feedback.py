@@ -23,44 +23,54 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from scipy.ndimage import gaussian_filter
 
-# -------------------------
-# Filter function
-# -------------------------
+
+# ----------------------------------------------------
+# Image filtering function (unchanged)
+# ----------------------------------------------------
 def filter_image(img, first_threshold, filter_boost, filter_sigma, second_threshold):
     """
     img is in [0..100] float range.
-    1) Zero out values below first_threshold
-    2) Add filter_boost to remaining (non-zero) pixels
-    3) Apply gaussian blur with sigma=filter_sigma
-    4) Zero out values below second_threshold
-    5) Binarize anything >0 to 100
+    Steps:
+     1) Zero out values below first_threshold
+     2) Add filter_boost to remaining (non-zero) pixels
+     3) Apply gaussian blur with sigma=filter_sigma
+     4) Zero out values below second_threshold
+     5) Binarize anything >0 to 100
     Return the filtered array.
     """
     filtered_img = img.copy()
-    filtered_img[filtered_img < first_threshold] = 0
-    mask = (filtered_img > 0)
+
+    # Step 1
+    filtered_img[filtered_img < first_threshold] = 0.0
+
+    # Step 2
+    mask = (filtered_img > 0.0)
     filtered_img[mask] += filter_boost
+
+    # Step 3
     filtered_img = gaussian_filter(filtered_img, sigma=filter_sigma)
-    filtered_img[filtered_img < second_threshold] = 0
-    # Binarize for display
+
+    # Step 4
+    filtered_img[filtered_img < second_threshold] = 0.0
+
+    # Step 5: binarize
     visual_img = filtered_img.copy()
-    visual_img[visual_img > 0] = 100.0
+    visual_img[visual_img > 0.0] = 100.0
     return visual_img
 
-# -------------------------
-# Node that publishes "live" feedback
-# -------------------------
+
+# ----------------------------------------------------
+# Live Feedback Node
+# ----------------------------------------------------
 class LiveFeedbackNode(Node):
     """
-    Subscribes to camera images (mono16 -> scaled to [0..100]) and odometry.
-    Maintains latest camera and odometry.
-    Has a timer at 5 Hz that updates a GUI with:
-      1) Normalized image (image / image.max)
-      2) Raw scaled image [0..100]
-      3) Filtered image [0..100]
-    Also shows the latest odometry in a label.
-    Has param fields for filter thresholds, etc., with "Save Params" button.
-    No "Update" button. It's all live.
+    Subscribes to:
+      - "camera/thermal_image" (Image messages)
+      - "/combined_odometry" (JSON-encoded String messages from your new publisher)
+
+    Displays:
+      - Three image views (normalized, raw, filtered)
+      - A text label with the entire JSON from the latest odometry
     """
 
     def __init__(self, freq_hz=5.0):
@@ -69,8 +79,12 @@ class LiveFeedbackNode(Node):
 
         # Latest camera frame (None if not received yet)
         self.latest_image = None  # float in [0..100]
-        # Latest odometry data (parsed from JSON)
+
+        # Latest odometry data (stored as a Python dictionary from JSON)
         self.latest_odom = None
+
+        # Latest hotspot location
+        self.hotspot_location = None
 
         # Default filter params
         self.param_file = "detection_params.npy"
@@ -83,30 +97,37 @@ class LiveFeedbackNode(Node):
         # Subscribers
         self.create_subscription(
             Image,
-            "camera/low_pi_thermal_image",
+            "camera/thermal_image",
             self.camera_callback,
             10
         )
+
         qos_profile = QoSProfile(
             reliability=ReliabilityPolicy.BEST_EFFORT,
             depth=10
         )
         self.create_subscription(
             String,
-            "/low_alt_combined_odometry",
+            "/combined_odometry",
             self.odom_callback,
             qos_profile
         )
+        self.hot_sub = self.create_subscription(
+            String, "hotspot_info", 
+            self.hot_callback, 10
+        )
 
-        # [ADDED] Publisher to send drop command to the first node
-        self.drop_publisher = self.create_publisher(String, "servo_command", 10)
+        #publishers
+        self.drop_mech_pub = self.create_publisher(
+            String, "/move_command", 10
+        )
 
-        # Timer at freq_hz to invoke the GUI update callback
+        # Timer at freq_hz => call a GUI update callback
         period_s = 1.0 / freq_hz
         self.gui_timer = self.create_timer(period_s, self.gui_update_callback)
 
     def load_params(self):
-        """Load filter parameters from a .npy file if present."""
+        """Load filter parameters from a .npy file if present, or create with defaults."""
         if os.path.exists(self.param_file):
             arr = np.load(self.param_file, allow_pickle=True)
             if len(arr) == 4:
@@ -115,9 +136,9 @@ class LiveFeedbackNode(Node):
                 self.filter_sigma     = arr[2]
                 self.second_thresh    = arr[3]
             else:
-                self.get_logger().warn("Param file shape mismatch. Using defaults.")
+                self.get_logger().error("Param file shape mismatch. Using defaults.")
         else:
-            # Save defaults
+            # Save defaults if no file
             arr = np.array([self.first_threshold, self.filter_boost,
                             self.filter_sigma, self.second_thresh], dtype=float)
             np.save(self.param_file, arr)
@@ -129,8 +150,8 @@ class LiveFeedbackNode(Node):
         np.save(self.param_file, arr)
         self.get_logger().info(f"Params saved to {self.param_file}")
 
-    def camera_callback(self, msg):
-        """Receive the camera image, convert to float [0..100]."""
+    def camera_callback(self, msg: Image):
+        """Receive the camera image, convert to float in [0..100]."""
         try:
             raw_16 = np.frombuffer(msg.data, dtype=np.uint16).reshape(msg.height, msg.width)
         except ValueError as e:
@@ -139,66 +160,80 @@ class LiveFeedbackNode(Node):
         scaled = (raw_16.astype(float) / 65535.0) * 100.0
         self.latest_image = scaled
 
-    def odom_callback(self, msg):
-        """Store the latest odometry JSON as a dictionary."""
+    def odom_callback(self, msg: String):
+        """
+        Parse JSON from /combined_odometry.
+        Example fields:
+          timestamp, latitude_deg, longitude_deg, altitude_ellipsoid_m,
+          vel_n_m_s, vel_e_m_s, vel_d_m_s, eph, epv, s_variance_m_s,
+          heading_accuracy, qw, qx, qy, qz.
+        """
         try:
             data = json.loads(msg.data)
-            self.latest_odom = data  # store as dictionary
+            self.latest_odom = data
         except Exception as e:
             self.get_logger().error(f"Failed to parse odometry JSON: {e}")
 
+    def hot_callback(self, msg):
+        try: 
+            data = json.loads(msg.data)
+            self.hot_location = data
+        except Exception as e:
+            self.get_logger().error(f"Failed to parse hotspot data in mech drop code: {e}")
+
     def gui_update_callback(self):
         """
-        Timer callback at 5 Hz to refresh the GUI. We'll store references
-        to our figure/axes in the node or pass them in via a global.
-        For minimal code, we can set a global GUI reference or static var.
+        Timer callback at 5 Hz to refresh the GUI.
+        We'll handle the actual drawing in a function in main() that uses Tk + Matplotlib.
         """
-        # This is a placeholder. The actual GUI updates will happen in the
-        # main "live_feedback.py" code, once we integrate node + GUI. We need
-        # a shared approach or a callback from the outside. We'll handle that
-        # in "main()" below.
+        # This node method just runs. The real "drawing" occurs in main().
         pass
 
-# -------------------------
-# The main function w/ GUI
-# -------------------------
+
+# ----------------------------------------------------
+# Main function with Tk GUI
+# ----------------------------------------------------
 def main():
     rclpy.init()
     node = LiveFeedbackNode(freq_hz=5.0)
 
-    # We'll create a background spin thread
+    # Spin in a background thread so that callbacks keep working
     spin_thread = threading.Thread(target=rclpy.spin, args=(node,), daemon=True)
     spin_thread.start()
 
-    # Now create the Tkinter UI
+    # Create a Tkinter window
     root = tk.Tk()
     root.title("Live Feedback (5 Hz)")
 
-    # 3 subplots in one row
+    # Make a 3-subplot figure for (Normalized, Raw, Filtered)
     fig = Figure(figsize=(12,4), dpi=100)
-    (ax1, ax2, ax3) = fig.subplots(1,3)
+    ax1, ax2, ax3 = fig.subplots(1, 3)
 
-    # Create a canvas
     canvas = FigureCanvasTkAgg(fig, master=root)
     canvas_widget = canvas.get_tk_widget()
     canvas_widget.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-    # Create dummy images
+    # Initialize dummy images
     dummy_img = np.zeros((10,10), dtype=float)
-    im_norm    = ax1.imshow(dummy_img, cmap='gray', vmin=0, vmax=1, origin="lower")
+
+    im_norm = ax1.imshow(dummy_img, cmap='gray', vmin=0, vmax=1, origin="lower")
     ax1.set_title("Normalized")
 
-    im_raw     = ax2.imshow(dummy_img, cmap='gray', vmin=0, vmax=100, origin="lower")
+    im_raw = ax2.imshow(dummy_img, cmap='gray', vmin=0, vmax=100, origin="lower")
     ax2.set_title("Raw [0..100]")
 
-    im_filt    = ax3.imshow(dummy_img, cmap='gray', vmin=0, vmax=100, origin="lower")
+    im_filt = ax3.imshow(dummy_img, cmap='gray', vmin=0, vmax=100, origin="lower")
     ax3.set_title("Filtered")
 
-    # A small label to show odometry
+    # A label to show odometry
     odom_label = tk.Label(root, text="No odom yet", font=("Arial", 10))
     odom_label.pack(side=tk.TOP, pady=5)
 
-    # Param area
+    # The label to show hotspot location
+    hot_label = tk.Label(root, text="No hotspot found", font=("Ariel", 10))
+    hot_label.pack(side=tk.TOP, pady=5)
+
+    # Param controls
     param_frame = tk.Frame(root)
     param_frame.pack(side=tk.TOP, pady=5)
 
@@ -236,29 +271,38 @@ def main():
         row=2, column=0, columnspan=4, pady=5
     )
 
-    # [ADDED] Button to publish a drop command
-    def on_drop_button():
-        msg = String()
-        msg.data = "open"  # or whatever triggers your drop
-        node.drop_publisher.publish(msg)
+    def drop_mech():
+        command = String()
+        command.data = "open"
+        node.drop_mech_pub.publish(command)
+        node.get_logger().info(f"Opened drop mechanism")
+    
+    tk.Button(param_frame, text="Drop", command=drop_mech).grid(
+        row=2, column=2, columnspan=4, pady=5
+    )
 
-    drop_button = tk.Button(root, text="Trigger Drop", command=on_drop_button)
-    drop_button.pack(side=tk.TOP, pady=5)
-
+    # GUI refresh function, called ~5 Hz
     def refresh_gui():
+        # 1) If we have a new image, update the plots
         if node.latest_image is not None:
-            # 1) Normalized => in [0..1]
             img = node.latest_image
             max_val = img.max() if img.size > 0 else 0.0
-            if max_val < 1e-9:
-                norm_img = np.zeros_like(img)
-            else:
+
+            # Normalized
+            if max_val > 1e-9:
                 norm_img = (img - img.min()) / (max_val - img.min())
+            else:
+                norm_img = np.zeros_like(img)
 
-            # 2) Raw => [0..100]
-            raw_img = img
+            im_norm.set_data(norm_img)
+            im_norm.set_clim(0, 1)
+            ax1.set_title(f"Normalized (max={max_val:.1f})")
 
-            # 3) Filtered => apply current node params
+            # Raw
+            im_raw.set_data(img)
+            im_raw.set_clim(0, 100)
+
+            # Filtered
             filt_img = filter_image(
                 img,
                 node.first_threshold,
@@ -266,31 +310,27 @@ def main():
                 node.filter_sigma,
                 node.second_thresh
             )
-
-            im_norm.set_data(norm_img)
-            ax1.set_title(f"Normalized (max={max_val:.1f})")
-            im_norm.set_clim(0, 1)
-
-            im_raw.set_data(raw_img)
-            im_raw.set_clim(0, 100)
-
             im_filt.set_data(filt_img)
             im_filt.set_clim(0, 100)
 
-        # Show latest odom
+        # 2) Display latest odometry (raw JSON)
         if node.latest_odom is not None:
             txt = f"Latest Odom:\n{json.dumps(node.latest_odom, indent=2)}"
             odom_label.config(text=txt)
+        # 3) Display hotspot relative location
+        if node.hotspot_location is not None:
+            hot_txt = f"Hotspot location: {json.dumps(node.hot_location, indent=2)}\n"
+            hot_label.config(text=hot_txt)
 
         canvas.draw()
-        # Schedule next refresh
-        root.after(200, refresh_gui)  # 5 Hz => 200 ms
+        # Schedule next update
+        root.after(200, refresh_gui)  # ~5 Hz = 200 ms
 
-    # Kick off the first refresh
+    # Start the periodic GUI update
     root.after(200, refresh_gui)
 
     def on_closing():
-        node.get_logger().info("Shutting down live_feedback.py ...")
+        node.get_logger().info("Shutting down live_feedback_node ...")
         rclpy.shutdown()
         spin_thread.join(timeout=1.0)
         root.destroy()

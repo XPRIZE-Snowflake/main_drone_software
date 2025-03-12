@@ -51,7 +51,7 @@ class DropMechNode(Node):
         )
 
         self.img_sub = self.create_subscription(
-            String, "servo_command", self.servo_command_callback, 10
+            String, "move_command", self.servo_command_callback, 10
         )
 
     def drop_callback(self, msg):

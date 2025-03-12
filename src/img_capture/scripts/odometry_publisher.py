@@ -3,96 +3,137 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy
+
 from px4_msgs.msg import VehicleAttitude, SensorGps
 from std_msgs.msg import String
-import math
 import json
-import pandas as pd
-from datetime import datetime
-
-class CustomPoseMsg:
-    def __init__(self, timestamp, latitude, longitude, altitude, pitch, roll, yaw):
-        self.timestamp = timestamp
-        self.latitude = latitude
-        self.longitude = longitude
-        self.altitude = altitude
-        self.pitch = pitch
-        self.roll = roll
-        self.yaw = yaw
 
 class CombinedOdometryPublisher(Node):
-    def __init__(self, camera_angle=0.0):
+    def __init__(self):
         super().__init__('combined_odometry_publisher')
-        self.get_logger().info("Odometry publisher started")
+        self.get_logger().info("Combined Odometry Publisher started.\n")
 
-        # Initialize variables
-        self.roll = self.pitch = self.yaw = 0.0
-        self.latitude = self.longitude = self.altitude = 0.0
+        # -- Internal storage for raw data
+        # We'll store them as Python floats or integers,
+        # so we don't risk "float32 is not JSON serializable" errors.
         self.timestamp = 0
 
-        # Set up QoS profile for subscriptions (BEST_EFFORT for PX4 topics)
+        # GPS data
+        self.latitude = 0.0
+        self.longitude = 0.0
+        self.altitude_ellipsoid = 0.0
+        self.vel_n_m_s = 0.0
+        self.vel_e_m_s = 0.0
+        self.vel_d_m_s = 0.0
+        self.eph = 0.0
+        self.epv = 0.0
+        self.s_variance_m_s = 0.0
+        self.heading_accuracy = 0.0
+
+        # Attitude quaternion
+        self.qw = 1.0
+        self.qx = 0.0
+        self.qy = 0.0
+        self.qz = 0.0
+
+        # Set up QoS profile for PX4 topics (BEST_EFFORT)
         qos_profile = QoSProfile(
             reliability=ReliabilityPolicy.BEST_EFFORT,
             depth=10
         )
 
-        # Create subscriptions
-        self.create_subscription(VehicleAttitude, '/fmu/out/vehicle_attitude', self.attitude_callback, qos_profile)
-        self.create_subscription(SensorGps, '/fmu/out/vehicle_gps_position', self.gps_position_callback, qos_profile)
+        # Subscriptions
+        self.create_subscription(VehicleAttitude,
+                                 '/fmu/out/vehicle_attitude',
+                                 self.attitude_callback,
+                                 qos_profile)
 
-        # Create publisher for combined odometry data
-        self.publisher = self.create_publisher(String, '/low_alt_combined_odometry', 10)
+        self.create_subscription(SensorGps,
+                                 '/fmu/out/vehicle_gps_position',
+                                 self.gps_callback,
+                                 qos_profile)
 
-        # Timer for periodic publishing at 20 Hz (50 ms interval)
+        # Publisher: combined odometry data
+        self.publisher = self.create_publisher(String, '/combined_odometry', 10)
+
+        # Timer for periodic publishing (20 Hz)
         self.timer = self.create_timer(1.0 / 20.0, self.timer_callback)
 
-        # Add camera angle
-        self.camera_angle = camera_angle * 3.141526 / 180
+    def attitude_callback(self, msg: VehicleAttitude):
+        """
+        Callback for VehicleAttitude messages to retrieve raw quaternion (body->NED).
+        """
+        # Ensure we cast each to Python float
+        q = msg.q  # [w, x, y, z]
+        self.qw = float(q[0])
+        self.qx = float(q[1])
+        self.qy = float(q[2])
+        self.qz = float(q[3])
+
+    def gps_callback(self, msg: SensorGps):
+        """
+        Callback for SensorGps messages to retrieve raw data:
+        timestamp, lat, lon, alt ellipsoid, velocities, accuracy, etc.
+        """
+        self.timestamp = int(msg.timestamp)  # microseconds (as int)
+        self.latitude = float(msg.latitude_deg)
+        self.longitude = float(msg.longitude_deg)
+
+        # altitude above ellipsoid
+        self.altitude_ellipsoid = float(msg.altitude_ellipsoid_m)
+
+        # Raw GPS velocities in NED
+        self.vel_n_m_s = float(msg.vel_n_m_s)
+        self.vel_e_m_s = float(msg.vel_e_m_s)
+        self.vel_d_m_s = float(msg.vel_d_m_s)
+
+        # Accuracy metrics
+        self.eph = float(msg.eph)
+        self.epv = float(msg.epv)
+        self.s_variance_m_s = float(msg.s_variance_m_s)
+        self.heading_accuracy = float(msg.heading_accuracy)
 
     def timer_callback(self):
-        """Timer callback to publish combined odometry data."""
-        self.publish_combined_odometry()
+        """
+        Periodic publish of combined data as a JSON string.
+        """
+        data_dict = {
+            "timestamp": self.timestamp,
+            "latitude_deg": self.latitude,
+            "longitude_deg": self.longitude,
+            "altitude_ellipsoid_m": self.altitude_ellipsoid,
+            "vel_n_m_s": self.vel_n_m_s,
+            "vel_e_m_s": self.vel_e_m_s,
+            "vel_d_m_s": self.vel_d_m_s,
+            "eph": self.eph,
+            "epv": self.epv,
+            "s_variance_m_s": self.s_variance_m_s,
+            "heading_accuracy": self.heading_accuracy,
+            "qw": self.qw,
+            "qx": self.qx,
+            "qy": self.qy,
+            "qz": self.qz
+        }
 
-    def attitude_callback(self, msg):
-        """Callback for VehicleAttitude messages to extract roll, pitch, yaw."""
-        w, x, y, z = msg.q  # Quaternion components from VehicleAttitude message
-        self.roll = math.atan2(2 * (w * x + y * z), 1 - 2 * (x * x + y * y))
-        self.pitch = math.asin(2 * (w * y - z * x)) + self.camera_angle
-        self.yaw = math.atan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z))
+        # Convert dict to JSON
+        json_msg = String()
+        json_msg.data = json.dumps(data_dict)
 
-    def gps_position_callback(self, msg):
-        """Callback for SensorGps messages to extract GPS data."""
-        self.latitude = msg.latitude_deg
-        self.longitude = msg.longitude_deg
-        self.altitude = msg.altitude_msl_m
-        self.timestamp = msg.timestamp
+        # Publish
+        self.publisher.publish(json_msg)
 
-    def publish_combined_odometry(self):
-        """Publish combined odometry data as a JSON string."""
-        custom_pose = CustomPoseMsg(
-            timestamp=self.timestamp,
-            latitude=self.latitude,
-            longitude=self.longitude,
-            altitude=self.altitude,
-            pitch=self.pitch,
-            roll=self.roll,
-            yaw=self.yaw
+        # Log (optional)
+        self.get_logger().debug(
+            f"GPS timestamp={self.timestamp}, "
+            f"lat={self.latitude}, lon={self.longitude}, alt_ellipsoid={self.altitude_ellipsoid}, "
+            f"vel_n={self.vel_n_m_s}, vel_e={self.vel_e_m_s}, vel_d={self.vel_d_m_s}, "
+            f"eph={self.eph}, epv={self.epv}, s_variance={self.s_variance_m_s}, heading_acc={self.heading_accuracy}, "
+            f"quat=({self.qw}, {self.qx}, {self.qy}, {self.qz})"
         )
-
-        # Convert CustomPoseMsg to JSON string and publish it
-        json_str = json.dumps(custom_pose.__dict__)
-        msg = String()
-        msg.data = json_str
-
-        # Publish the message on the /low_alt_combined_odometry topic
-        self.publisher.publish(msg)
-
-        # Log
-        self.get_logger().debug(f"timestamp: {self.timestamp}, latitude: {self.latitude}, longitude: {self.longitude}, altitude: {self.altitude}, pitch: {self.pitch}, roll: {self.roll}, yaw: {self.yaw}")
 
 def main(args=None):
     rclpy.init(args=args)
-    node = CombinedOdometryPublisher(camera_angle=50.0)
+    node = CombinedOdometryPublisher()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
