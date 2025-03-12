@@ -83,7 +83,7 @@ class LiveFeedbackNode(Node):
         # Subscribers
         self.create_subscription(
             Image,
-            "camera/low_pi_thermal_image",
+            "camera/thermal_image",
             self.camera_callback,
             10
         )

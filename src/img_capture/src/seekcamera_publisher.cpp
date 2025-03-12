@@ -35,7 +35,7 @@ public:
   : Node("seekcamera_node")
   {
     // Create the ROS publisher
-    image_pub_ = this->create_publisher<sensor_msgs::msg::Image>("camera/low_pi_thermal_image", 10);
+    image_pub_ = this->create_publisher<sensor_msgs::msg::Image>("camera/thermal_image", 10);
 
     // Create and init the Seek Camera Manager
     seekcamera_error_t res = seekcamera_manager_create(&manager_, SEEKCAMERA_IO_TYPE_USB);

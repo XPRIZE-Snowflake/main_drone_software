@@ -323,7 +323,7 @@ class HotSpotNode(Node):
         # Subscribers
         self.create_subscription(
             Image,
-            "camera/low_pi_thermal_image",
+            "camera/thermal_image",
             self.img_callback,
             10
         )
