@@ -44,8 +44,8 @@ class FlightLoggerNode(Node):
 
         # Setup image and odom log files
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        self.img_filename = f"flight_logs/therm_images_{timestamp}.npy"
-        self.odom_filename = f"flight_logs/flight_odom_{timestamp}.npy"
+        self.img_filename = f"flight_logs/high_therm_images_{timestamp}.npy"
+        self.odom_filename = f"flight_logs/high_flight_odom_{timestamp}.npy"
  
         # Latest camera msg (None if not arrived yet)
         self.latest_img_msg = None
