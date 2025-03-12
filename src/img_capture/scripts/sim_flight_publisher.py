@@ -32,8 +32,8 @@ class SimCombinedPublisher(Node):
         super().__init__('sim_combined_publisher')
 
         # Publishers
-        self.camera_pub = self.create_publisher(Image, 'camera/low_pi_thermal_image', 10)
-        self.odom_pub   = self.create_publisher(String, '/low_alt_combined_odometry', 10)
+        self.camera_pub = self.create_publisher(Image, 'camera/thermal_image', 10)
+        self.odom_pub   = self.create_publisher(String, '/combined_odometry', 10)
 
         # Load data from files
         try:

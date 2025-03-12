@@ -64,7 +64,7 @@ class LowAltFilterNode(Node):
 
         ## Subscribers ##
         self.img_sub = self.create_subscription(
-            Image, "camera/low_pi_thermal_image", self.img_callback, 10
+            Image, "camera/thermal_image", self.img_callback, 10
         )
 
         qos_profile = QoSProfile(
