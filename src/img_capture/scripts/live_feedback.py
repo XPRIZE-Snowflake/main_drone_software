@@ -93,7 +93,7 @@ class LiveFeedbackNode(Node):
         )
         self.create_subscription(
             String,
-            "/combined_odometry",
+            "/low_alt_combined_odometry",
             self.odom_callback,
             qos_profile
         )

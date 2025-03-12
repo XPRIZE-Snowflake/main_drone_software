@@ -71,7 +71,7 @@ class LowAltFilterNode(Node):
             reliability=ReliabilityPolicy.BEST_EFFORT, depth=10
         )
         self.odom_sub = self.create_subscription(
-            String, "/combined_odometry", self.odom_callback, qos_profile
+            String, "/low_alt_combined_odometry", self.odom_callback, qos_profile
         )
 
         self.timer_period = 1.0 / freq_hz
@@ -151,7 +151,7 @@ class LowAltFilterNode(Node):
         # self.get_logger().info(
         #     f"First Alt: {self.home_altitude:.2f}, Curr Alt: {self.altitude:.2f} Altitude Difference: {altitude_difference:.2f}m"
         # )
-        if(altitude_difference < 30):
+        if(altitude_difference < 25):
             return
         
 
@@ -169,11 +169,11 @@ class LowAltFilterNode(Node):
             np.array([0, 0, altitude_difference]) )[0]
         
         
-        self.get_logger().info(
+        self.get_logger().debug(
             f"Relative coords: X:{x:.2f}m, Y: {y:.2f}m, Altitude: {altitude_difference:.2f}m"
         )
 
-        if(altitude_difference > 65):
+        if(altitude_difference > 50):
             self.publish_location(x, y, altitude_difference)
 
         self.saved_images.append(scaled_img)
@@ -266,7 +266,7 @@ class LowAltFilterNode(Node):
         msg = String()
         msg.data = json_str
 
-        # Publish the message on the /combined_odometry topic
+        # Publish the message on the /low_alt_combined_odometry topic
         self.hotspot_pub.publish(msg)
 
 

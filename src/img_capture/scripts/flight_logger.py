@@ -17,7 +17,7 @@ from datetime import datetime
 
 """
 'Flight Logger' node that:
-- Subscribes to camera/thermal_image + /combined_odometry
+- Subscribes to camera/thermal_image + /low_alt_combined_odometry
 - Queues last N=25 odometry messages
 - Has a timer at 3 Hz that checks for the 'latest image', 
   finds best-match odometry, and stores them in lists.
@@ -44,8 +44,8 @@ class FlightLoggerNode(Node):
 
         # Setup image and odom log files
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        self.img_filename = f"flight_logs/therm_images_{timestamp}.npy"
-        self.odom_filename = f"flight_logs/flight_odom_{timestamp}.csv"
+        self.img_filename = f"flight_logs/low_therm_images_{timestamp}.npy"
+        self.odom_filename = f"flight_logs/low_flight_odom_{timestamp}.npy"
  
         # Latest camera msg (None if not arrived yet)
         self.latest_img_msg = None
@@ -65,7 +65,7 @@ class FlightLoggerNode(Node):
         )
         self.odom_sub = self.create_subscription(
             String,
-            "/combined_odometry",
+            "/low_alt_combined_odometry",
             self.odom_callback,
             qos_profile
         )
@@ -73,8 +73,8 @@ class FlightLoggerNode(Node):
         # Timer at freq_hz => gather data
         self.timer_period = 1.0 / freq_hz
         self.match_timer = self.create_timer(self.timer_period, self.timer_callback)
-        # Timer for 1 sec => log data
-        self.log_timer = self.create_timer(1.0, self.save_periodically)
+        # Timer for 10 sec => log data
+        self.log_timer = self.create_timer(10.0, self.save_periodically)
 
     def img_callback(self, msg):
         """Just store the latest image msg."""
@@ -116,7 +116,7 @@ class FlightLoggerNode(Node):
         self.saved_odom.append(best_odom)
 
         # Optionally log something
-        self.get_logger().info(f"Stored 1 image & matching odom. Now have {len(self.saved_images)} samples.")
+        self.get_logger().debug(f"Stored 1 image & matching odom. Now have {len(self.saved_images)} samples.")
 
         # Mark the image as consumed if you want to skip re-using it 
         # (otherwise we'll store it again next cycle).
@@ -131,12 +131,12 @@ class FlightLoggerNode(Node):
 
         if self.saved_odom:
             df = pd.DataFrame(self.saved_odom)
-            df.to_csv(self.odom_filename, mode='a', header=not os.path.exists(self.odom_filename), index=False)
-            self.get_logger().info(f"Appended {len(self.saved_odom)} odometry entries to {self.odom_filename}")
+            np.save(self.odom_filename, df.values)
+            self.get_logger().info(f"Saved {len(self.saved_odom)} odometry entries to {self.odom_filename}")
 
         # Clear lists after saving to prevent duplication
-        self.saved_images.clear()
-        self.saved_odom.clear()
+        # self.saved_images.clear()
+        # self.saved_odom.clear()
 
     def find_closest_odom(self, img_time_us):
         """Find odom in self.odom_history with closest 'timestamp' field to img_time_us."""

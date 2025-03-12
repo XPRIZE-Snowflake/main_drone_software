@@ -23,6 +23,7 @@ class CustomPoseMsg:
 class CombinedOdometryPublisher(Node):
     def __init__(self, camera_angle=0.0):
         super().__init__('combined_odometry_publisher')
+        self.get_logger().info("Odometry publisher started")
 
         # Initialize variables
         self.roll = self.pitch = self.yaw = 0.0
@@ -40,7 +41,7 @@ class CombinedOdometryPublisher(Node):
         self.create_subscription(SensorGps, '/fmu/out/vehicle_gps_position', self.gps_position_callback, qos_profile)
 
         # Create publisher for combined odometry data
-        self.publisher = self.create_publisher(String, '/combined_odometry', 10)
+        self.publisher = self.create_publisher(String, '/low_alt_combined_odometry', 10)
 
         # Timer for periodic publishing at 20 Hz (50 ms interval)
         self.timer = self.create_timer(1.0 / 20.0, self.timer_callback)
@@ -83,11 +84,11 @@ class CombinedOdometryPublisher(Node):
         msg = String()
         msg.data = json_str
 
-        # Publish the message on the /combined_odometry topic
+        # Publish the message on the /low_alt_combined_odometry topic
         self.publisher.publish(msg)
 
         # Log
-        self.get_logger().info(f"timestamp: {self.timestamp}, latitude: {self.latitude}, longitude: {self.longitude}, altitude: {self.altitude}, pitch: {self.pitch}, roll: {self.roll}, yaw: {self.yaw}")
+        self.get_logger().debug(f"timestamp: {self.timestamp}, latitude: {self.latitude}, longitude: {self.longitude}, altitude: {self.altitude}, pitch: {self.pitch}, roll: {self.roll}, yaw: {self.yaw}")
 
 def main(args=None):
     rclpy.init(args=args)
