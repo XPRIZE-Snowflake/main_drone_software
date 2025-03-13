@@ -71,7 +71,7 @@ class LowAltFilterNode(Node):
             reliability=ReliabilityPolicy.BEST_EFFORT, depth=10
         )
         self.odom_sub = self.create_subscription(
-            String, "/low_alt_combined_odometry", self.odom_callback, qos_profile
+            String, "/combined_odometry", self.odom_callback, qos_profile
         )
 
         self.timer_period = 1.0 / freq_hz
@@ -266,7 +266,7 @@ class LowAltFilterNode(Node):
         msg = String()
         msg.data = json_str
 
-        # Publish the message on the /low_alt_combined_odometry topic
+        # Publish the message on the /combined_odometry topic
         self.hotspot_pub.publish(msg)
 
 

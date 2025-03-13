@@ -329,7 +329,7 @@ class HotSpotNode(Node):
         )
         self.create_subscription(
             String,
-            "/low_alt_combined_odometry",
+            "/combined_odometry",
             self.odom_callback,
             10
         )
