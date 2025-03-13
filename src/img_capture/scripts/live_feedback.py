@@ -108,7 +108,7 @@ class LiveFeedbackNode(Node):
         )
         self.create_subscription(
             String,
-            "/combined_odometry",
+            "combined_odometry",
             self.odom_callback,
             qos_profile
         )
@@ -119,7 +119,7 @@ class LiveFeedbackNode(Node):
 
         #publishers
         self.drop_mech_pub = self.create_publisher(
-            String, "/move_command", 10
+            String, "move_command", 10
         )
 
         # Timer at freq_hz => call a GUI update callback

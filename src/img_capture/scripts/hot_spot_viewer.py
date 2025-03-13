@@ -46,7 +46,7 @@ class HotSpotViewerNode(Node):
         self.window_center_y = 0.0
 
         # Subscribe
-        self.create_subscription(String, "/hot_spots", self.hotspot_callback, 10)
+        self.create_subscription(String, "hot_spots", self.hotspot_callback, 10)
 
         # Refresh rate for the GUI
         self.period_ms = int(1000 // freq_hz)

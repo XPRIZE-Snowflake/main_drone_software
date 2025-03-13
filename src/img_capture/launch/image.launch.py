@@ -36,23 +36,14 @@ def generate_launch_description():
     )
     
     odometry_publisher_python_node = launch_ros.actions.Node(
-        package='img_capture', 
-        executable='odometry_publisher.py', 
-        name='odometry_publisher', 
-        output={ 'both': 'log'},
-        # remappings= [
-        #     ('odometry', '/high/camera/thermal_image')
-        # ],
+        package='img_capture', executable='odometry_publisher.py', 
+        name='odometry_publisher', output={ 'both': 'log'},
         namespace=namespace
     )
     
     flight_logger_node = launch_ros.actions.Node(
         package='img_capture', executable='flight_logger.py', 
-        name='flight_logger', 
-        output={ 'both': 'log'},
-        # remappings= [
-        #     ('camera/thermal_image', '/high/camera/thermal_image')
-        # ],
+        name='flight_logger', output={ 'both': 'log'},
         namespace=namespace
     )
     
@@ -69,10 +60,8 @@ def generate_launch_description():
     )
     
     kmeans_node = launch_ros.actions.Node(
-        package='img_capture', 
-        executable='kmeans.py', 
-        name='kmeans', 
-        output={ 'both': 'log'}, 
+        package='img_capture', executable='kmeans.py', 
+        name='kmeans', output={ 'both': 'log'}, 
         parameters=[
             {"max_radius": 15.0},
             {"min_size": 10}
