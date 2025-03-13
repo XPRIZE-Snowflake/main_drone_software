@@ -281,7 +281,7 @@ class HotSpotNode(Node):
     def __init__(self):
         super().__init__("hot_spot_node")
 
-        self.get_logger().info("HotSpotNode is starting...")
+        # self.get_logger().info("HotSpotNode is starting...")
 
         # Load filter parameters from JSON
         try:
@@ -317,7 +317,7 @@ class HotSpotNode(Node):
 
         # Publishers
         self.hotspot_pub = self.create_publisher(
-            String, "/hot_spots", 10
+            String, "hot_spots", 10
         )
 
         # Subscribers
@@ -329,7 +329,7 @@ class HotSpotNode(Node):
         )
         self.create_subscription(
             String,
-            "/combined_odometry",
+            "combined_odometry",
             self.odom_callback,
             10
         )
@@ -365,7 +365,7 @@ class HotSpotNode(Node):
             self.ref_lon = data["longitude"]
             self.ref_alt = data["altitude"]
             self.X0, self.Y0, self.Z0 = latlon_to_ecef(self.ref_lat, self.ref_lon, self.ref_alt)
-            self.get_logger().info(
+            self.get_logger().debug(
                 f"Reference lat/lon/alt = ({self.ref_lat}, {self.ref_lon}, {self.ref_alt})"
             )
 
@@ -394,7 +394,7 @@ class HotSpotNode(Node):
             self.newest_img_msg = None
 
             if len(self.odom_history) == 0:
-                self.get_logger().warn("No odometry yet - skipping this image.")
+                self.get_logger().debug("No odometry yet - skipping this image.")
                 continue
 
             # Convert image to float [0..100]
@@ -413,7 +413,7 @@ class HotSpotNode(Node):
             # Find best odom
             odom = self.find_closest_odom(img_time_us)
             if odom is None:
-                self.get_logger().warn("Could not find matching odom. Skipping image.")
+                self.get_logger().debug("Could not find matching odom. Skipping image.")
                 continue
 
             # Must have reference lat/lon/alt
@@ -446,7 +446,7 @@ class HotSpotNode(Node):
                     "hotspots": []
                 }
                 self.hotspot_pub.publish(String(data=json.dumps(out_msg)))
-                self.get_logger().info(f"No hotspots found (timestamp={img_time_us}).")
+                self.get_logger().debug(f"No hotspots found (timestamp={img_time_us}).")
                 continue
 
             # Convert camera location to ENU
@@ -491,7 +491,7 @@ class HotSpotNode(Node):
                 "hotspots": final_hotspots
             }
             self.hotspot_pub.publish(String(data=json.dumps(out_msg)))
-            self.get_logger().info(
+            self.get_logger().debug(
                 f"Published {len(final_hotspots)} hotspot(s) (ts={img_time_us})."
             )
 

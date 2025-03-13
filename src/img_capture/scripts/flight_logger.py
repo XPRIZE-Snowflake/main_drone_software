@@ -65,7 +65,7 @@ class FlightLoggerNode(Node):
         )
         self.odom_sub = self.create_subscription(
             String,
-            "/combined_odometry",
+            "combined_odometry",
             self.odom_callback,
             qos_profile
         )
