@@ -29,8 +29,8 @@ class DynamicKMeans(Node):
         
         self.lat_lon_elements = np.empty((0, 2))  # Rolling list of all received coordinates
         
-        self.create_subscription(String, "/hot_spots", self.hotspot_callback, 10)
-        self.pub = self.create_publisher(NavSatFix, '/fire_gps_pin', 10)
+        self.create_subscription(String, "hot_spots", self.hotspot_callback, 10)
+        self.pub = self.create_publisher(NavSatFix, 'fire_gps_pin', 10)
     
     def send_command(self, centroid):
         """

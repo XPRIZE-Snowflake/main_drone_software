@@ -1,55 +1,83 @@
+import os
 import launch
 import launch_ros.actions
+from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, GroupAction
 from launch.substitutions import LaunchConfiguration
 import launch.conditions
 
 
 def generate_launch_description():
+    namespace = os.getenv("ROS_NAMESPACE", "")
 
     sim_arg = DeclareLaunchArgument(
-        'sim', default_value='false', description='Set to true to launch sim_flight_publisher.py, otherwise start seekcamera_publisher.cpp and odometry_publisher.py'
+        'sim', default_value='false', 
+        description='Set to true to launch sim_flight_publisher.py, otherwise start seekcamera_publisher.cpp and odometry_publisher.py'
     )
     log_arg = DeclareLaunchArgument(
-        'log', default_value='false', description='Set to true to enable flight_logger.py'
+        'log', default_value='false', 
+        description='Set to true to enable flight_logger.py'
     )
     high_arg = DeclareLaunchArgument(
-        'high', default_value='true', description='Set to false to run low_alt_filter.py, otherwise runs high_alt_filter.py and kmeans.py'
+        'high', default_value='true', 
+        description='Set to false to run low_alt_filter.py, otherwise runs high_alt_filter.py and kmeans.py'
     )
 
     sim_flight_publisher_node = launch_ros.actions.Node(
-        package='img_capture', executable='sim_flight_publisher.py', name='sim_flight_publisher', output='screen'
+        package='img_capture', executable='sim_flight_publisher.py', 
+        name='sim_flight_publisher', output={'both': 'log'}, 
+        namespace=namespace
     )
     
     seekcamera_publisher_node = launch_ros.actions.Node(
-        package='img_capture', executable='seekcamera_publisher', name='seekcamera_publisher', output='screen'
+        package='img_capture', executable='seekcamera_publisher', 
+        name='seekcamera_publisher', output={'both': 'log'}, 
+        namespace=namespace
     )
     
     odometry_publisher_python_node = launch_ros.actions.Node(
-        package='img_capture', executable='odometry_publisher.py', name='odometry_publisher', output='screen'
+        package='img_capture', 
+        executable='odometry_publisher.py', 
+        name='odometry_publisher', 
+        output={ 'both': 'log'},
+        # remappings= [
+        #     ('odometry', '/high/camera/thermal_image')
+        # ],
+        namespace=namespace
     )
     
     flight_logger_node = launch_ros.actions.Node(
-        package='img_capture', executable='flight_logger.py', name='flight_logger', output='screen'
+        package='img_capture', executable='flight_logger.py', 
+        name='flight_logger', 
+        output={ 'both': 'log'},
+        # remappings= [
+        #     ('camera/thermal_image', '/high/camera/thermal_image')
+        # ],
+        namespace=namespace
     )
     
     low_alt_filter_node = launch_ros.actions.Node(
-        package='img_capture', executable='low_alt_filter.py', name='low_alt_filter', output='screen'
+        package='img_capture', executable='low_alt_filter.py', 
+        name='low_alt_filter', output={ 'both': 'log'}, 
+        namespace=namespace
     )
     
     high_alt_filter_node = launch_ros.actions.Node(
-        package='img_capture', executable='high_alt_filter.py', name='high_alt_filter', output='screen'
+        package='img_capture', executable='high_alt_filter.py', 
+        name='hot_spot_node', output={'both': 'log'}, 
+        namespace=namespace
     )
     
     kmeans_node = launch_ros.actions.Node(
         package='img_capture', 
         executable='kmeans.py', 
         name='kmeans', 
-        output='screen', 
+        output={ 'both': 'log'}, 
         parameters=[
             {"max_radius": 15.0},
             {"min_size": 10}
-        ]
+        ],
+        namespace=namespace
     )
 
     sim_group = GroupAction(

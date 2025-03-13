@@ -34,7 +34,7 @@ class SimCombinedPublisher(Node):
 
         # Publishers
         self.camera_pub = self.create_publisher(Image, 'camera/thermal_image', 10)
-        self.odom_pub   = self.create_publisher(String, '/combined_odometry', 10)
+        self.odom_pub   = self.create_publisher(String, 'combined_odometry', 10)
 
         # Load data from files
         try:

@@ -317,7 +317,7 @@ class HotSpotNode(Node):
 
         # Publishers
         self.hotspot_pub = self.create_publisher(
-            String, "/hot_spots", 10
+            String, "hot_spots", 10
         )
 
         # Subscribers
@@ -329,7 +329,7 @@ class HotSpotNode(Node):
         )
         self.create_subscription(
             String,
-            "/combined_odometry",
+            "combined_odometry",
             self.odom_callback,
             10
         )

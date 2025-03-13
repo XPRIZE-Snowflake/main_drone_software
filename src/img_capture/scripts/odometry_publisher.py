@@ -54,7 +54,7 @@ class CombinedOdometryPublisher(Node):
                                  qos_profile)
 
         # Publisher: combined odometry data
-        self.publisher = self.create_publisher(String, '/combined_odometry', 10)
+        self.publisher = self.create_publisher(String, 'combined_odometry', 10)
 
         # Timer for periodic publishing (20 Hz)
         self.timer = self.create_timer(1.0 / 20.0, self.timer_callback)
