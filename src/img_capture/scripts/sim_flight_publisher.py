@@ -30,10 +30,11 @@ class CustomPoseMsg:
 class SimCombinedPublisher(Node):
     def __init__(self):
         super().__init__('sim_combined_publisher')
+        self.get_logger().info("Sim Flight Publisher started.\n")
 
         # Publishers
         self.camera_pub = self.create_publisher(Image, 'camera/thermal_image', 10)
-        self.odom_pub   = self.create_publisher(String, '/combined_odometry', 10)
+        self.odom_pub   = self.create_publisher(String, 'combined_odometry', 10)
 
         # Load data from files
         try:
@@ -69,7 +70,7 @@ class SimCombinedPublisher(Node):
         # Image dimensions
         self.height = int(self.video_matrix.shape[1])
         self.width  = int(self.video_matrix.shape[2])
-        self.get_logger().info(
+        self.get_logger().debug(
             f"Loaded {self.num_frames} frames of size {self.width}x{self.height}."
         )
 
@@ -81,7 +82,7 @@ class SimCombinedPublisher(Node):
             dt_us = np.diff(self.timestamps_us)
             avg_dt_us = np.mean(dt_us)
             freq = 1e6 / avg_dt_us
-            self.get_logger().info(f"Estimated publishing frequency: {freq:.2f} Hz")
+            self.get_logger().debug(f"Estimated publishing frequency: {freq:.2f} Hz")
         else:
             self.get_logger().warn("Only one sample found; frequency estimation not possible.")
 
@@ -139,7 +140,7 @@ class SimCombinedPublisher(Node):
 
             img_msg.data = frame.tobytes()
             self.camera_pub.publish(img_msg)
-            self.get_logger().info(f"Published frame {i+1}/{self.num_frames}")
+            self.get_logger().debug(f"Published frame {i+1}/{self.num_frames}")
 
             # ------------------- Publish Odometry -------------------
             row = self.odom_data[i]
@@ -164,7 +165,7 @@ class SimCombinedPublisher(Node):
             odom_msg.data = json.dumps(custom_pose.__dict__)
 
             self.odom_pub.publish(odom_msg)
-            self.get_logger().info(f"Published odometry: {odom_msg.data}")
+            self.get_logger().debug(f"Published odometry: {odom_msg.data}")
 
         self.get_logger().info("All frames and odometry have been published. Shutting down node.")
         rclpy.shutdown()
@@ -175,7 +176,7 @@ def main(args=None):
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        node.get_logger().info("Keyboard interrupt, shutting down node.")
+        node.get_logger().debug("Keyboard interrupt, shutting down node.")
     finally:
         node.destroy_node()
         rclpy.shutdown()

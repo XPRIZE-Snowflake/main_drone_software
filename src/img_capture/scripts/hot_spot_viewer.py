@@ -66,7 +66,7 @@ class HotSpotViewerNode(Node):
                 self.enu_ys.append(ey)
                 self.weights.append(w)
 
-            self.get_logger().info(f"Received {len(hotspots)} hotspots (total={len(self.lats)}).")
+            self.get_logger().debug(f"Received {len(hotspots)} hotspots (total={len(self.lats)}).")
         except Exception as e:
             self.get_logger().error(f"Failed to parse hotspot JSON: {e}")
 
