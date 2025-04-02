@@ -33,7 +33,7 @@ def filter_image(img, first_threshold, filter_boost, filter_sigma, second_thresh
     Steps:
      1) Zero out values below first_threshold
      2) Add filter_boost to remaining (non-zero) pixels
-     3) Apply gaussian blur with sigma=filter_sigma
+     3) Apply gaussian filter with sigma=filter_sigma
      4) Zero out values below second_threshold
      5) Binarize anything >0 to 100
     Return the filtered array.
@@ -66,11 +66,13 @@ class LiveFeedbackNode(Node):
     """
     Subscribes to:
       - "camera/thermal_image" (Image messages)
-      - "/combined_odometry" (JSON-encoded String messages from your new publisher)
+      - "/combined_odometry" (JSON-encoded String messages)
+      - "hotspot_info" (JSON-encoded String messages)
+      - "average_hotspots" (JSON-encoded String messages, newly added)
 
-    Displays:
+    Displays (in the Tk GUI):
       - Three image views (normalized, raw, filtered)
-      - A text label with the entire JSON from the latest odometry
+      - Odom data, hotspot data, and "Way Point" (average hotspots).
     """
 
     def __init__(self, freq_hz=5.0):
@@ -85,6 +87,9 @@ class LiveFeedbackNode(Node):
 
         # Latest hotspot location
         self.hotspot_location = None
+
+        # Latest "Way Point" data from average_hotspots topic
+        self.way_point_data = None
 
         # Default filter params
         self.param_file = "detection_params.npy"
@@ -101,7 +106,6 @@ class LiveFeedbackNode(Node):
             self.camera_callback,
             10
         )
-
         qos_profile = QoSProfile(
             reliability=ReliabilityPolicy.BEST_EFFORT,
             depth=10
@@ -113,13 +117,25 @@ class LiveFeedbackNode(Node):
             qos_profile
         )
         self.hot_sub = self.create_subscription(
-            String, "hotspot_info", 
-            self.hot_callback, 10
+            String, 
+            "hotspot_info",
+            self.hot_callback, 
+            10
+        )
+        # NEW: Subscribe to the average hotspots topic
+        self.create_subscription(
+            String,
+            "average_hotspots",
+            self.way_point_callback,
+            10
         )
 
-        #publishers
+        # Publishers
         self.drop_mech_pub = self.create_publisher(
-            String, "move_command", 10
+            String, "servo_command", 10
+        )
+        self.log_pub = self.create_publisher(
+            String, "save_log", 10
         )
 
         # Timer at freq_hz => call a GUI update callback
@@ -145,8 +161,12 @@ class LiveFeedbackNode(Node):
 
     def save_params(self):
         """Save current filter parameters to .npy file."""
-        arr = np.array([self.first_threshold, self.filter_boost,
-                        self.filter_sigma, self.second_thresh], dtype=float)
+        arr = np.array([
+            self.first_threshold,
+            self.filter_boost,
+            self.filter_sigma,
+            self.second_thresh
+        ], dtype=float)
         np.save(self.param_file, arr)
         self.get_logger().info(f"Params saved to {self.param_file}")
 
@@ -175,20 +195,29 @@ class LiveFeedbackNode(Node):
             self.get_logger().error(f"Failed to parse odometry JSON: {e}")
 
     def hot_callback(self, msg):
-        try: 
+        try:
             data = json.loads(msg.data)
             self.hot_location = data
         except Exception as e:
             self.get_logger().error(f"Failed to parse hotspot data in mech drop code: {e}")
 
+    # NEW callback for way point (average hotspots)
+    def way_point_callback(self, msg):
+        """Handle incoming average hotspot data."""
+        try:
+            data = json.loads(msg.data)
+            self.way_point_data = data
+        except Exception as e:
+            self.get_logger().error(f"Failed to parse average hotspot data: {e}")
+
     def gui_update_callback(self):
         """
         Timer callback at 5 Hz to refresh the GUI.
-        We'll handle the actual drawing in a function in main() that uses Tk + Matplotlib.
+        We'll handle the actual drawing in a function in main().
         """
-        # This node method just runs. The real "drawing" occurs in main().
         pass
 
+is_drop_open = False
 
 # ----------------------------------------------------
 # Main function with Tk GUI
@@ -206,7 +235,7 @@ def main():
     root.title("Live Feedback (5 Hz)")
 
     # Make a 3-subplot figure for (Normalized, Raw, Filtered)
-    fig = Figure(figsize=(12,4), dpi=100)
+    fig = Figure(figsize=(12, 4), dpi=100)
     ax1, ax2, ax3 = fig.subplots(1, 3)
 
     canvas = FigureCanvasTkAgg(fig, master=root)
@@ -214,7 +243,7 @@ def main():
     canvas_widget.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
     # Initialize dummy images
-    dummy_img = np.zeros((10,10), dtype=float)
+    dummy_img = np.zeros((10, 10), dtype=float)
 
     im_norm = ax1.imshow(dummy_img, cmap='gray', vmin=0, vmax=1, origin="lower")
     ax1.set_title("Normalized")
@@ -225,37 +254,37 @@ def main():
     im_filt = ax3.imshow(dummy_img, cmap='gray', vmin=0, vmax=100, origin="lower")
     ax3.set_title("Filtered")
 
-    # A label to show odometry
-    odom_label = tk.Label(root, text="No odom yet", font=("Arial", 10))
-    odom_label.pack(side=tk.TOP, pady=5)
+    # Frame for data/labels/entries/buttons
+    data_frame = tk.Frame(root)
+    data_frame.pack(side=tk.TOP, pady=5)
 
-    # The label to show hotspot location
-    hot_label = tk.Label(root, text="No hotspot found", font=("Ariel", 10))
-    hot_label.pack(side=tk.TOP, pady=5)
+    # Labels for odom, hotspots, and new "Way Point"
+    odom_label = tk.Label(data_frame, text="No odom yet", font=("Arial", 10))
+    odom_label.grid(row=3, column=0, padx=5)
+    hot_label  = tk.Label(data_frame, text="No hotspot found", font=("Ariel", 10))
+    hot_label.grid(row=3, column=1, padx=5)
+    waypoint_label = tk.Label(data_frame, text="No Way Point yet", font=("Arial", 10))
+    waypoint_label.grid(row=3, column=2, padx=5)
 
-    # Param controls
-    param_frame = tk.Frame(root)
-    param_frame.pack(side=tk.TOP, pady=5)
-
-    tk.Label(param_frame, text="First Threshold").grid(row=0, column=0, padx=5)
-    ent_first_threshold = tk.Entry(param_frame, width=6)
+    tk.Label(data_frame, text="First Threshold").grid(row=1, column=2, padx=5)
+    ent_first_threshold = tk.Entry(data_frame, width=6)
     ent_first_threshold.insert(0, str(node.first_threshold))
-    ent_first_threshold.grid(row=0, column=1)
+    ent_first_threshold.grid(row=2, column=2)
 
-    tk.Label(param_frame, text="Filter Boost").grid(row=0, column=2, padx=5)
-    ent_filter_boost = tk.Entry(param_frame, width=6)
+    tk.Label(data_frame, text="Filter Boost").grid(row=1, column=3, padx=5)
+    ent_filter_boost = tk.Entry(data_frame, width=6)
     ent_filter_boost.insert(0, str(node.filter_boost))
-    ent_filter_boost.grid(row=0, column=3)
+    ent_filter_boost.grid(row=2, column=3)
 
-    tk.Label(param_frame, text="Filter Sigma").grid(row=1, column=0, padx=5)
-    ent_filter_sigma = tk.Entry(param_frame, width=6)
+    tk.Label(data_frame, text="Filter Sigma").grid(row=1, column=4, padx=5)
+    ent_filter_sigma = tk.Entry(data_frame, width=6)
     ent_filter_sigma.insert(0, str(node.filter_sigma))
-    ent_filter_sigma.grid(row=1, column=1)
+    ent_filter_sigma.grid(row=2, column=4)
 
-    tk.Label(param_frame, text="Second Threshold").grid(row=1, column=2, padx=5)
-    ent_second_threshold = tk.Entry(param_frame, width=6)
+    tk.Label(data_frame, text="Second Threshold").grid(row=1, column=5, padx=5)
+    ent_second_threshold = tk.Entry(data_frame, width=6)
     ent_second_threshold.insert(0, str(node.second_thresh))
-    ent_second_threshold.grid(row=1, column=3)
+    ent_second_threshold.grid(row=2, column=5)
 
     def save_params():
         try:
@@ -267,18 +296,33 @@ def main():
         except ValueError:
             print("Invalid param input, cannot save.")
 
-    tk.Button(param_frame, text="Save Params", command=save_params).grid(
-        row=2, column=0, columnspan=4, pady=5
-    )
-
     def drop_mech():
+        global is_drop_open
         command = String()
-        command.data = "open"
-        node.drop_mech_pub.publish(command)
-        node.get_logger().info(f"Opened drop mechanism")
-    
-    tk.Button(param_frame, text="Drop", command=drop_mech).grid(
-        row=2, column=2, columnspan=4, pady=5
+        if is_drop_open:
+            command.data = "close"
+            node.drop_mech_pub.publish(command)
+            node.get_logger().info("Closed drop mechanism")
+            is_drop_open = False
+        else:
+            command.data = "open"
+            node.drop_mech_pub.publish(command)
+            node.get_logger().info("Opened drop mechanism")
+            is_drop_open = True
+
+    def save_log():
+        command = String()
+        command.data = "save"
+        node.log_pub.publish(command)
+
+    tk.Button(data_frame, text="Save Params", command=save_params).grid(
+        row=0, column=2, pady=5
+    )
+    tk.Button(data_frame, text="Drop", command=drop_mech).grid(
+        row=0, column=3, pady=5
+    )
+    tk.Button(data_frame, text="Save Log", command=save_log).grid(
+        row=0, column=4, pady=5
     )
 
     # GUI refresh function, called ~5 Hz
@@ -293,7 +337,6 @@ def main():
                 norm_img = (img - img.min()) / (max_val - img.min())
             else:
                 norm_img = np.zeros_like(img)
-
             im_norm.set_data(norm_img)
             im_norm.set_clim(0, 1)
             ax1.set_title(f"Normalized (max={max_val:.1f})")
@@ -317,10 +360,30 @@ def main():
         if node.latest_odom is not None:
             txt = f"Latest Odom:\n{json.dumps(node.latest_odom, indent=2)}"
             odom_label.config(text=txt)
+
         # 3) Display hotspot relative location
         if node.hotspot_location is not None:
-            hot_txt = f"Hotspot location: {json.dumps(node.hot_location, indent=2)}\n"
+            hot_txt = f"Hotspot location:\n{json.dumps(node.hot_location, indent=2)}"
             hot_label.config(text=hot_txt)
+
+        # 4) Display "Way Point" (average hotspot info) if available
+        if node.way_point_data is not None:
+            # Example data:
+            # {
+            #   "average_lat": <float>,
+            #   "average_lon": <float>,
+            #   "average_x": <float>,
+            #   "average_y": <float>,
+            #   "total_count": <int>
+            # }
+            w = node.way_point_data
+            wp_txt = (
+                f"Way Point:\n"
+                f"Lat/Lon=({w['average_lat']:.6f}, {w['average_lon']:.6f})\n"
+                f"X/Y=({w['average_x']:.2f}, {w['average_y']:.2f})\n"
+                f"Count={w['total_count']}"
+            )
+            waypoint_label.config(text=wp_txt)
 
         canvas.draw()
         # Schedule next update

@@ -19,12 +19,14 @@ from datetime import datetime
 'Flight Logger' node that:
 - Subscribes to camera/thermal_image + /combined_odometry
 - Queues last N=25 odometry messages
-- Has a timer at 3 Hz that checks for the 'latest image', 
+- Has a timer at 3 Hz that checks for the 'latest image',
   finds best-match odometry, and stores them in lists.
-- Saves data every 10 seconda to npy and csv log files
-- On shutdown , saves last image and odom data
+- Saves data every 10 seconds to npy and csv log files
+- On shutdown, saves last image and odom data
 
-Made Feb 23 to ensure data logs even when UAV shutdowns unexpectedly
+All functionality is the same as before. Updated only to match the
+newly published odometry fields:
+    timestamp, x, y, z, pitch, roll, yaw, ref_lat, ref_lon, ref_alt
 """
 
 class FlightLoggerNode(Node):
@@ -42,11 +44,19 @@ class FlightLoggerNode(Node):
         # log directory
         os.makedirs("flight_logs", exist_ok=True)
 
-        # Setup image and odom log files
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        self.img_filename = f"flight_logs/high_therm_images_{timestamp}.npy"
-        self.odom_filename = f"flight_logs/high_flight_odom_{timestamp}.npy"
- 
+        # setup log files
+        self.namespace = os.getenv("ROS_NAMESPACE", "")
+        if self.namespace is not None:
+            # Setup image and odom log files
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            self.img_filename = f"flight_logs/{self.namespace}_therm_images_{timestamp}.npy"
+            self.odom_filename = f"flight_logs/{self.namespace}_flight_odom_{timestamp}.npy"
+        else:
+            # Setup image and odom log files
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            self.img_filename = f"flight_logs/low_therm_images_{timestamp}.npy"
+            self.odom_filename = f"flight_logs/low_flight_odom_{timestamp}.npy"
+
         # Latest camera msg (None if not arrived yet)
         self.latest_img_msg = None
 
@@ -69,19 +79,27 @@ class FlightLoggerNode(Node):
             self.odom_callback,
             qos_profile
         )
+        self.live_sub = self.create_subscription(
+            String, "save_log", self.save_button, 10
+        )
 
         # Timer at freq_hz => gather data
         self.timer_period = 1.0 / freq_hz
         self.match_timer = self.create_timer(self.timer_period, self.timer_callback)
         # Timer for 10 sec => log data
         self.log_timer = self.create_timer(10.0, self.save_periodically)
+        # Timer for 1 minute => change file name
+        self.name_change = self.create_timer(60.0, self.change_filename)
 
     def img_callback(self, msg):
         """Just store the latest image msg."""
         self.latest_img_msg = msg
 
     def odom_callback(self, msg):
-        """Parse JSON, store in queue."""
+        """
+        Parse JSON from the combined_odometry topic. The published data has keys:
+        timestamp, x, y, z, pitch, roll, yaw, ref_lat, ref_lon, ref_alt.
+        """
         try:
             data = json.loads(msg.data)
             self.odom_history.append(data)  # store raw dict
@@ -118,12 +136,11 @@ class FlightLoggerNode(Node):
         # Optionally log something
         self.get_logger().debug(f"Stored 1 image & matching odom. Now have {len(self.saved_images)} samples.")
 
-        # Mark the image as consumed if you want to skip re-using it 
-        # (otherwise we'll store it again next cycle).
+        # Mark the image as consumed if you want to skip re-using it
         self.latest_img_msg = None
 
     def save_periodically(self):
-        """Save images and odometry data every second"""
+        """Save images and odometry data every 10 seconds."""
         if self.saved_images:
             arr = np.array(self.saved_images, dtype=np.float32)
             np.save(self.img_filename, arr)  # Overwrites but maintains continuous saving
@@ -133,6 +150,38 @@ class FlightLoggerNode(Node):
             df = pd.DataFrame(self.saved_odom)
             np.save(self.odom_filename, df.values)
             self.get_logger().info(f"Appended {len(self.saved_odom)} odometry entries to {self.odom_filename}")
+
+    def change_filename(self):
+        if self.namespace is not None:
+            # Setup image and odom log files
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            self.img_filename = f"flight_logs/{self.namespace}_therm_images_{timestamp}.npy"
+            self.odom_filename = f"flight_logs/{self.namespace}_flight_odom_{timestamp}.npy"
+            self.get_logger().info(f"Changed filename with timestamp {timestamp}.")
+        else:
+            # Setup image and odom log files
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            self.img_filename = f"flight_logs/low_therm_images_{timestamp}.npy"
+            self.odom_filename = f"flight_logs/low_flight_odom_{timestamp}.npy"
+            self.get_logger().info(f"Changed filename with timestamp {timestamp}.")
+
+    def save_button(self, msg):
+        """Save data when a button is pushed on the GUI"""
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        img_live_filename = f"flight_logs/low_live_therm_images_{timestamp}.npy"
+        odom_live_filename = f"flight_logs/low_live_flight_odom_{timestamp}.npy"
+
+        if self.saved_images:
+            arr = np.array(self.saved_images, dtype=np.float32)
+            np.save(img_live_filename, arr)
+            self.get_logger().info(f"Saved {len(self.saved_images)} images to {img_live_filename}")
+
+        if self.saved_odom:
+            df = pd.DataFrame(self.saved_odom)
+            np.save(odom_live_filename, df.values)
+            self.get_logger().info(f"Appended {len(self.saved_odom)} odometry entries to {odom_live_filename}")
+
+        self.get_logger().info(f"Manually saved flight data")
 
     def find_closest_odom(self, img_time_us):
         """Find odom in self.odom_history with closest 'timestamp' field to img_time_us."""
@@ -152,7 +201,6 @@ class FlightLoggerNode(Node):
 
     def save_and_exit(self):
         """On shutdown, save last images & odom to disk."""
-        # Save images
         self.save_periodically()
         self.get_logger().info("Final save completed before shutdown")
 

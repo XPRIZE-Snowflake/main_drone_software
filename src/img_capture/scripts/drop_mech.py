@@ -47,11 +47,11 @@ class DropMechNode(Node):
     def drop_callback(self, msg):
         try: 
             data = json.loads(msg.data)
-            self.x = data.get("x", 0)
-            self.y = data.get("y", 0)
+            self.x = data.get("x", 26)
+            self.y = data.get("y", 26)
             self.alt = data.get("alt", 70)
             self.hot_location = data
-            if abs(self.x) <  5 and abs(self.y) < 5:
+            if abs(self.x) <  25 and abs(self.y) < 25:
                 self.get_logger().info(f"Drop mech activated")
                 self.servo.value = self.openVal
         except Exception as e:

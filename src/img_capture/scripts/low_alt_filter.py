@@ -25,7 +25,9 @@ from collections import deque
 from datetime import datetime
 from scipy.ndimage import gaussian_filter
 
+from tf_transformations import euler_from_quaternion
 
+## need to install tf-transformations
 
 
 # Setting up json string message for location
@@ -80,12 +82,12 @@ class LowAltFilterNode(Node):
             reliability=ReliabilityPolicy.BEST_EFFORT, depth=10
         )
         self.odom_sub = self.create_subscription(
-            String, "/combined_odometry", self.odom_callback, qos_profile
+            String, "combined_odometry", self.odom_callback, qos_profile
         )
 
-        self.hot_sub = self.create_subscription(
-            NavSatFix, "/user_hotspot", self.hot_coord_callback, 10
-        )
+        # self.hot_sub = self.create_subscription(
+        #     NavSatFix, "/user_hotspot", self.hot_coord_callback, 10
+        # )
 
         self.timer_period = 1.0 / freq_hz
         self.timer_ = self.create_timer(self.timer_period, self.timer_callback)
@@ -111,13 +113,13 @@ class LowAltFilterNode(Node):
         except Exception as e:
             self.get_logger().error(f"Failed to parse odom: {e}")
     
-    def hot_coord_callback(self, msg):
-        # self.hot_location = msg.data
-        self.user_hot_lat = msg.latitude
-        self.user_hot_long = msg.longitude
-        # self.user_hot_alt = msg.altitude
+    # def hot_coord_callback(self, msg):
+    #     # self.hot_location = msg.data
+    #     self.user_hot_lat = msg.latitude
+    #     self.user_hot_long = msg.longitude
+    #     # self.user_hot_alt = msg.altitude
 
-        self.get_logger().debug(f"Recieved hotspot location from user - Lat: {self.user_hot_lat}, Long: {self.user_hot_long}")
+    #     self.get_logger().debug(f"Recieved hotspot location from user - Lat: {self.user_hot_lat}, Long: {self.user_hot_long}")
 
 
     def timer_callback(self):
@@ -149,30 +151,49 @@ class LowAltFilterNode(Node):
         # pixel_offset_x, pixel_offset_y = hotspot_x - center_x, hotspot_y - center_y
 
         # ## take odom data and locate hotspots
-        self.altitude = best_odom.get("altitude", 1400)
-        self.pitch = math.radians(best_odom.get("pitch", 0))
-        self.roll = math.radians(best_odom.get("roll", 0))
-        self.yaw = math.radians(best_odom.get("yaw", 0))
+        # self.altitude = best_odom.get("altitude", 1400)
+        # self.pitch = math.radians(best_odom.get("pitch", 0))
+        # self.roll = math.radians(best_odom.get("roll", 0))
+        # self.yaw = math.radians(best_odom.get("yaw", 0))
+
+        # ## take odom data and locate hotspots
+        # self.altitude = best_odom.get("altitude_ellipsoid_m", 1400)
+        # curr_qw = best_odom.get("qw", 1)
+        # curr_qx = best_odom.get("qw", 0)
+        # curr_qy = best_odom.get("qw", 0)
+        # curr_qz = best_odom.get("qw", 0)
+        # self.roll, self.pitch, self.yaw = self.quaternion_to_euler(curr_qw, curr_qx, curr_qy, curr_qz)
+
+        
 
         ## used for debugging purposes
         # world_long = best_odom.get("longitude", 0)
         # world_lat = best_odom.get("lattitude", 0)
         # self.get_logger().info(f"World Location; Lat: {world_lat}, Long: {world_long}")
         
-        # Alt 70
-        # Compare altitude with home location
-        if(self.home_location is None):
-            self.home_altitude = 1300
-        else:
-            self.home_altitude = self.home_location.get("altitude", 1300)  # Default home altitude
+        # # Alt 70
+        # # Compare altitude with home location
+        # if(self.home_location is None):
+        #     self.home_altitude = 1300
+        # else:
+        #     self.home_altitude = self.home_location.get("altitude_ellipsoid_m", 1300)  # Default home altitude
         
-        altitude_difference = self.altitude - self.home_altitude
+        # altitude_difference = self.altitude - self.home_altitude
+
+        try:
+            self.pitch = best_odom.get("pitch")
+            self.roll  = best_odom.get("roll")
+            self.yaw   = best_odom.get("yaw")
+            altitude_difference = best_odom.get("z")
+        except ValueError as e:
+            self.get_logger().debug(f"Couldn't parse odom in filter: {e}")
+            return
 
         # Log altitude to check
         # self.get_logger().info(
         #     f"First Alt: {self.home_altitude:.2f}, Curr Alt: {self.altitude:.2f} Altitude Difference: {altitude_difference:.2f}m"
         # )
-        if(altitude_difference < 25):
+        if(altitude_difference < 15):
             return
         
 
@@ -191,15 +212,20 @@ class LowAltFilterNode(Node):
         
         
         self.get_logger().debug(
-            f"Relative coords: X:{x:.2f}m, Y: {y:.2f}m, Altitude: {altitude_difference:.2f}m"
+            f"Relative coords from UAV to fire: X:{x:.2f}m, Y: {y:.2f}m, Altitude: {altitude_difference:.2f}m"
         )
 
-        if(altitude_difference > 50):
-            self.publish_location(x, y, altitude_difference)
+        # if(altitude_difference > 25):
+        self.publish_location(x, y, altitude_difference)
 
         self.saved_images.append(scaled_img)
         self.saved_odom.append(best_odom)
         self.latest_img_msg = None
+
+    def quaternion_to_euler(self, qw, qx, qy, qz):
+        # Convert quaternion to Euler angles (roll, pitch, yaw)
+        euler = euler_from_quaternion([qx, qy, qz, qw])
+        return euler  # Returns a tuple: (roll, pitch, yaw)
 
     ## converts camera pixel locations to real world locations ##
     def pixels_to_world(self, pixel_coords, camera_dims, fov, pitch, roll, yaw, camera_coords):
